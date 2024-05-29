@@ -1,4 +1,21 @@
 {
   "name": "react-mug",
-  "version": "0.0.0"
+  "version": "0.0.1",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build-cjs": "tsc -p ./builder/tsconfig.cjs.json",
+    "build-mjs": "tsc -p ./builder/tsconfig.mjs.json",
+    "clean-dist": "shx rm -fr ./dist/",
+    "clean-deps": "shx rm -fr ./package-lock.json ./node_modules/"
+  },
+  "devDependencies": {
+    "shx": "~0.3.4",
+    "typescript": "~5.4.5"
+  }
 }

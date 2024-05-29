@@ -1,0 +1,3 @@
+{
+  "extends": "./builder/tsconfig.cjs"
+}

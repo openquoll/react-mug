@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./cache/tsconfig.cjs.tsbuildinfo",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "../dist/cjs/"
+  }
+}

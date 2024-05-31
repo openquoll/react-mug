@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.base",
   "compilerOptions": {
-    "tsBuildInfoFile": "./cache/tsconfig.mjs.tsbuildinfo",
+    "tsBuildInfoFile": "./cache/tsconfig.esm.tsbuildinfo",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "outDir": "../dist/mjs/"
+    "outDir": "../dist/esm/"
   }
 }

@@ -8,3 +8,5 @@ coverage/
 
 builder/cache/
 dist/
+
+*.draft.*

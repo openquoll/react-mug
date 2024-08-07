@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { construction, isArray, isMug, isNonArrayObjectLike, isObjectLike } from '../mug';
+import { construction, isArray, isMug, isNonArrayObjectLike, ownKeysOfObjectLike } from '../mug';
 import { rawStateStore } from '../raw-state';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
@@ -11,11 +11,9 @@ function subscribeTo(mugLike: any, changeListener: () => void): void {
   }
 
   if (isNonArrayObjectLike(mugLike)) {
-    [...Object.getOwnPropertyNames(mugLike), ...Object.getOwnPropertySymbols(mugLike)].forEach(
-      (key) => {
-        subscribeTo(mugLike[key], changeListener);
-      },
-    );
+    ownKeysOfObjectLike(mugLike).forEach((key) => {
+      subscribeTo(mugLike[key], changeListener);
+    });
     return;
   }
 
@@ -35,11 +33,9 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 
   if (isNonArrayObjectLike(mugLike)) {
-    [...Object.getOwnPropertyNames(mugLike), ...Object.getOwnPropertySymbols(mugLike)].forEach(
-      (key) => {
-        unsubscribeFrom(mugLike[key], changeListener);
-      },
-    );
+    ownKeysOfObjectLike(mugLike).forEach((key) => {
+      unsubscribeFrom(mugLike[key], changeListener);
+    });
     return;
   }
 

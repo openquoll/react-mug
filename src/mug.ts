@@ -1,27 +1,28 @@
 /**
- * A mug is a holder of states. Imagine states as liquid in mug cups.
+ * A mug is a holder of states. Imagine mug cups containing states as liquid
+ * inside.
  *
  * A mug is any object conforming to the shape `{ [construction]: ... }`. The
  * `[construction]` field denotes how the held states are initially constructed.
  *
  * ---
  *
- * A Mug can also hold other Mugs. Imagine mug cups stacked together.
+ * A Mug can be a holder of other Mugs. Imagine mug cups stacked together.
  *
  * ---
  *
- * A state is a plain value but with no `[construction]` at any level.
+ * A state is a plain value without `[construction]` at any level.
  *
  * ---
  *
  * A mug-like is a mug, a state or something between a mug and a state. Imagine
- * a mixture of mug cups and liquid.
+ * mug-likes as mixtures of mug cups and liquid.
  *
  * A mug-like is a plain value with or without `[construction]`.
  *
  * The most mug-like is mugs and the least mug-like is states.
  *
- * Overall speaking, mugs, mug-likes and states constitue a mug-state continuum.
+ * Thus, mugs, mug-likes and states constitue a mug-state continuum.
  *
  * ---
  *
@@ -81,21 +82,18 @@ export type PossibleMug<TMugLike> =
         ? Mug<PossibleMugLike<TMugLikeItem[]>>
         : Mug<TMugLike>;
 
-export function isObjectLike(o: any): o is ObjectLike {
+export function isObjectLike(o: any): boolean {
   return typeof o === 'object' && o !== null;
+}
+
+export function isPlainObject(o: any): boolean {
+  return isObjectLike(o) && [Object, undefined].includes(o.constructor);
 }
 
 export const isArray = Array.isArray;
 
-export function isNonArrayObjectLike(o: any): o is ObjectLike {
-  return isObjectLike(o) && !isArray(o);
-}
-
 export function isMug(o: any): o is Mug<any> {
-  if (!isNonArrayObjectLike(o)) {
-    return false;
-  }
-  return Object.prototype.hasOwnProperty.call(o, construction);
+  return isObjectLike(o) && Object.prototype.hasOwnProperty.call(o, construction);
 }
 
 export function isState(o: any): boolean {
@@ -103,7 +101,7 @@ export function isState(o: any): boolean {
     return false;
   }
 
-  if (isNonArrayObjectLike(o)) {
+  if (isPlainObject(o)) {
     return ownKeysOfObjectLike(o).reduce((result, key) => {
       return result && isState(o[key]);
     }, true);
@@ -127,8 +125,15 @@ export function areEqualMugLikes(a: any, b: any): boolean {
     return Object.is(a, b);
   }
 
-  if (isNonArrayObjectLike(a) && isNonArrayObjectLike(b)) {
+  if (isPlainObject(a) && isPlainObject(b)) {
     return ownKeysOfObjectLike({ ...a, ...b }).reduce((result, key) => {
+      const keyInA = a.hasOwnProperty(key);
+      const keyInB = b.hasOwnProperty(key);
+
+      if (!keyInA || !keyInB) {
+        return false;
+      }
+
       return result && areEqualMugLikes(a[key], b[key]);
     }, true);
   }
@@ -138,12 +143,42 @@ export function areEqualMugLikes(a: any, b: any): boolean {
       return false;
     }
 
-    return a.reduce((result, aItem, i) => {
-      return result && areEqualMugLikes(aItem, b[i]);
-    }, true);
+    let result = true;
+    for (let i = 0, n = a.length; i < n; i++) {
+      const indexInA = i in a;
+      const indexInB = i in b;
+
+      if (!indexInA && !indexInB) {
+        continue;
+      }
+
+      if (indexInA && !indexInB) {
+        result = false;
+        break;
+      }
+
+      if (!indexInA && indexInB) {
+        result = false;
+        break;
+      }
+
+      result = result && areEqualMugLikes(a[i], b[i]);
+    }
+    return result;
   }
 
   return false;
+}
+
+export function emptyCloneOfPlainObject(o: any): any {
+  return Object.create(o.constructor?.prototype ?? null);
+}
+
+export function shallowCloneOfPlainObject(o: any): any {
+  return ownKeysOfObjectLike(o).reduce((r, key) => {
+    r[key] = o[key];
+    return r;
+  }, emptyCloneOfPlainObject(o));
 }
 
 export type NumAsStr<T> = T extends number ? `${T}` : T;

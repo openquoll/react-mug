@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { construction, isArray, isMug, isNonArrayObjectLike, ownKeysOfObjectLike } from '../mug';
+import { construction, isArray, isMug, isPlainObject, ownKeysOfObjectLike } from '../mug';
 import { rawStateStore } from '../raw-state';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
@@ -10,7 +10,7 @@ function subscribeTo(mugLike: any, changeListener: () => void): void {
     return;
   }
 
-  if (isNonArrayObjectLike(mugLike)) {
+  if (isPlainObject(mugLike)) {
     ownKeysOfObjectLike(mugLike).forEach((key) => {
       subscribeTo(mugLike[key], changeListener);
     });
@@ -18,8 +18,8 @@ function subscribeTo(mugLike: any, changeListener: () => void): void {
   }
 
   if (isArray(mugLike)) {
-    mugLike.forEach((childMugLike) => {
-      subscribeTo(childMugLike, changeListener);
+    mugLike.forEach((mugLikeItem) => {
+      subscribeTo(mugLikeItem, changeListener);
     });
     return;
   }
@@ -32,7 +32,7 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
     return;
   }
 
-  if (isNonArrayObjectLike(mugLike)) {
+  if (isPlainObject(mugLike)) {
     ownKeysOfObjectLike(mugLike).forEach((key) => {
       unsubscribeFrom(mugLike[key], changeListener);
     });
@@ -40,8 +40,8 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 
   if (isArray(mugLike)) {
-    mugLike.forEach((childMugLike) => {
-      unsubscribeFrom(childMugLike, changeListener);
+    mugLike.forEach((mugLikeItem) => {
+      unsubscribeFrom(mugLikeItem, changeListener);
     });
     return;
   }

@@ -1,11 +1,13 @@
 import {
   areEqualMugLikes,
   construction,
+  emptyCloneOfPlainObject,
   isArray,
   isMug,
-  isNonArrayObjectLike,
+  isPlainObject,
   isState,
   ownKeysOfObjectLike,
+  shallowCloneOfPlainObject,
 } from './mug';
 import { rawStateStore } from './raw-state';
 
@@ -18,16 +20,15 @@ function readMugLike(mugLike: any): any {
     return mugLike;
   }
 
-  if (isNonArrayObjectLike(mugLike)) {
-    const state: any = {};
-    ownKeysOfObjectLike(mugLike).forEach((key) => {
-      state[key] = readMugLike(mugLike[key]);
-    });
-    return state;
+  if (isPlainObject(mugLike)) {
+    return ownKeysOfObjectLike(mugLike).reduce((result, key) => {
+      result[key] = readMugLike(mugLike[key]);
+      return result;
+    }, emptyCloneOfPlainObject(mugLike));
   }
 
   if (isArray(mugLike)) {
-    return mugLike.map((childMugLikg) => readMugLike(childMugLikg));
+    return mugLike.map((mugLikeItem) => readMugLike(mugLikeItem));
   }
 
   return mugLike;
@@ -47,50 +48,63 @@ function calcRawState(mugLike: any, input: any): any {
     return mugLike;
   }
 
-  if (isNonArrayObjectLike(mugLike) && isNonArrayObjectLike(input)) {
-    const rawState: any = {};
-    ownKeysOfObjectLike(mugLike).forEach((mugLikeKey) => {
-      const noKeyInInput = !input.hasOwnProperty(mugLikeKey);
-      if (noKeyInInput) {
-        rawState[mugLikeKey] = mugLike[mugLikeKey];
+  if (isPlainObject(mugLike) && isPlainObject(input)) {
+    return ownKeysOfObjectLike(input).reduce((rawState, inputKey) => {
+      const inputKeyInMugLike = mugLike.hasOwnProperty(inputKey);
+
+      if (!inputKeyInMugLike) {
+        rawState[inputKey] = input[inputKey];
+        return rawState;
       }
 
-      if (isMug(input[mugLikeKey])) {
-        rawState[mugLikeKey] = input[mugLikeKey];
-        return;
+      if (isMug(input[inputKey])) {
+        rawState[inputKey] = input[inputKey];
+        return rawState;
       }
 
-      if (isMug(mugLike[mugLikeKey])) {
-        rawState[mugLikeKey] = mugLike[mugLikeKey];
-        return;
+      if (isMug(mugLike[inputKey])) {
+        return rawState;
       }
 
-      rawState[mugLikeKey] = calcRawState(mugLike[mugLikeKey], input[mugLikeKey]);
-    });
-    return rawState;
+      rawState[inputKey] = calcRawState(mugLike[inputKey], input[inputKey]);
+      return rawState;
+    }, shallowCloneOfPlainObject(mugLike));
   }
 
   if (isArray(mugLike) && isArray(input)) {
     const rawState: any[] = [];
-    input.forEach((inputItem, i) => {
-      const noIndexInMugLike = i >= mugLike.length - 1;
-      if (noIndexInMugLike) {
-        rawState.push(inputItem);
-        return;
+    rawState.length = input.length;
+
+    for (let i = 0, n = rawState.length; i < n; i++) {
+      const indexInMugLike = i in mugLike;
+      const indexInInput = i in input;
+
+      if (!indexInMugLike && !indexInInput) {
+        continue;
       }
 
-      if (isMug(inputItem)) {
-        rawState.push(inputItem);
-        return;
+      if (indexInMugLike && !indexInInput) {
+        rawState[i] = mugLike[i];
+        continue;
+      }
+
+      if (!indexInMugLike && indexInInput) {
+        rawState[i] = input[i];
+        continue;
+      }
+
+      if (isMug(input[i])) {
+        rawState[i] = input[i];
+        continue;
       }
 
       if (isMug(mugLike[i])) {
-        rawState.push(mugLike[i]);
-        return;
+        rawState[i] = mugLike[i];
+        continue;
       }
 
-      rawState[i] = calcRawState(mugLike[i], inputItem);
-    });
+      rawState[i] = calcRawState(mugLike[i], input[i]);
+    }
     return rawState;
   }
 
@@ -105,7 +119,7 @@ function writeMugLike(mugLike: any, input: any): void {
     return;
   }
 
-  if (isNonArrayObjectLike(mugLike) && isNonArrayObjectLike(input)) {
+  if (isPlainObject(mugLike) && isPlainObject(input)) {
     ownKeysOfObjectLike(mugLike).forEach((mugLikeKey) => {
       writeMugLike(mugLike[mugLikeKey], input[mugLikeKey]);
     });

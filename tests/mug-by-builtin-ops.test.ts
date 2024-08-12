@@ -385,17 +385,129 @@ describe('operates a number mug by builtin ops', () => {
     [construction]: 100,
   };
 
-  test('the state read before write equals the construction value', () => {
+  test('the state read before write equals the construction in value', () => {
     const aState = check(aMug);
 
     expect(aState).toBe(aMug[construction]);
   });
 
-  test('writes the state, the state changes', () => {
+  test('writes the state, the state changes in value', () => {
     swirl(aMug, 110);
 
     const aState = check(aMug);
 
     expect(aState).toBe(110);
+  });
+});
+
+describe('operates a class-defined mug by builtin ops', () => {
+  class Point3D {
+    constructor(x: number = 0, y: number = 0, z: number = 0) {}
+  }
+
+  interface AState {
+    s: string;
+    o: {
+      s: string;
+    };
+    position: Point3D;
+  }
+
+  class AMug implements Mug<AState> {
+    [construction] = {
+      s: 'qwe',
+      o: {
+        s: 'qwe',
+      },
+      position: new Point3D(),
+    };
+  }
+
+  const aMug = new AMug();
+
+  test('the state read before write equals the construction in ref and value', () => {
+    const aState = check(aMug);
+    expect(aState).toBe(aMug[construction]);
+    expect(aState).toEqual(aMug[construction]);
+  });
+
+  describe('writes the string field with a different value', () => {
+    let aStateBefore: any, aStateAfter: any;
+    let constructionBefore: any, constructionShallowCloneBefore: any;
+
+    test('[action]', () => {
+      aStateBefore = check(aMug);
+      constructionBefore = aMug[construction];
+      constructionShallowCloneBefore = { ...aMug[construction] };
+
+      swirl(aMug, { s: 'wer' });
+
+      aStateAfter = check(aMug);
+    });
+
+    test('[verify] the state changes in ref and value', () => {
+      expect(aStateAfter).not.toBe(aStateBefore);
+      expect(aStateAfter).toEqual({
+        s: 'wer',
+        o: {
+          s: 'qwe',
+        },
+        position: new Point3D(),
+      });
+    });
+
+    test('[verify] the rest fields stay unchanged in ref and value', () => {
+      ownKeysOfObjectLike(aStateBefore)
+        .filter((key) => key !== 's')
+        .forEach((key) => {
+          expect(aStateAfter[key]).toBe(aStateBefore[key]);
+          expect(aStateAfter[key]).toEqual(aStateBefore[key]);
+        });
+    });
+  });
+
+  describe('writes the class-defined field', () => {
+    test('with a different same-class instance that has different field values, the field changes in ref and value', () => {
+      const aStateBefore = check(aMug);
+
+      swirl(aMug, { position: new Point3D(100, 100, 100) });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.position).not.toBe(aStateBefore.position);
+      expect(aStateAfter.position).toEqual(new Point3D(100, 100, 100));
+    });
+
+    test('with a different same-class instance that has same field values, the field changes in ref', () => {
+      const aStateBefore = check(aMug);
+
+      swirl(aMug, { position: new Point3D(100, 100, 100) });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.position).not.toBe(aStateBefore.position);
+    });
+
+    test('with a plain object that has one matching field of a different value, the state stays unchanged in ref and value', () => {
+      const aStateBefore = check(aMug);
+
+      swirl(aMug, { position: { x: 200 } });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.position).toBe(aStateBefore.position);
+      expect(aStateAfter.position).toEqual(aStateBefore.position);
+    });
+
+    test('with a plain object that has all matching fields of different values, the field stays unchanged in ref and value', () => {
+      const aStateBefore = check(aMug);
+
+      swirl(aMug, { position: { x: 200, y: 200, z: 200 } });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.position).toBe(aStateBefore.position);
+      expect(aStateAfter.position).toEqual(aStateBefore.position);
+    });
   });
 });

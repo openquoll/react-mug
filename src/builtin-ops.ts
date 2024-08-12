@@ -1,11 +1,17 @@
-import { isArray, isPlainObject, ownKeysOfObjectLike, shallowCloneOfPlainObject } from './mug';
+import {
+  isArray,
+  isObjectLike,
+  isPlainObject,
+  ownKeysOfObjectLike,
+  shallowCloneOfPlainObject,
+} from './mug';
 import { r, w } from './rw';
 
 export const check = r(<TState>(state: TState): TState => {
   return state;
 });
 
-function applyPatch(state: any, patch: any): any {
+function mergePatch(state: any, patch: any): any {
   if (Object.is(state, patch)) {
     return state;
   }
@@ -19,7 +25,7 @@ function applyPatch(state: any, patch: any): any {
         return result;
       }
 
-      result[patchKey] = applyPatch(state[patchKey], patch[patchKey]);
+      result[patchKey] = mergePatch(state[patchKey], patch[patchKey]);
       return result;
     }, shallowCloneOfPlainObject(state));
   }
@@ -46,14 +52,20 @@ function applyPatch(state: any, patch: any): any {
         continue;
       }
 
-      result[i] = applyPatch(state[i], patch[i]);
+      result[i] = mergePatch(state[i], patch[i]);
     }
     return result;
+  }
+
+  if (isObjectLike(state) && isObjectLike(patch)) {
+    if (state.constructor !== patch.constructor) {
+      return state;
+    }
   }
 
   return patch;
 }
 
 export const swirl = w((state: any, patch: any): any => {
-  return applyPatch(state, patch);
+  return mergePatch(state, patch);
 });

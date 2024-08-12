@@ -4,6 +4,7 @@ import {
   emptyCloneOfPlainObject,
   isArray,
   isMug,
+  isObjectLike,
   isPlainObject,
   isState,
   ownKeysOfObjectLike,
@@ -106,6 +107,12 @@ function calcRawState(mugLike: any, input: any): any {
       rawState[i] = calcRawState(mugLike[i], input[i]);
     }
     return rawState;
+  }
+
+  if (isObjectLike(mugLike) && isObjectLike(input)) {
+    if (mugLike.constructor !== input.constructor) {
+      return mugLike;
+    }
   }
 
   return input;

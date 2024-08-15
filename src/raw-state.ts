@@ -1,8 +1,8 @@
 import { construction } from './mug';
 
 class RawStateStore {
-  private _rawStatesByMug = new Map<any, any>();
-  private _changeListenerSetsByMug = new Map<any, ((state: any) => void)[]>();
+  private _rawStatesByMug = new WeakMap<any, any>();
+  private _changeListenerSetsByMug = new WeakMap<any, ((state: any) => void)[]>();
 
   public setRawState(mug: any, rawState: any): void {
     this._rawStatesByMug.set(mug, rawState);

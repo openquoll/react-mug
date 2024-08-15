@@ -17,7 +17,8 @@
     "build-cjs": "tsc -p ./builder/tsconfig.cjs.json",
     "build-esm": "tsc -p ./builder/tsconfig.esm.json",
     "clean-dist": "shx rm -fr ./dist/",
-    "clean-deps": "shx rm -fr ./package-lock.json ./node_modules/"
+    "clean-deps": "shx rm -fr ./package-lock.json ./node_modules/",
+    "test": "jest"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "~4.3.0",

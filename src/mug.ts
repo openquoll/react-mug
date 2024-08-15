@@ -92,6 +92,10 @@ export function isPlainObject(o: any): boolean {
 
 export const isArray = Array.isArray;
 
+export function isClassDefinedObject(o: any): boolean {
+  return isObjectLike(o) && !isArray(o) && ![Object, undefined].includes(o.constructor);
+}
+
 export function isMug(o: any): o is Mug<any> {
   return isObjectLike(o) && Object.prototype.hasOwnProperty.call(o, construction);
 }
@@ -145,19 +149,14 @@ export function areEqualMugLikes(a: any, b: any): boolean {
 
     let result = true;
     for (let i = 0, n = a.length; i < n; i++) {
-      const indexInA = i in a;
-      const indexInB = i in b;
+      const indexInA = a.hasOwnProperty(i);
+      const indexInB = b.hasOwnProperty(i);
 
       if (!indexInA && !indexInB) {
         continue;
       }
 
-      if (indexInA && !indexInB) {
-        result = false;
-        break;
-      }
-
-      if (!indexInA && indexInB) {
+      if (!indexInA || !indexInB) {
         result = false;
         break;
       }

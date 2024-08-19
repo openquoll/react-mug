@@ -933,7 +933,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
       });
     });
 
-    test('[verify] the rest fields stay unchanged changes in ref and value', () => {
+    test('[verify] the rest fields stay unchanged changes in ref and value, [important]', () => {
       ownKeysOfObjectLike(aStateBefore)
         .filter((key) => key !== 's')
         .forEach((key) => {

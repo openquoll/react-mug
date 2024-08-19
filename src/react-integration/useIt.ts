@@ -11,8 +11,8 @@ function subscribeTo(mugLike: any, changeListener: () => void): void {
   }
 
   if (isPlainObject(mugLike)) {
-    ownKeysOfObjectLike(mugLike).forEach((key) => {
-      subscribeTo(mugLike[key], changeListener);
+    ownKeysOfObjectLike(mugLike).forEach((mugLikeKey) => {
+      subscribeTo(mugLike[mugLikeKey], changeListener);
     });
     return;
   }
@@ -33,8 +33,8 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 
   if (isPlainObject(mugLike)) {
-    ownKeysOfObjectLike(mugLike).forEach((key) => {
-      unsubscribeFrom(mugLike[key], changeListener);
+    ownKeysOfObjectLike(mugLike).forEach((mugLikeKey) => {
+      unsubscribeFrom(mugLike[mugLikeKey], changeListener);
     });
     return;
   }

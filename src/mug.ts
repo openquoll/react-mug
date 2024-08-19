@@ -189,6 +189,98 @@ export function areEqualMugLikes(a: any, b: any): boolean {
   return false;
 }
 
+export function mixMugLikes(a: any, b: any): any {
+  if (isMug(a) || isMug(b)) {
+    return a;
+  }
+
+  if (areEqualMugLikes(a, b)) {
+    return a;
+  }
+
+  if (isPlainObject(a) && isPlainObject(b)) {
+    const result = ownKeysOfObjectLike(b).reduce((result, bKey) => {
+      const bKeyInA = a.hasOwnProperty(bKey);
+
+      if (!bKeyInA) {
+        if (isMug(b[bKey])) {
+          return result;
+        }
+        result[bKey] = b[bKey];
+        return result;
+      }
+
+      if (isMug(a[bKey]) || isMug(b[bKey])) {
+        return result;
+      }
+
+      result[bKey] = mixMugLikes(a[bKey], b[bKey]);
+
+      return result;
+    }, shallowCloneOfPlainObject(a));
+
+    if (areEqualMugLikes(a, result)) {
+      return a;
+    }
+
+    return result;
+  }
+
+  if (isArray(a) && isArray(b)) {
+    const result: any[] = [];
+    result.length = b.length;
+
+    for (let i = 0, n = result.length; i < n; i++) {
+      const indexInA = a.hasOwnProperty(i);
+      const indexInB = b.hasOwnProperty(i);
+
+      if (!indexInA && !indexInB) {
+        continue;
+      }
+
+      if (indexInA && !indexInB) {
+        result[i] = a[i];
+        continue;
+      }
+
+      if (!indexInA && indexInB) {
+        if (isMug(b[i])) {
+          continue;
+        }
+        result[i] = b[i];
+        continue;
+      }
+
+      if (isMug(a[i]) || isMug(b[i])) {
+        result[i] = a[i];
+        continue;
+      }
+
+      result[i] = mixMugLikes(a[i], b[i]);
+    }
+
+    if (areEqualMugLikes(a, result)) {
+      return a;
+    }
+
+    return result;
+  }
+
+  if (isClassDefinedObject(a) && isPlainObject(b)) {
+    if (a.constructor !== b.constructor) {
+      return a;
+    }
+
+    if (Object.is(a, b)) {
+      return a;
+    }
+
+    return b;
+  }
+
+  return b;
+}
+
 export function emptyCloneOfPlainObject(o: any): any {
   return Object.create(o.constructor?.prototype ?? null);
 }

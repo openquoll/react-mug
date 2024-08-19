@@ -42,7 +42,9 @@ export type Mug<TConstruction> = {
 export type RawState<TMugLike> =
   TMugLike extends Mug<infer TConstruction> ? TConstruction : TMugLike;
 
-export type ObjectLike = { [k: keyof any]: any };
+export type AnyObjectLike = { [k: keyof any]: any };
+
+export type AnyTuple = [any, ...any];
 
 /**
  * The state type for a given mug-like type.
@@ -50,7 +52,7 @@ export type ObjectLike = { [k: keyof any]: any };
 export type State<TMugLike> =
   TMugLike extends Mug<infer TConstruction>
     ? State<TConstruction>
-    : TMugLike extends ObjectLike
+    : TMugLike extends AnyObjectLike
       ? { [K in keyof TMugLike]: State<TMugLike[K]> }
       : TMugLike extends (infer TMugLikeItem)[]
         ? State<TMugLikeItem>[]
@@ -62,7 +64,7 @@ export type State<TMugLike> =
 export type PossibleMugLike<TMugLike> =
   TMugLike extends Mug<infer TConstruction>
     ? PossibleMugLike<TConstruction>
-    : TMugLike extends ObjectLike
+    : TMugLike extends AnyObjectLike
       ?
           | Mug<{ [K in keyof TMugLike]: PossibleMugLike<TMugLike[K]> }>
           | { [K in keyof TMugLike]: PossibleMugLike<TMugLike[K]> }
@@ -76,11 +78,29 @@ export type PossibleMugLike<TMugLike> =
 export type PossibleMug<TMugLike> =
   TMugLike extends Mug<infer TConstruction>
     ? PossibleMug<TConstruction>
-    : TMugLike extends ObjectLike
+    : TMugLike extends AnyObjectLike
       ? Mug<{ [K in keyof TMugLike]: PossibleMugLike<TMugLike[K]> }>
       : TMugLike extends (infer TMugLikeItem)[]
         ? Mug<PossibleMugLike<TMugLikeItem[]>>
         : Mug<TMugLike>;
+
+export function tuple<T extends AnyTuple>(...args: T): T {
+  return args;
+}
+
+export class MugError extends Error {
+  public name: string = 'MugError';
+
+  constructor(message: string) {
+    super(message);
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, MugError);
+    }
+
+    Object.setPrototypeOf(this, MugError.prototype);
+  }
+}
 
 export function isObjectLike(o: any): boolean {
   return typeof o === 'object' && o !== null;
@@ -182,7 +202,7 @@ export function shallowCloneOfPlainObject(o: any): any {
 
 export type NumAsStr<T> = T extends number ? `${T}` : T;
 
-export function ownKeysOfObjectLike<T extends ObjectLike>(o: T): NumAsStr<keyof T>[] {
+export function ownKeysOfObjectLike<T extends AnyObjectLike>(o: T): NumAsStr<keyof T>[] {
   if (isObjectLike(o)) {
     const ownKeys = [...Object.getOwnPropertyNames(o), ...Object.getOwnPropertySymbols(o)];
     return ownKeys as NumAsStr<keyof T>[];

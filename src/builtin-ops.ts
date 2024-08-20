@@ -1,5 +1,4 @@
 import {
-  areEqualMugLikes,
   isArray,
   isClassDefinedObject,
   isMug,
@@ -19,7 +18,7 @@ function mergePatch(state: any, patch: any): any {
     return state;
   }
 
-  if (areEqualMugLikes(state, patch)) {
+  if (Object.is(state, patch)) {
     return state;
   }
 
@@ -74,6 +73,7 @@ function mergePatch(state: any, patch: any): any {
     if (patch.constructor !== state.constructor) {
       return state;
     }
+
     return patch;
   }
 

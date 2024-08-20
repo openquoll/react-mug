@@ -307,7 +307,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
   });
 
-  describe('ae8aba7, writes "the object array field", [cite] 11d55b6:4dee5ea', () => {
+  describe('ae8aba7, writes "the object array field", [cite] .:4dee5ea', () => {
     describe('7d919a6, with a dense bigger-length array of different full-fledged items', () => {
       test('[action, verify] the field changes in ref, length, and all items', () => {
         swirl(aMug, {
@@ -436,7 +436,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
   });
 
-  describe('1240350, writes "the object tuple field" with a sparse tuple of a partial object item that has a different string field value, [cite] 11d55b6:ae8aba7', () => {
+  describe('1240350, writes "the object tuple field" with a sparse tuple of a partial object item that has a different string field value, [cite] .:ae8aba7', () => {
     let aStateBefore: any, aStateAfter: any;
 
     test('[action]', () => {
@@ -480,7 +480,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
   });
 
-  describe('bea0ff2, continuously reads the mug after write, [cite] 11d55b6:908db7b', () => {
+  describe('bea0ff2, continuously reads the mug after write, [cite] .:908db7b', () => {
     test('[action, verify] the state and its fields stay unchanged in ref and value', () => {
       const aState1 = check(aMug);
       const aState2 = check(aMug);
@@ -995,7 +995,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('694282b, writes "the muggy object field_s string field" with a same value, [cite] 6a8c78f:bf62d1f', () => {
+  describe('694282b, writes "the muggy object field_s string field" with a same value, [cite] .:bf62d1f', () => {
     let aStateBefore: any, aStateAfter: any;
     let objectStateBefore: any, objectStateAfter: any;
 
@@ -1034,7 +1034,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('33fb29a, writes "the latter mirror muggy object field_s string field" with a different value, [cite] 6a8c78f:bf62d1f', () => {
+  describe('33fb29a, writes "the latter mirror muggy object field_s string field" with a different value, [cite] .:bf62d1f', () => {
     let aStateBefore: any, aStateAfter: any;
     let objectStateBefore: any, objectStateAfter: any;
 
@@ -1076,7 +1076,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('7e06f81, writes "the muggy object and the latter mirror muggy object fields_ string fields" with different values simultaneously, [cite] 6a8c78f:bf62d1f', () => {
+  describe('7e06f81, writes "the muggy object and the latter mirror muggy object fields_ string fields" with different values simultaneously, [cite] .:bf62d1f', () => {
     let aStateBefore: any, aStateAfter: any;
     let objectStateBefore: any, objectStateAfter: any;
 
@@ -1119,7 +1119,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('fc86947, writes "the object mug_s string field" with a different value, [cite] 6a8c78f:bf62d1f', () => {
+  describe('fc86947, writes "the object mug_s string field" with a different value, [cite] .:bf62d1f', () => {
     let aStateBefore: any, aStateAfter: any;
     let objectStateBefore: any, objectStateAfter: any;
 
@@ -1167,7 +1167,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('c8f0abf, writes "the object mug_s string field" with a same value, [cite] 6a8c78f:bf62d1f', () => {
+  describe('c8f0abf, writes "the object mug_s string field" with a same value, [cite] .:bf62d1f', () => {
     test('[action, verify] the parent mug_s state and its fields stay unchanged in ref and value', () => {
       swirl(aMug, {
         muggyObject: { s: '7b6' },
@@ -1206,7 +1206,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('baa7548, writes "the latter mirror muggy number field" with a different value, [cite] 6a8c78f:c2d5e4f', () => {
+  describe('baa7548, writes "the latter mirror muggy number field" with a different value, [cite] .:c2d5e4f', () => {
     test('[action, verify], the parent mug_s state changes in ref, the field, the muggy number field, and the number mug_s state change in value', () => {
       swirl(aMug, { muggyNumber: 555 });
       const aStateBefore = check(aMug);
@@ -1226,7 +1226,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('4d45544, writes "the muggy number field" with a same value, [cite] 6a8c78f:c2d5e4f', () => {
+  describe('4d45544, writes "the muggy number field" with a same value, [cite] .:c2d5e4f', () => {
     test('[action, verify] the state and the number mug_s state stays unchanged in ref and value', () => {
       swirl(aMug, { muggyNumber: 975 });
       const aStateBefore = check(aMug);
@@ -1247,7 +1247,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('e23ccc9, writes "the number mug" with a different value, [cite] 6a8c78f:c2d5e4f', () => {
+  describe('e23ccc9, writes "the number mug" with a different value, [cite] .:c2d5e4f', () => {
     test('[action, verify] the parent mug_s state changes in ref, the muggy number field and the latter mirror muggy number field change in value', () => {
       swirl(aMug, { muggyNumber: 796 });
       const aStateBefore = check(aMug);
@@ -1265,7 +1265,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('1b5f6ea, writes "the number mug" with a same value, [cite] 6a8c78f:c2d5e4f', () => {
+  describe('1b5f6ea, writes "the number mug" with a same value, [cite] .:c2d5e4f', () => {
     test('[action, verify] the parent mug_s state stay unchaged in ref and value', () => {
       swirl(aMug, { muggyNumber: 737 });
       const aStateBefore = check(aMug);
@@ -1332,7 +1332,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('29925d3, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-0 item that has a same string field value, [cite] 6a8c78f:5761e9a', () => {
+  describe('29925d3, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-0 item that has a same string field value, [cite] .:5761e9a', () => {
     let aStateBefore: any, aStateAfter: any;
     let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
 
@@ -1379,7 +1379,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('f311c76, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-1 item that has a different string field value, [cite] 6a8c78f:5761e9a', () => {
+  describe('f311c76, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-1 item that has a different string field value, [cite] .:5761e9a', () => {
     let aStateBefore: any, aStateAfter: any;
     let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
 
@@ -1425,7 +1425,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('59b94c2, writes "the muggy object array field" with a dense same-length array of full-fledged object items that have different string field values simultaneously, [cite] 6a8c78f:5761e9a', () => {
+  describe('59b94c2, writes "the muggy object array field" with a dense same-length array of full-fledged object items that have different string field values simultaneously, [cite] .:5761e9a', () => {
     let aStateBefore: any, aStateAfter: any;
     let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
 
@@ -1474,7 +1474,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('b0fe53a, writes "the muggy object array item mug_s string field" with a different value, [cite] 6a8c78f:5761e9a', () => {
+  describe('b0fe53a, writes "the muggy object array item mug_s string field" with a different value, [cite] .:5761e9a', () => {
     let aStateBefore: any, aStateAfter: any;
     let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
 
@@ -1524,7 +1524,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('fff90bc, writes "the muggy object array item mug_s string field" with a same value, [cite] 6a8c78f:5761e9a', () => {
+  describe('fff90bc, writes "the muggy object array item mug_s string field" with a same value, [cite] .:5761e9a', () => {
     test('[action, verify], the parent mug_s state, its fields, and the muggy object array items stay unchanged in ref and value', () => {
       swirl(aMug, {
         muggyObjectArray: [{ s: 'cbd', o: { s: 'asd' } }, ,],
@@ -1699,7 +1699,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
     });
   });
 
-  describe('f68c346, continuously reads the mug after write, [cite] 6a8c78f:30cb2f8', () => {
+  describe('f68c346, continuously reads the mug after write, [cite] .:30cb2f8', () => {
     test('[action, verify] the state and its fields stay unchanged in ref and evaluated value', () => {
       const aState1 = check(aMug);
       const aState2 = check(aMug);

@@ -189,96 +189,79 @@ export function areEqualMugLikes(a: any, b: any): boolean {
   return false;
 }
 
-export function mixMugLikes(a: any, b: any): any {
-  if (isMug(a) || isMug(b)) {
-    return a;
+export function assignInput(mugLike: any, input: any): any {
+  if (isMug(mugLike) || isMug(input)) {
+    return mugLike;
   }
 
-  if (areEqualMugLikes(a, b)) {
-    return a;
+  if (areEqualMugLikes(mugLike, input)) {
+    return mugLike;
   }
 
-  if (isPlainObject(a) && isPlainObject(b)) {
-    const result = ownKeysOfObjectLike(b).reduce((result, bKey) => {
-      const bKeyInA = a.hasOwnProperty(bKey);
+  if (isPlainObject(mugLike) && isPlainObject(input)) {
+    const result = ownKeysOfObjectLike({ ...mugLike, ...input }).reduce((result, key) => {
+      const keyInMugLike = mugLike.hasOwnProperty(key);
+      const keyInInput = input.hasOwnProperty(key);
 
-      if (!bKeyInA) {
-        if (isMug(b[bKey])) {
+      if (keyInMugLike && !keyInInput) {
+        return result;
+      }
+
+      if (!keyInMugLike && keyInInput) {
+        if (isMug(input[key])) {
           return result;
         }
-        result[bKey] = b[bKey];
+        result[key] = input[key];
         return result;
       }
 
-      if (isMug(a[bKey]) || isMug(b[bKey])) {
-        return result;
-      }
-
-      result[bKey] = mixMugLikes(a[bKey], b[bKey]);
+      result[key] = assignInput(mugLike[key], input[key]);
 
       return result;
-    }, shallowCloneOfPlainObject(a));
+    }, emptyCloneOfPlainObject(mugLike));
 
-    if (areEqualMugLikes(a, result)) {
-      return a;
+    if (areEqualMugLikes(mugLike, result)) {
+      return mugLike;
     }
 
     return result;
   }
 
-  if (isArray(a) && isArray(b)) {
+  if (isArray(mugLike) && isArray(input)) {
     const result: any[] = [];
-    result.length = b.length;
+    result.length = input.length;
 
     for (let i = 0, n = result.length; i < n; i++) {
-      const indexInA = a.hasOwnProperty(i);
-      const indexInB = b.hasOwnProperty(i);
+      const indexInMugLike = mugLike.hasOwnProperty(i);
+      const indexInInput = input.hasOwnProperty(i);
 
-      if (!indexInA && !indexInB) {
+      if (!indexInMugLike && !indexInInput) {
         continue;
       }
 
-      if (indexInA && !indexInB) {
-        result[i] = a[i];
+      if (indexInMugLike && !indexInInput) {
         continue;
       }
 
-      if (!indexInA && indexInB) {
-        if (isMug(b[i])) {
+      if (!indexInMugLike && indexInInput) {
+        if (isMug(input[i])) {
           continue;
         }
-        result[i] = b[i];
+        result[i] = input[i];
         continue;
       }
 
-      if (isMug(a[i]) || isMug(b[i])) {
-        result[i] = a[i];
-        continue;
-      }
-
-      result[i] = mixMugLikes(a[i], b[i]);
+      result[i] = assignInput(mugLike[i], input[i]);
     }
 
-    if (areEqualMugLikes(a, result)) {
-      return a;
+    if (areEqualMugLikes(mugLike, result)) {
+      return mugLike;
     }
 
     return result;
   }
 
-  if (isClassDefinedObject(a) && isPlainObject(b)) {
-    if (a.constructor !== b.constructor) {
-      return a;
-    }
-
-    if (Object.is(a, b)) {
-      return a;
-    }
-
-    return b;
-  }
-
-  return b;
+  return input;
 }
 
 export function emptyCloneOfPlainObject(o: any): any {

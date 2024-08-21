@@ -7,6 +7,7 @@ import {
   isMug,
   isObjectLike,
   isPlainObject,
+  isState,
   MugError,
   ownKeysOfObjectLike,
 } from './mug';
@@ -56,6 +57,10 @@ class MugLikeReadAction {
       this._readingMugLikes.delete(mugLike);
 
       return ValueStabilizer.ForMugLikeRead.apply(mugLike, state);
+    }
+
+    if (isState(mugLike)) {
+      return mugLike;
     }
 
     if (isPlainObject(mugLike)) {
@@ -116,6 +121,10 @@ class MugLikeWriteAction {
 
       rawStateStore.setRawState(mugLike, newRawState);
       this._writtenMugs.add(mugLike);
+      return;
+    }
+
+    if (isState(mugLike)) {
       return;
     }
 

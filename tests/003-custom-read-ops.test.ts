@@ -1,7 +1,7 @@
-import { check, r, swirl } from '../src';
-import { construction, Mug, ownKeysOfObjectLike, PossibleMugLike } from '../src/mug';
+import { check, construction, Mug, PossibleMugLike, r, swirl } from '../src';
+import { ownKeysOfObjectLike } from '../src/mug';
 
-describe('dd10061, operates by a plain object state custom read op', () => {
+describe('dd10061, operates by an object state custom read op', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -13,7 +13,7 @@ describe('dd10061, operates by a plain object state custom read op', () => {
     potentialMuggyObject: ObjectState;
   }
 
-  describe('a9760b1, the op generates a new return on each call', () => {
+  describe('a9760b1, the op accepts a constant extra and generates a new return', () => {
     const customReadFn = jest.fn(
       (state: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
         return {
@@ -26,7 +26,68 @@ describe('dd10061, operates by a plain object state custom read op', () => {
 
     const customReadOp = r(customReadFn);
 
-    describe('efdaecb, continuously reads a plain object state with a constant extra', () => {
+    const extra: Pick<ObjectState, 'o'> = {
+      o: {
+        s: 'asd',
+      },
+    };
+
+    let checkedState: any;
+    let checkedObjectState: any;
+    let opParamState1: any, opParamState2: any;
+    let opParamExtra1: any, opParamExtra2: any;
+    let opReturn1: any, opReturn2: any;
+    let finalReturn1: any, finalReturn2: any;
+
+    function sharedVerifyCases() {
+      test('[verify] the op-param state and its fields stay unchanged in ref and value', () => {
+        expect(opParamState2).toBe(opParamState1);
+        ownKeysOfObjectLike(opParamState1).forEach((key) => {
+          expect(opParamState2[key]).toBe(opParamState1[key]);
+        });
+        expect(opParamState2).toStrictEqual(opParamState1);
+      });
+
+      test('[verify] the first op-param extra and its fields equal the input extra and its fields in ref and value', () => {
+        expect(opParamExtra1).toBe(extra);
+        ownKeysOfObjectLike(extra).forEach((key) => {
+          expect(opParamExtra1[key]).toBe(extra[key]);
+        });
+        expect(opParamExtra1).toStrictEqual(extra);
+      });
+
+      test('[verify] the op-param extra and its fields stay unchanged in ref and value', () => {
+        expect(opParamExtra2).toBe(opParamExtra1);
+        ownKeysOfObjectLike(opParamExtra1).forEach((key) => {
+          expect(opParamExtra2[key]).toBe(opParamExtra1[key]);
+        });
+        expect(opParamExtra2).toStrictEqual(opParamExtra1);
+      });
+
+      test('[verify] the final return and its fields keep same as the op return and its fields in ref and value', () => {
+        expect(finalReturn1).toBe(opReturn1);
+        ownKeysOfObjectLike(opReturn1).forEach((key) => {
+          expect(finalReturn1[key]).toBe(opReturn1[key]);
+        });
+        expect(finalReturn1).toStrictEqual(opReturn1);
+
+        expect(finalReturn2).toBe(opReturn2);
+        ownKeysOfObjectLike(opReturn2).forEach((key) => {
+          expect(finalReturn2[key]).toBe(opReturn2[key]);
+        });
+        expect(finalReturn2).toStrictEqual(opReturn2);
+      });
+
+      test('[verify] the final return and its fields change in ref but not in value', () => {
+        expect(finalReturn2).not.toBe(finalReturn1);
+        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
+          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
+        });
+        expect(finalReturn2).toStrictEqual(finalReturn1);
+      });
+    }
+
+    describe('efdaecb, continuously reads a constant plain object state', () => {
       const aState = {
         s: 'asd',
         o: {
@@ -39,17 +100,6 @@ describe('dd10061, operates by a plain object state custom read op', () => {
           },
         },
       };
-
-      const extra: Pick<ObjectState, 'o'> = {
-        o: {
-          s: 'asd',
-        },
-      };
-
-      let opParamState1: any, opParamState2: any;
-      let opParamExtra1: any, opParamExtra2: any;
-      let opReturn1: any, opReturn2: any;
-      let finalReturn1: any, finalReturn2: any;
 
       test('[action]', () => {
         customReadFn.mockClear();
@@ -73,54 +123,10 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         expect(opParamState1).toStrictEqual(aState);
       });
 
-      test('[verify] the op-param state and its fields stay unchanged in ref and value', () => {
-        expect(opParamState2).toBe(opParamState1);
-        ownKeysOfObjectLike(opParamState1).forEach((key) => {
-          expect(opParamState2[key]).toBe(opParamState1[key]);
-        });
-        expect(opParamState2).toStrictEqual(opParamState1);
-      });
-
-      test('[verify] the first op-param extra and its fields equal the input extra and its fields in ref and value', () => {
-        expect(opParamExtra1).toBe(extra);
-        ownKeysOfObjectLike(extra).forEach((key) => {
-          expect(opParamExtra1[key]).toBe(extra[key]);
-        });
-        expect(opParamExtra1).toStrictEqual(extra);
-      });
-
-      test('[verify] the op-param extra and its fields stay unchanged in ref and value', () => {
-        expect(opParamExtra2).toBe(opParamExtra1);
-        ownKeysOfObjectLike(opParamExtra1).forEach((key) => {
-          expect(opParamExtra2[key]).toBe(opParamExtra1[key]);
-        });
-        expect(opParamExtra2).toStrictEqual(opParamExtra1);
-      });
-
-      test('[verify] the final return and its fields keep equal to the op return and its fields in ref and value', () => {
-        expect(finalReturn1).toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(finalReturn1[key]).toBe(opReturn1[key]);
-        });
-        expect(finalReturn1).toStrictEqual(opReturn1);
-
-        expect(finalReturn2).toBe(opReturn2);
-        ownKeysOfObjectLike(opReturn2).forEach((key) => {
-          expect(finalReturn2[key]).toBe(opReturn2[key]);
-        });
-        expect(finalReturn2).toStrictEqual(opReturn2);
-      });
-
-      test('[verify] the final return and its fields change in ref but not in value', () => {
-        expect(finalReturn2).not.toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
-        });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
-      });
+      sharedVerifyCases();
     });
 
-    describe('c2f5436, continuously reads a plain object mug with a constant extra before write, [cite] .:efdaecb', () => {
+    describe('c2f5436, continuously reads a plain object mug before write', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -135,17 +141,6 @@ describe('dd10061, operates by a plain object state custom read op', () => {
           },
         },
       };
-
-      const extra: Pick<ObjectState, 'o'> = {
-        o: {
-          s: 'asd',
-        },
-      };
-
-      let opParamState1: any, opParamState2: any;
-      let opParamExtra1: any, opParamExtra2: any;
-      let opReturn1: any, opReturn2: any;
-      let finalReturn1: any, finalReturn2: any;
 
       test('[action]', () => {
         customReadFn.mockClear();
@@ -169,54 +164,10 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         expect(opParamState1).toStrictEqual(aMug[construction]);
       });
 
-      test('[verify] the op-param state and its fields stay unchanged in ref and value', () => {
-        expect(opParamState2).toBe(opParamState1);
-        ownKeysOfObjectLike(opParamState1).forEach((key) => {
-          expect(opParamState2[key]).toBe(opParamState1[key]);
-        });
-        expect(opParamState2).toStrictEqual(opParamState1);
-      });
-
-      test('[verify] the first op-param extra and its fields equal the input extra and its fields in ref and value', () => {
-        expect(opParamExtra1).toBe(extra);
-        ownKeysOfObjectLike(extra).forEach((key) => {
-          expect(opParamExtra1[key]).toBe(extra[key]);
-        });
-        expect(opParamExtra1).toStrictEqual(extra);
-      });
-
-      test('[verify] the op-param extra and its fields stay unchanged in ref and value', () => {
-        expect(opParamExtra2).toBe(opParamExtra1);
-        ownKeysOfObjectLike(opParamExtra1).forEach((key) => {
-          expect(opParamExtra2[key]).toBe(opParamExtra1[key]);
-        });
-        expect(opParamExtra2).toStrictEqual(opParamExtra1);
-      });
-
-      test('[verify] the final return and its fields keep equal to the op return and its fields in ref and value', () => {
-        expect(finalReturn1).toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(finalReturn1[key]).toBe(opReturn1[key]);
-        });
-        expect(finalReturn1).toStrictEqual(opReturn1);
-
-        expect(finalReturn2).toBe(opReturn2);
-        ownKeysOfObjectLike(opReturn2).forEach((key) => {
-          expect(finalReturn2[key]).toBe(opReturn2[key]);
-        });
-        expect(finalReturn2).toStrictEqual(opReturn2);
-      });
-
-      test('[verify] the final return and its fields change in ref but not in value', () => {
-        expect(finalReturn2).not.toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
-        });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
-      });
+      sharedVerifyCases();
     });
 
-    describe('888be13, continuously reads a plain object mug with a constant extra after write, [cite] .:c2f5436', () => {
+    describe('888be13, continuously reads a plain object mug after write', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -231,18 +182,6 @@ describe('dd10061, operates by a plain object state custom read op', () => {
           },
         },
       };
-
-      const extra: Pick<ObjectState, 'o'> = {
-        o: {
-          s: 'asd',
-        },
-      };
-
-      let checkedState: any;
-      let opParamState1: any, opParamState2: any;
-      let opParamExtra1: any, opParamExtra2: any;
-      let opReturn1: any, opReturn2: any;
-      let finalReturn1: any, finalReturn2: any;
 
       test('[action]', () => {
         swirl(aMug, {
@@ -274,54 +213,10 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         expect(opParamState1).toStrictEqual(checkedState);
       });
 
-      test('[verify] the op-param state and its fields stay unchanged in ref and value', () => {
-        expect(opParamState2).toBe(opParamState1);
-        ownKeysOfObjectLike(opParamState1).forEach((key) => {
-          expect(opParamState2[key]).toBe(opParamState1[key]);
-        });
-        expect(opParamState2).toStrictEqual(opParamState1);
-      });
-
-      test('[verify] the first op-param extra and its fields equal the input extra and its fields in ref and value', () => {
-        expect(opParamExtra1).toBe(extra);
-        ownKeysOfObjectLike(extra).forEach((key) => {
-          expect(opParamExtra1[key]).toBe(extra[key]);
-        });
-        expect(opParamExtra1).toStrictEqual(extra);
-      });
-
-      test('[verify] the op-param extra and its fields stay unchanged in ref and value', () => {
-        expect(opParamExtra2).toBe(opParamExtra1);
-        ownKeysOfObjectLike(opParamExtra1).forEach((key) => {
-          expect(opParamExtra2[key]).toBe(opParamExtra1[key]);
-        });
-        expect(opParamExtra2).toStrictEqual(opParamExtra1);
-      });
-
-      test('[verify] the final return and its fields keep equal to the op return and its fields in ref and value', () => {
-        expect(finalReturn1).toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(finalReturn1[key]).toBe(opReturn1[key]);
-        });
-        expect(finalReturn1).toStrictEqual(opReturn1);
-
-        expect(finalReturn2).toBe(opReturn2);
-        ownKeysOfObjectLike(opReturn2).forEach((key) => {
-          expect(finalReturn2[key]).toBe(opReturn2[key]);
-        });
-        expect(finalReturn2).toStrictEqual(opReturn2);
-      });
-
-      test('[verify] the final return and its fields change in ref but not in value', () => {
-        expect(finalReturn2).not.toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
-        });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
-      });
+      sharedVerifyCases();
     });
 
-    describe('6e9b3ce, continuously reads a mug-nested plain object mug-like with a constant extra before write, [cite] .:efdaecb', () => {
+    describe('6e9b3ce, continuously reads a constant mug-nested object mug-like before write', () => {
       const objectMug: Mug<ObjectState> = {
         [construction]: {
           s: 'asd',
@@ -339,18 +234,9 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         potentialMuggyObject: objectMug,
       };
 
-      const extra: Pick<ObjectState, 'o'> = {
-        o: {
-          s: 'asd',
-        },
-      };
-
-      let opParamState1: any, opParamState2: any;
-      let opParamExtra1: any, opParamExtra2: any;
-      let opReturn1: any, opReturn2: any;
-      let finalReturn1: any, finalReturn2: any;
-
       test('[action]', () => {
+        checkedState = check(aMugLike);
+
         customReadFn.mockClear();
         finalReturn1 = customReadOp(aMugLike, extra);
         opParamState1 = customReadFn.mock.calls[0][0];
@@ -366,6 +252,14 @@ describe('dd10061, operates by a plain object state custom read op', () => {
 
       test('[verify] the first op-param state doesn_t equal the mug-like in ref', () => {
         expect(opParamState1).not.toBe(aMugLike);
+      });
+
+      test('[verify] the first op-param state and its fields equal the checked state and its fields in ref and value', () => {
+        expect(opParamState1).toBe(checkedState);
+        ownKeysOfObjectLike(checkedState).forEach((key) => {
+          expect(opParamState1[key]).toBe(checkedState[key]);
+        });
+        expect(opParamState1).toStrictEqual(checkedState);
       });
 
       test('[verify] the first op-param state_s muggy object field and its child fields equal the object mug_s construction and its fields in ref and value', () => {
@@ -385,54 +279,10 @@ describe('dd10061, operates by a plain object state custom read op', () => {
           });
       });
 
-      test('[verify] the op-param state and its fields stay unchanged in ref and value', () => {
-        expect(opParamState2).toBe(opParamState1);
-        ownKeysOfObjectLike(opParamState1).forEach((key) => {
-          expect(opParamState2[key]).toBe(opParamState1[key]);
-        });
-        expect(opParamState2).toStrictEqual(opParamState1);
-      });
-
-      test('[verify] the first op-param extra and its fields equal the input extra and its fields in ref and value', () => {
-        expect(opParamExtra1).toBe(extra);
-        ownKeysOfObjectLike(extra).forEach((key) => {
-          expect(opParamExtra1[key]).toBe(extra[key]);
-        });
-        expect(opParamExtra1).toStrictEqual(extra);
-      });
-
-      test('[verify] the op-param extra and its fields stay unchanged in ref and value', () => {
-        expect(opParamExtra2).toBe(opParamExtra1);
-        ownKeysOfObjectLike(opParamExtra1).forEach((key) => {
-          expect(opParamExtra2[key]).toBe(opParamExtra1[key]);
-        });
-        expect(opParamExtra2).toStrictEqual(opParamExtra1);
-      });
-
-      test('[verify] the final return and its fields keep equal to the op return and its fields in ref and value', () => {
-        expect(finalReturn1).toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(finalReturn1[key]).toBe(opReturn1[key]);
-        });
-        expect(finalReturn1).toStrictEqual(opReturn1);
-
-        expect(finalReturn2).toBe(opReturn2);
-        ownKeysOfObjectLike(opReturn2).forEach((key) => {
-          expect(finalReturn2[key]).toBe(opReturn2[key]);
-        });
-        expect(finalReturn2).toStrictEqual(opReturn2);
-      });
-
-      test('[verify] the final return and its fields change in ref but not in value', () => {
-        expect(finalReturn2).not.toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
-        });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
-      });
+      sharedVerifyCases();
     });
 
-    describe('25cfa11, continuously reads a mug-nested plain object mug-like with an extra after write, [cite] .:6e9b3ce', () => {
+    describe('25cfa11, continuously reads a constant mug-nested object mug-like after write', () => {
       const objectMug: Mug<ObjectState> = {
         [construction]: {
           s: 'asd',
@@ -449,19 +299,6 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         },
         potentialMuggyObject: objectMug,
       };
-
-      const extra: Pick<ObjectState, 'o'> = {
-        o: {
-          s: 'asd',
-        },
-      };
-
-      let checkedState: any;
-      let checkedObjectState: any;
-      let opParamState1: any, opParamState2: any;
-      let opParamExtra1: any, opParamExtra2: any;
-      let opReturn1: any, opReturn2: any;
-      let finalReturn1: any, finalReturn2: any;
 
       test('[action]', () => {
         swirl(aMugLike, {
@@ -487,18 +324,12 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         opReturn2 = customReadFn.mock.results[0].value;
       });
 
-      test('[verify] the first op-param state doesn_t equal the checked state in ref', () => {
-        expect(opParamState1).not.toBe(aMugLike);
-      });
-
-      test('[verify] the first op-param state_s muggy object field and its child fields equal the checked state_s counterpart field and its child fields in ref and value', () => {
-        expect(opParamState1.potentialMuggyObject).toBe(checkedState.potentialMuggyObject);
-        ownKeysOfObjectLike(checkedState.potentialMuggyObject).forEach((key) => {
-          expect(opParamState1.potentialMuggyObject[key]).toBe(
-            checkedState.potentialMuggyObject[key],
-          );
+      test('[verify] the first op-param state and its fields equal the checked state and its fields in ref and value', () => {
+        expect(opParamState1).toBe(checkedState);
+        ownKeysOfObjectLike(checkedState).forEach((key) => {
+          expect(opParamState1[key]).toBe(checkedState[key]);
         });
-        expect(opParamState1.potentialMuggyObject).toStrictEqual(checkedState.potentialMuggyObject);
+        expect(opParamState1).toStrictEqual(checkedState);
       });
 
       test('[verify] the first op-param state_s muggy object field and its child fields equal the checked object state and its fields in ref and value', () => {
@@ -518,62 +349,18 @@ describe('dd10061, operates by a plain object state custom read op', () => {
           });
       });
 
-      test('[verify] the op-param state and its fields stay unchanged in ref and value', () => {
-        expect(opParamState2).toBe(opParamState1);
-        ownKeysOfObjectLike(opParamState1).forEach((key) => {
-          expect(opParamState2[key]).toBe(opParamState1[key]);
-        });
-        expect(opParamState2).toStrictEqual(opParamState1);
-      });
-
-      test('[verify] the first op-param extra and its fields equal the input extra and its fields in ref and value', () => {
-        expect(opParamExtra1).toBe(extra);
-        ownKeysOfObjectLike(extra).forEach((key) => {
-          expect(opParamExtra1[key]).toBe(extra[key]);
-        });
-        expect(opParamExtra1).toStrictEqual(extra);
-      });
-
-      test('[verify] the op-param extra and its fields stay unchanged in ref and value', () => {
-        expect(opParamExtra2).toBe(opParamExtra1);
-        ownKeysOfObjectLike(opParamExtra1).forEach((key) => {
-          expect(opParamExtra2[key]).toBe(opParamExtra1[key]);
-        });
-        expect(opParamExtra2).toStrictEqual(opParamExtra1);
-      });
-
-      test('[verify] the final return and its fields keep equal to the op return and its fields in ref and value', () => {
-        expect(finalReturn1).toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(finalReturn1[key]).toBe(opReturn1[key]);
-        });
-        expect(finalReturn1).toStrictEqual(opReturn1);
-
-        expect(finalReturn2).toBe(opReturn2);
-        ownKeysOfObjectLike(opReturn2).forEach((key) => {
-          expect(finalReturn2[key]).toBe(opReturn2[key]);
-        });
-        expect(finalReturn2).toStrictEqual(opReturn2);
-      });
-
-      test('[verify] the final return and its fields change in ref but not in value', () => {
-        expect(finalReturn2).not.toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
-        });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
-      });
+      sharedVerifyCases();
     });
   });
 
-  describe('dec9c67, the op selects an existing field on each call, [cite] .:a9760b1', () => {
+  describe('dec9c67, the op only selects an existing field, [cite] .:a9760b1', () => {
     const customReadFn = jest.fn((state: AState): ObjectState => {
       return state.potentialMuggyObject;
     });
 
     const customReadOp = r(customReadFn);
 
-    describe('0ae4ce0, continuously reads a mug-nested plain object mug-like after write', () => {
+    describe('0ae4ce0, continuously reads a constant mug-nested object mug-like after write', () => {
       const objectMug: Mug<ObjectState> = {
         [construction]: {
           s: 'asd',
@@ -591,9 +378,7 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         potentialMuggyObject: objectMug,
       };
 
-      let finalReturn1: any, finalReturn2: any;
-
-      test('[action]', () => {
+      test('[action, verify] the final return and its fields stay unchanged in ref and value', () => {
         swirl(aMugLike, {
           potentialMuggyObject: { s: 'sdf' },
         });
@@ -605,13 +390,11 @@ describe('dd10061, operates by a plain object state custom read op', () => {
         expect(checkedObjectState).toMatchObject({ s: 'sdf' });
 
         customReadFn.mockClear();
-        finalReturn1 = customReadOp(aMugLike);
+        const finalReturn1 = customReadOp(aMugLike);
 
         customReadFn.mockClear();
-        finalReturn2 = customReadOp(aMugLike);
-      });
+        const finalReturn2 = customReadOp(aMugLike);
 
-      test('[verify] the final return and its fields stay unchanged in ref and value', () => {
         expect(finalReturn2).toBe(finalReturn1);
         ownKeysOfObjectLike(finalReturn1).forEach((key) => {
           expect(finalReturn2[key]).toBe(finalReturn1[key]);

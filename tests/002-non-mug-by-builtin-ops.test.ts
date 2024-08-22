@@ -103,7 +103,7 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
       aState = check(aMugLike);
     });
 
-    test('[verify] the state doesn_t equal the mug-like in ref', () => {
+    test('[verify] the state differs from the mug-like in ref', () => {
       expect(aState).not.toBe(aMugLike);
     });
 
@@ -679,7 +679,7 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
       aState = check(aMugLike);
     });
 
-    test('[verify] the state doesn_t equal the mug-like in ref', () => {
+    test('[verify] the state differs from the mug-like in ref', () => {
       expect(aState).not.toBe(aMugLike);
     });
 

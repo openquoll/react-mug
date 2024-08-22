@@ -848,7 +848,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d
       aState = check(aMug);
     });
 
-    test('[verify] the state doesn_t equal the construction in ref', () => {
+    test('[verify] the state differs from the construction in ref', () => {
       expect(aState).not.toBe(aMug[construction]);
     });
 

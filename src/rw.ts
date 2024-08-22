@@ -1,6 +1,6 @@
 import {
   areEqualMugLikes,
-  assignInput,
+  assignConservatively,
   construction,
   emptyCloneOfPlainObject,
   isArray,
@@ -113,7 +113,7 @@ class MugLikeWriteAction {
       }
 
       const oldRawState = rawStateStore.getRawState(mugLike);
-      const newRawState = assignInput(oldRawState, input);
+      const newRawState = assignConservatively(oldRawState, input);
 
       if (Object.is(newRawState, oldRawState)) {
         return;
@@ -163,6 +163,11 @@ class MugLikeWriteAction {
 
 export function r(readFn: (...args: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
+    // When the mugLike is a state, use the readFn as it is.
+    if (isState(mugLike)) {
+      return readFn(mugLike, ...restArgs);
+    }
+
     const rAction = new MugLikeReadAction();
     const state = rAction.apply(mugLike);
     rAction.clear();
@@ -173,6 +178,18 @@ export function r(readFn: (...args: any) => any) {
 
 export function w(writeFn: (...args: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
+    // When the mugLike is a state, use the writeFn as it is.
+    if (isState(mugLike)) {
+      const newState = writeFn(mugLike, ...restArgs);
+
+      // When the new state is a state, use it as it is.
+      if (isState(newState)) {
+        return newState;
+      }
+
+      return assignConservatively(mugLike, newState);
+    }
+
     const rAction = new MugLikeReadAction();
     const oldState = rAction.apply(mugLike);
     rAction.clear();
@@ -183,6 +200,6 @@ export function w(writeFn: (...args: any) => any) {
     wAction.apply(mugLike, newState);
     wAction.clear();
 
-    return assignInput(mugLike, newState);
+    return assignConservatively(mugLike, newState);
   };
 }

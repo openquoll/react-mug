@@ -189,39 +189,55 @@ export function areEqualMugLikes(a: any, b: any): boolean {
   return false;
 }
 
-export function assignInput(mugLike: any, input: any): any {
+export function assignConservatively(mugLike: any, input: any): any {
   if (isMug(mugLike) || isMug(input)) {
     return mugLike;
   }
 
-  if (areEqualMugLikes(mugLike, input)) {
+  if (Object.is(mugLike, input)) {
     return mugLike;
   }
 
   if (isPlainObject(mugLike) && isPlainObject(input)) {
-    const result = ownKeysOfObjectLike({ ...mugLike, ...input }).reduce((result, key) => {
+    const result = emptyCloneOfPlainObject(mugLike);
+    let allFieldsFromMugLike = true;
+    let allFieldsFromInput = true;
+    ownKeysOfObjectLike({ ...mugLike, ...input }).forEach((key) => {
       const keyInMugLike = mugLike.hasOwnProperty(key);
       const keyInInput = input.hasOwnProperty(key);
 
       if (keyInMugLike && !keyInInput) {
-        return result;
+        allFieldsFromMugLike = false;
+        return;
       }
 
       if (!keyInMugLike && keyInInput) {
         if (isMug(input[key])) {
-          return result;
+          allFieldsFromInput = false;
+          return;
         }
+        allFieldsFromMugLike = false;
         result[key] = input[key];
-        return result;
+        return;
       }
 
-      result[key] = assignInput(mugLike[key], input[key]);
+      result[key] = assignConservatively(mugLike[key], input[key]);
 
-      return result;
+      if (!Object.is(mugLike[key], result[key])) {
+        allFieldsFromMugLike = false;
+      }
+
+      if (!Object.is(input[key], result[key])) {
+        allFieldsFromInput = false;
+      }
     }, emptyCloneOfPlainObject(mugLike));
 
-    if (areEqualMugLikes(mugLike, result)) {
+    if (allFieldsFromMugLike) {
       return mugLike;
+    }
+
+    if (allFieldsFromInput) {
+      return input;
     }
 
     return result;
@@ -230,7 +246,8 @@ export function assignInput(mugLike: any, input: any): any {
   if (isArray(mugLike) && isArray(input)) {
     const result: any[] = [];
     result.length = input.length;
-
+    let allItemsFromMugLike = mugLike.length === result.length;
+    let allItemsFromInput = true;
     for (let i = 0, n = result.length; i < n; i++) {
       const indexInMugLike = mugLike.hasOwnProperty(i);
       const indexInInput = input.hasOwnProperty(i);
@@ -240,22 +257,37 @@ export function assignInput(mugLike: any, input: any): any {
       }
 
       if (indexInMugLike && !indexInInput) {
+        allItemsFromMugLike = false;
         continue;
       }
 
       if (!indexInMugLike && indexInInput) {
         if (isMug(input[i])) {
+          allItemsFromInput = false;
           continue;
         }
+        allItemsFromMugLike = false;
         result[i] = input[i];
         continue;
       }
 
-      result[i] = assignInput(mugLike[i], input[i]);
+      result[i] = assignConservatively(mugLike[i], input[i]);
+
+      if (!Object.is(mugLike[i], result[i])) {
+        allItemsFromMugLike = false;
+      }
+
+      if (!Object.is(input[i], result[i])) {
+        allItemsFromInput = false;
+      }
     }
 
-    if (areEqualMugLikes(mugLike, result)) {
+    if (allItemsFromMugLike) {
       return mugLike;
+    }
+
+    if (allItemsFromInput) {
+      return input;
     }
 
     return result;

@@ -645,7 +645,7 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
   });
 });
 
-describe('d2451be, operates "a constant mug-nested array mug-like" by builtin ops, [cite] 5b713bb', () => {
+describe('d2451be, operates "a constant mug-nested array mug-like" by builtin ops, [cite] .:5b713bb', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -739,7 +739,7 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
   });
 });
 
-describe('00f8db6, operates "a constant mug-nested tuple mug-like" by builtin ops, [cite] 00f8db6', () => {
+describe('00f8db6, operates "a constant mug-nested tuple mug-like" by builtin ops, [cite] .:6d47edb', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -803,7 +803,7 @@ describe('00f8db6, operates "a constant mug-nested tuple mug-like" by builtin op
   });
 });
 
-describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [cite] 5b713bb, 00f8db6', () => {
+describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [cite] .:5b713bb, .:00f8db6', () => {
   interface ObjectState {
     s: string;
     o: {

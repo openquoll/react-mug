@@ -517,7 +517,7 @@ describe('c2b8bbf, operates "a number mug" by builtin ops', () => {
   });
 });
 
-describe('abed36c, operates "a plain array mug" by builtin ops, [cite] 11d55b6', () => {
+describe('abed36c, operates "a plain array mug" by builtin ops, [cite] .:11d55b6', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -558,7 +558,7 @@ describe('abed36c, operates "a plain array mug" by builtin ops, [cite] 11d55b6',
   });
 });
 
-describe('10aed7c, operates "a plain tuple mug" by builtin ops, [cite] abed36c', () => {
+describe('10aed7c, operates "a plain tuple mug" by builtin ops, [cite] .:abed36c', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -774,7 +774,7 @@ describe('18a9e96, operates "a class-defined" object mug by builtin ops', () => 
   });
 });
 
-describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] 11d55b6', () => {
+describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] .:11d55b6', () => {
   interface ObjectState {
     s: string;
     o: {

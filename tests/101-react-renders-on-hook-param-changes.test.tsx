@@ -661,7 +661,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('120567d, initially renders with a mug, rerenders with a second mug different in ref and evaluated value, [cite] f0432c9', () => {
+    describe('120567d, initially renders with a mug, rerenders with a second mug different in ref and evaluated value, [cite] .:f0432c9', () => {
       const aMug1: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -715,7 +715,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('56f04f7, initially renders with a mug, rerenders with a mug-nested mug-like different in evaluated value, [cite] f0432c9', () => {
+    describe('56f04f7, initially renders with a mug, rerenders with a mug-nested mug-like different in evaluated value, [cite] .:f0432c9', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -769,7 +769,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('4a88802, initially renders with a mug, rerenders with a second mug different in ref but equal in evaluated value, [cite] f0432c9', () => {
+    describe('4a88802, initially renders with a mug, rerenders with a second mug different in ref but equal in evaluated value, [cite] .:f0432c9', () => {
       const aMug1: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -822,7 +822,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('0345a6a, initially renders with a mug, rerenders with a mug-nested mug-like equal in evaluated value, [cite] f0432c9', () => {
+    describe('0345a6a, initially renders with a mug, rerenders with a mug-nested mug-like equal in evaluated value, [cite] .:f0432c9', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -875,7 +875,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('a684d16, initially renders with a mug, rerenders with the same mug, [cite] f0432c9', () => {
+    describe('a684d16, initially renders with a mug, rerenders with the same mug, [cite] .:f0432c9', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -952,7 +952,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('352eb49, initially renders with a mug-nest mug-like, rerenders with a second mug-nested mug-like different in ref and evaluated value, [cite] 90dde99', () => {
+    describe('352eb49, initially renders with a mug-nest mug-like, rerenders with a second mug-nested mug-like different in ref and evaluated value, [cite] .:90dde99', () => {
       const aMugLike1: PossibleMugLike<AState> = {
         s: 'asd',
         o: {
@@ -1006,7 +1006,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('2c5a287, initially renders with a mug-nest mug-like, rerenders with a second mug-nested mug-like different in ref but equal in evaluated value, [cite] 90dde99', () => {
+    describe('2c5a287, initially renders with a mug-nest mug-like, rerenders with a second mug-nested mug-like different in ref but equal in evaluated value, [cite] .:90dde99', () => {
       const aMugLike1: PossibleMugLike<AState> = {
         s: 'asd',
         o: {
@@ -1059,7 +1059,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('8cfdabb, initially renders with a mug-nest mug-like, rerenders with the same mug-like, [cite] 90dde99', () => {
+    describe('8cfdabb, initially renders with a mug-nest mug-like, rerenders with the same mug-like, [cite] .:90dde99', () => {
       const aMugLike: PossibleMugLike<AState> = {
         s: 'asd',
         o: {
@@ -1169,7 +1169,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('35013f6, initially renders with an extra, rerenders with a second extra different in ref and value, [cite] 3d70420', () => {
+    describe('35013f6, initially renders with an extra, rerenders with a second extra different in ref and value, [cite] .:3d70420', () => {
       const extra1: Pick<ObjectState, 'o'> = {
         o: {
           s: 'asd',
@@ -1226,7 +1226,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('e56058b, initially renders with an extra, rerenders with a second extra different in ref but equal in value, [cite] 3d70420', () => {
+    describe('e56058b, initially renders with an extra, rerenders with a second extra different in ref but equal in value, [cite] .:3d70420', () => {
       const extra1: Pick<ObjectState, 'o'> = {
         o: {
           s: 'asd',
@@ -1267,7 +1267,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('c5d656a, initially renders with an extra, rerenders with the same extra, [cite] 3d70420', () => {
+    describe('c5d656a, initially renders with an extra, rerenders with the same extra, [cite] .:3d70420', () => {
       const extra: Pick<ObjectState, 'o'> = {
         o: {
           s: 'asd',

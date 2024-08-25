@@ -24,7 +24,7 @@ describe('900ce35, operates by an object state custom write op', () => {
     let checkedObjectStateBefore: any, checkedObjectStateAfter: any;
     let fnParamState: any, fnReturn: any, finalReturn: any;
 
-    describe('5fb96fe, writes a constant plain object state, [cite] 31f3463', () => {
+    describe('5fb96fe, writes a constant plain object state, [cite] 002:31f3463', () => {
       const aState: AState = {
         s: 'asd',
         o: {
@@ -61,7 +61,7 @@ describe('900ce35, operates by an object state custom write op', () => {
       });
     });
 
-    describe('e3e8bb7, writes a plain object mug, [cite] 11d55b6', () => {
+    describe('e3e8bb7, writes a plain object mug, [cite] 001:11d55b6', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -113,7 +113,7 @@ describe('900ce35, operates by an object state custom write op', () => {
       });
     });
 
-    describe('d822e05, writes a constant mug-nested object mug-like, [cite] 5b713bb', () => {
+    describe('d822e05, writes a constant mug-nested object mug-like, [cite] 002:5b713bb', () => {
       const objectMug: Mug<ObjectState> = {
         [construction]: {
           s: 'asd',

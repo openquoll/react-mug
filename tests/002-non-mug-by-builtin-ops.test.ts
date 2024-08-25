@@ -56,7 +56,7 @@ describe('31f3463, operates "a constant plain object state" by builtin ops', () 
   });
 });
 
-describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin ops, [cite] 6a8c78f', () => {
+describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin ops, [cite] 001:6a8c78f', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -885,8 +885,8 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
     let aState1: any, aState2: any;
 
     test('[action]', () => {
-      aState1 = check([objectMug1, objectMug2]);
-      aState2 = check([objectMug1, objectMug2]);
+      aState1 = check(tuple(objectMug1, objectMug2));
+      aState2 = check(tuple(objectMug1, objectMug2));
     });
 
     test('[verify] the state changes in ref but not in value', () => {
@@ -908,7 +908,7 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
         o1: objectMug1,
         o2: objectMug2,
       });
-      const aState2 = check([objectMug1, objectMug2]);
+      const aState2 = check(tuple(objectMug1, objectMug2));
 
       expect(aState2[0]).toBe(aState1.o1);
       expect(aState2[1]).toBe(aState1.o2);
@@ -984,9 +984,9 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
       aStateBefore = check([objectMug1, objectMug2]);
       objectStateBefore = check(objectMug1);
 
-      swirl([objectMug1, objectMug2], [{ s: '857' }, ,]);
+      swirl(tuple(objectMug1, objectMug2), [{ s: '857' }, ,]);
 
-      aStateAfter = check([objectMug1, objectMug2]);
+      aStateAfter = check(tuple(objectMug1, objectMug2));
       objectStateAfter = check(objectMug1);
     });
 
@@ -1053,8 +1053,8 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
     let aState1: any, aState2: any;
 
     test('[action]', () => {
-      aState1 = check([objectMug1, objectMug2]);
-      aState2 = check([objectMug1, objectMug2]);
+      aState1 = check(tuple(objectMug1, objectMug2));
+      aState2 = check(tuple(objectMug1, objectMug2));
     });
 
     test('[verify] the state changes in ref but not in value', () => {

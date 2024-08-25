@@ -774,7 +774,7 @@ describe('18a9e96, operates "a class-defined" object mug by builtin ops', () => 
   });
 });
 
-describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] .:11d55b6', () => {
+describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:11d55b6', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -1076,7 +1076,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] .:1
     });
   });
 
-  describe('7e06f81, writes "the muggy object and the latter mirror muggy object fields_ string fields" with different values simultaneously, [cite] .:bf62d1f', () => {
+  describe('7e06f81, simultaneously writes "the muggy object and the latter mirror muggy object fields_ string fields" with different values, [cite] .:bf62d1f', () => {
     let aStateBefore: any, aStateAfter: any;
     let objectStateBefore: any, objectStateAfter: any;
 
@@ -1425,7 +1425,7 @@ describe('6a8c78f, operates "a mug-nested normal mug" by builtin ops, [cite] .:1
     });
   });
 
-  describe('59b94c2, writes "the muggy object array field" with a dense same-length array of full-fledged object items that have different string field values simultaneously, [cite] .:5761e9a', () => {
+  describe('59b94c2, simultaneously writes "the muggy object array field" with a dense same-length array of full-fledged object items that have different string field values, [cite] .:5761e9a', () => {
     let aStateBefore: any, aStateAfter: any;
     let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
 

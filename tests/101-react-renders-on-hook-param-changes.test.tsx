@@ -157,7 +157,7 @@ describe('229a728, react renders on hook param changes', () => {
   });
 
   describe('0e73ab1, the mug-like changes', () => {
-    const readFn = jest.fn((aState: AState) => {
+    const readFn = jest.fn((aState: AState): AState => {
       return aState;
     });
 
@@ -211,8 +211,9 @@ describe('229a728, react renders on hook param changes', () => {
         expect(AComponent).toHaveBeenCalledTimes(2);
       });
 
-      test('[verify] the hook result changes in ref', () => {
+      test('[verify] the hook result changes in ref and value', () => {
         expect(hookReturn2).not.toBe(hookReturn1);
+        expect(hookReturn2).not.toStrictEqual(hookReturn1);
       });
 
       test('[verify] the hook on-rerender result and its fields equal the read fn on-rerender return in ref and value', () => {
@@ -525,7 +526,7 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
 
-      test('[verify] the read fn_s on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
+      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
         ownKeysOfObjectLike(checkedState2).forEach((key) => {
           expect(readFnParamState2[key]).toBe(checkedState2[key]);
@@ -577,7 +578,7 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
 
-      test('[verify] read fn_s on-rerender param state and its fields equal the mug_s checked state and its fields in ref and value', () => {
+      test('[verify] read fn on-rerender param state and its fields equal the mug_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
         ownKeysOfObjectLike(checkedState2).forEach((key) => {
           expect(readFnParamState2[key]).toBe(checkedState2[key]);
@@ -866,7 +867,7 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
 
-      test('[verify] read fn_s on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
+      test('[verify] read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
         ownKeysOfObjectLike(checkedState2).forEach((key) => {
           expect(readFnParamState2[key]).toBe(checkedState2[key]);
@@ -952,7 +953,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('352eb49, initially renders with a mug-nest mug-like, rerenders with a second mug-nested mug-like different in ref and evaluated value, [cite] .:90dde99', () => {
+    describe('352eb49, initially renders with a mug-nested mug-like, rerenders with a second mug-nested mug-like different in ref and evaluated value, [cite] .:90dde99', () => {
       const aMugLike1: PossibleMugLike<AState> = {
         s: 'asd',
         o: {
@@ -1006,7 +1007,7 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('2c5a287, initially renders with a mug-nest mug-like, rerenders with a second mug-nested mug-like different in ref but equal in evaluated value, [cite] .:90dde99', () => {
+    describe('2c5a287, initially renders with a mug-nested mug-like, rerenders with a second mug-nested mug-like different in ref but equal in evaluated value, [cite] .:90dde99', () => {
       const aMugLike1: PossibleMugLike<AState> = {
         s: 'asd',
         o: {
@@ -1059,7 +1060,46 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('8cfdabb, initially renders with a mug-nest mug-like, rerenders with the same mug-like, [cite] .:90dde99', () => {
+    describe('c0ea2d7, initially renders with a mug-nested mug-like, rerenders with a second mug-nested mug-like different in ref but equal in non-muggy field value and muggy field ref [cite] .:90dde99', () => {
+      const objectMug: Mug<ObjectState> = {
+        [construction]: {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+        },
+      };
+
+      const aMugLike1: PossibleMugLike<AState> = {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+        potentialMuggyObject: objectMug,
+      };
+
+      const aMugLike2: PossibleMugLike<AState> = {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+        potentialMuggyObject: objectMug,
+      };
+
+      test('[action]', () => {
+        const { rerender } = render(<AComponent mugLike={aMugLike1} />);
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+
+        checkedState2 = check(aMugLike2);
+        readFn.mockClear();
+        rerender(<AComponent mugLike={aMugLike2} />);
+        hookReturn2 = tapHookReturn.mock.calls[1][0];
+      });
+
+      sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged();
+    });
+
+    describe('8cfdabb, initially renders with a mug-nested mug-like, rerenders with the same mug-like, [cite] .:90dde99', () => {
       const aMugLike: PossibleMugLike<AState> = {
         s: 'asd',
         o: {
@@ -1213,8 +1253,9 @@ describe('229a728, react renders on hook param changes', () => {
         expect(readFnParamExtra2).toStrictEqual(extra2);
       });
 
-      test('[verify] the hook result changes in ref', () => {
+      test('[verify] the hook result changes in ref and value', () => {
         expect(hookReturn2).not.toBe(hookReturn1);
+        expect(hookReturn2).not.toStrictEqual(hookReturn1);
       });
 
       test('[verify] the hook on-rerender result and its fields equal the read fn on-rerender return in ref and value', () => {

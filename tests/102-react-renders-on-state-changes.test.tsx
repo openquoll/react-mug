@@ -254,8 +254,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { s: '3cc' });
-          swirl(aMug, { s: 'edf' });
+          swirl(swirl(aMug, { s: '3cc' }), { s: 'edf' });
           checkedAStateAfter = check(aMug);
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -338,8 +337,9 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { potentialMuggyObject: { s: '7a3' } });
-          swirl(aMug, { potentialMuggyObject: { s: 'b35' } });
+          swirl(swirl(aMug, { potentialMuggyObject: { s: '7a3' } }), {
+            potentialMuggyObject: { s: 'b35' },
+          });
           checkedAStateAfter = check(aMug);
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -422,8 +422,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(objectMug, { s: 'b5b' });
-          swirl(objectMug, { s: '660' });
+          swirl(swirl(objectMug, { s: 'b5b' }), { s: '660' });
           checkedAStateAfter = check(aMug);
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -506,8 +505,10 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { s: 'dee', potentialMuggyObject: { s: '48b' } });
-          swirl(aMug, { s: '94c', potentialMuggyObject: { s: '70f' } });
+          swirl(swirl(aMug, { s: 'dee', potentialMuggyObject: { s: '48b' } }), {
+            s: '94c',
+            potentialMuggyObject: { s: '70f' },
+          });
           checkedAStateAfter = check(aMug);
         });
         readFnParamStateLatest = readFn.mock.calls[3][0];
@@ -644,8 +645,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMugLike, [{ s: '6ea' }, ,]);
-          swirl(aMugLike, [{ s: 'f99' }, ,]);
+          swirl(swirl(aMugLike, [{ s: '6ea' }, ,]), [{ s: 'f99' }, ,]);
           checkedAStateAfter = check(aMugLike);
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -731,8 +731,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(objectMug1, { s: 'ee8' });
-          swirl(objectMug1, { s: '0d3' });
+          swirl(swirl(objectMug1, { s: 'ee8' }), { s: '0d3' });
           checkedAStateAfter = check(aMugLike);
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -816,8 +815,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMugLike, [{ s: '3f2' }, { s: '9ca' }]);
-          swirl(aMugLike, [{ s: 'eaa' }, { s: '0e8' }]);
+          swirl(swirl(aMugLike, [{ s: '3f2' }, { s: '9ca' }]), [{ s: 'eaa' }, { s: '0e8' }]);
           checkedAStateAfter = check(aMugLike);
         });
         readFnParamStateLatest = readFn.mock.calls[3][0];
@@ -952,8 +950,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(objectMug1, { s: '66a' });
-          swirl(objectMug1, { s: '2b2' });
+          swirl(swirl(objectMug1, { s: '66a' }), { s: '2b2' });
           checkedAStateAfter = check(tuple(objectMug1, objectMug2));
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -972,7 +969,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       sharedVerifyCasesOfReadFnCalledOnWrite();
     });
 
-    describe('0c06d13, batch writes the index-0_s object mug_s string field with a same value', () => {
+    describe('0c06d13, writes the index-0_s object mug_s string field with a same value', () => {
       test('[action]', async () => {
         swirl(objectMug1, { s: 'd26' });
         const checkedObjectState1Before = check(objectMug1);

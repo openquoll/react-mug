@@ -1,3 +1,8 @@
 {
-  "extends": "./builder/tsconfig.cjs"
+  "extends": "./builder/tsconfig.cjs",
+  "compilerOptions": {
+    "rootDir": "./"
+  },
+  "include": ["./src", "./tests", "./scripts"],
+  "exclude": []
 }

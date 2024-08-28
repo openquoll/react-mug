@@ -1,4 +1,4 @@
-import { check, construction, Mug, PossibleMugLike, r, swirl } from '../src';
+import { check, construction, Mug, MugLike, r, swirl } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('dd10061, operates by an object state custom read op', () => {
@@ -232,7 +232,7 @@ describe('dd10061, operates by an object state custom read op', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -297,7 +297,7 @@ describe('dd10061, operates by an object state custom read op', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -365,7 +365,7 @@ describe('dd10061, operates by an object state custom read op', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',

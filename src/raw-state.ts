@@ -48,3 +48,7 @@ class RawStateStore {
 }
 
 export const rawStateStore = new RawStateStore();
+
+export type RawState<TMugLike> = TMugLike extends { [construction]: infer TConstruction }
+  ? TConstruction
+  : TMugLike;

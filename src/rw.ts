@@ -10,8 +10,11 @@ import {
   isState,
   MugError,
   ownKeysOfObjectLike,
+  PossibleMugLike,
+  State,
 } from './mug';
 import { rawStateStore } from './raw-state';
+import { Param0, RestParams } from './type-util';
 
 class ValueStabilizer {
   private _staleValueByMugLike = new WeakMap();
@@ -161,7 +164,15 @@ class MugLikeWriteAction {
   }
 }
 
-export function r(readFn: (...args: any) => any) {
+export function r<TReadFn extends (state: any, ...restArgs: any) => any>(
+  readFn: TReadFn,
+): TReadFn extends <TState>(state: TState, ...restArgs: any) => TState
+  ? <TMugLike>(mugLike: TMugLike, ...restArgs: RestParams<TReadFn>) => State<TMugLike>
+  : (
+      mugLike: PossibleMugLike<Param0<TReadFn>>,
+      ...restArgs: RestParams<TReadFn>
+    ) => ReturnType<TReadFn>;
+export function r(readFn: (state: any, ...restArgs: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the readFn as it is.
     if (isState(mugLike)) {
@@ -176,7 +187,13 @@ export function r(readFn: (...args: any) => any) {
   };
 }
 
-export function w(writeFn: (...args: any) => any) {
+export function w<TWriteFn extends (state: any, ...restArgs: any) => Param0<TWriteFn>>(
+  writeFn: TWriteFn,
+): <TMugLike extends PossibleMugLike<Param0<TWriteFn>>>(
+  mugLike: TMugLike,
+  ...restArgs: RestParams<TWriteFn>
+) => TMugLike;
+export function w(writeFn: (state: any, ...restArgs: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.
     if (isState(mugLike)) {

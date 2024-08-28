@@ -1,6 +1,6 @@
 import { act, render } from '@testing-library/react';
 
-import { check, construction, Mug, PossibleMug, r, swirl, tuple, useOperator } from '../src';
+import { check, construction, Mug, r, swirl, tuple, useOperator } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => {
@@ -171,7 +171,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const aMug: PossibleMug<AState> = {
+    const aMug: Mug<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
       [construction]: {
         s: 'asd',
         o: {

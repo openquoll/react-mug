@@ -1,4 +1,4 @@
-import { check, construction, Mug, PossibleMugLike, w } from '../src';
+import { check, construction, Mug, MugLike, w } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('900ce35, operates by an object state custom write op', () => {
@@ -123,7 +123,7 @@ describe('900ce35, operates by an object state custom write op', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -392,7 +392,7 @@ describe('900ce35, operates by an object state custom write op', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -504,7 +504,7 @@ describe('900ce35, operates by an object state custom write op', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',

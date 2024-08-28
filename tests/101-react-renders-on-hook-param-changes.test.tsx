@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 
-import { check, construction, Mug, PossibleMugLike, r, useOperator } from '../src';
-import { ownKeysOfObjectLike } from '../src/mug';
+import { check, construction, Mug, MugLike, r, useOperator } from '../src';
+import { ownKeysOfObjectLike, PossibleMugLike } from '../src/mug';
 
 describe('229a728, react renders on hook param changes', () => {
   interface ObjectState {
@@ -355,7 +355,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'sdf',
         o: {
           s: 'sdf',
@@ -498,7 +498,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -732,7 +732,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'sdf',
         o: {
           s: 'sdf',
@@ -839,7 +839,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -905,7 +905,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('90dde99, initially renders with a mug-nested mug-like', () => {
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -954,7 +954,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('352eb49, initially renders with a mug-nested mug-like, rerenders with a second mug-nested mug-like different in ref and evaluated value, [cite] .:90dde99', () => {
-      const aMugLike1: PossibleMugLike<AState> = {
+      const aMugLike1: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -969,7 +969,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike2: PossibleMugLike<AState> = {
+      const aMugLike2: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'sdf',
         o: {
           s: 'sdf',
@@ -1008,7 +1008,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('2c5a287, initially renders with a mug-nested mug-like, rerenders with a second mug-nested mug-like different in ref but equal in evaluated value, [cite] .:90dde99', () => {
-      const aMugLike1: PossibleMugLike<AState> = {
+      const aMugLike1: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -1023,7 +1023,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike2: PossibleMugLike<AState> = {
+      const aMugLike2: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -1070,7 +1070,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      const aMugLike1: PossibleMugLike<AState> = {
+      const aMugLike1: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -1078,7 +1078,7 @@ describe('229a728, react renders on hook param changes', () => {
         potentialMuggyObject: objectMug,
       };
 
-      const aMugLike2: PossibleMugLike<AState> = {
+      const aMugLike2: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -1100,7 +1100,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('8cfdabb, initially renders with a mug-nested mug-like, rerenders with the same mug-like, [cite] .:90dde99', () => {
-      const aMugLike: PossibleMugLike<AState> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',

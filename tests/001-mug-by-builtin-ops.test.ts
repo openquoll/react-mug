@@ -1,4 +1,4 @@
-import { check, construction, Mug, PossibleMug, swirl } from '../src';
+import { check, construction, Mug, swirl } from '../src';
 import { MugError, ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
@@ -819,7 +819,18 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     objectMugSet: Set<Mug<ObjectState>>;
   }
 
-  const aMug: PossibleMug<AState> = {
+  const aMug: Mug<
+    AState,
+    {
+      muggyObject: Mug<ObjectState>;
+      latterMirrorMuggyObject: Mug<ObjectState>;
+
+      muggyNumber: Mug<number>;
+      latterMirrorMuggyNumber: Mug<number>;
+
+      muggyObjectArray: Mug<ObjectState>[];
+    }
+  > = {
     [construction]: {
       s: 'asd',
       o: {

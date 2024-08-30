@@ -7,7 +7,8 @@
     "README.md",
     "README.zh-Hans.md",
     "LICENSE",
-    "dist/"
+    "dist/",
+    "tests/tsd.d.ts"
   ],
   "exports": {
     ".": {
@@ -43,7 +44,7 @@
     "clean-installed": "shx rm -fr ./package-lock.json ./node_modules/",
     "test": "run-s main-test type-test",
     "main-test": "jest",
-    "type-test": "tsd -t . -f \"./@(src|tests)/**/*.test-d.ts?(x)\"",
+    "type-test": "tsd -t ./tests/tsd.d.ts -f \"./@(src|tests)/**/*.test-d.ts?(x)\"",
     "type-test-watch": "chokidar \"./src/**/*.ts?(x)\" \"./tests/**/*.test-d.ts?(x)\" --command \"npm run type-test\" --initial"
   },
   "peerDependencies": {

@@ -1,6 +1,14 @@
 {
   "name": "react-mug",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.1",
+  "license": "Apache-2.0",
+  "files": [
+    "package.json",
+    "README.md",
+    "README.zh-Hans.md",
+    "LICENSE",
+    "dist/"
+  ],
   "exports": {
     ".": {
       "import": {
@@ -13,17 +21,33 @@
       }
     }
   },
+  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "description": "",
+  "keywords": [
+    "react-mug",
+    "react",
+    "mug",
+    "state-management",
+    "state",
+    "management"
+  ],
+  "repository": "openquoll/react-mug",
+  "author": "Open Quoll",
   "scripts": {
+    "build-all": "run-s build-cjs build-esm",
     "build-cjs": "tsc -p ./builder/tsconfig.cjs.json",
-    "prebuild-cjs": "shx rm -fr ./builder/cache/",
     "build-esm": "tsc -p ./builder/tsconfig.esm.json",
-    "prebuild-esm": "shx rm -fr ./builder/cache/",
-    "clean-dist": "shx rm -fr ./dist/",
-    "clean-deps": "shx rm -fr ./package-lock.json ./node_modules/",
+    "clean-built": "shx rm -fr ./dist/ ./builder/cache/",
+    "clean-installed": "shx rm -fr ./package-lock.json ./node_modules/",
     "test": "run-s main-test type-test",
     "main-test": "jest",
     "type-test": "tsd -t . -f \"./@(src|tests)/**/*.test-d.ts?(x)\"",
     "type-test-watch": "chokidar \"./src/**/*.ts?(x)\" \"./tests/**/*.test-d.ts?(x)\" --command \"npm run type-test\" --initial"
+  },
+  "peerDependencies": {
+    "react": ">= 17"
   },
   "devDependencies": {
     "@swc/core": "~1.7.11",

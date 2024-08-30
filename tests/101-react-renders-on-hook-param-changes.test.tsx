@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 
 import { check, construction, Mug, MugLike, r, useOperator } from '../src';
 import { ownKeysOfObjectLike, PossibleMugLike } from '../src/mug';
+import { AnyFunction } from '../src/type-utils';
 
 describe('229a728, react renders on hook param changes', () => {
   interface ObjectState {
@@ -46,7 +47,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     type Props = {
-      readOp: (mugLike: any, ...restArgs: any) => any;
+      readOp: (mugLike: PossibleMugLike<AState>) => ObjectState['o'];
     };
 
     const AComponent = jest.fn(({ readOp }: Props) => {
@@ -56,9 +57,9 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('ff6702a, initially renders with read op#1', () => {
-      let checkedState1: any;
-      let readFn1ParamState1: any, readFn1Return1: any;
-      let hookReturn1: any;
+      let checkedState1: AState;
+      let readFn1ParamState1: AState, readFn1Return1: ObjectState['o'];
+      let hookReturn1: ObjectState['o'];
 
       test('[action]', () => {
         checkedState1 = check(aMug);
@@ -94,7 +95,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('209e098, initially renders with read op#1, rerenders with read op#2, [cite] .:ff6702a', () => {
-      let hookReturn1: any, hookReturn2: any;
+      let hookReturn1: ObjectState['o'], hookReturn2: ObjectState['o'];
 
       test('[action]', () => {
         const { rerender } = render(<AComponent readOp={readOp1} />);
@@ -127,7 +128,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('be7a5e5, initially renders and rerenders with read op#1, [cite] .:ff6702a', () => {
-      let hookReturn1: any, hookReturn2: any;
+      let hookReturn1: ObjectState['o'], hookReturn2: ObjectState['o'];
 
       test('[action]', () => {
         const { rerender } = render(<AComponent readOp={readOp1} />);
@@ -173,10 +174,10 @@ describe('229a728, react renders on hook param changes', () => {
       return <div />;
     });
 
-    let checkedState1: any, checkedState2: any;
-    let readFnParamState1: any, readFnParamState2: any;
-    let readFnReturn1: any, readFnReturn2: any;
-    let hookReturn1: any, hookReturn2: any;
+    let checkedState1: AState, checkedState2: AState;
+    let readFnParamState1: AState, readFnParamState2: AState;
+    let readFnReturn1: AState, readFnReturn2: AState;
+    let hookReturn1: AState, hookReturn2: AState;
 
     /**
      * Required variables: hookReturn1, hookReturn2
@@ -1173,9 +1174,9 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      let readFnParamExtra1: any;
-      let readFnReturn1: any;
-      let hookReturn1: any;
+      let readFnParamExtra1: Pick<ObjectState, 'o'>;
+      let readFnReturn1: Pick<ObjectState, 'o'>;
+      let hookReturn1: Pick<ObjectState, 'o'>;
 
       test('[action]', () => {
         render(<AComponent extra={extra} />);
@@ -1222,9 +1223,9 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      let readFnParamExtra2: any;
-      let readFnReturn2: any;
-      let hookReturn1: any, hookReturn2: any;
+      let readFnParamExtra2: Pick<ObjectState, 'o'>;
+      let readFnReturn2: Pick<ObjectState, 'o'>;
+      let hookReturn1: Pick<ObjectState, 'o'>, hookReturn2: Pick<ObjectState, 'o'>;
 
       test('[action]', () => {
         const { rerender } = render(<AComponent extra={extra1} />);
@@ -1280,7 +1281,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      let hookReturn1: any, hookReturn2: any;
+      let hookReturn1: Pick<ObjectState, 'o'>, hookReturn2: Pick<ObjectState, 'o'>;
 
       test('[action]', () => {
         const { rerender } = render(<AComponent extra={extra1} />);
@@ -1315,7 +1316,7 @@ describe('229a728, react renders on hook param changes', () => {
         },
       };
 
-      let hookReturn1: any, hookReturn2: any;
+      let hookReturn1: Pick<ObjectState, 'o'>, hookReturn2: Pick<ObjectState, 'o'>;
 
       test('[action]', () => {
         const { rerender } = render(<AComponent extra={extra} />);

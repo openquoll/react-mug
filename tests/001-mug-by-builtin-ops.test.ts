@@ -1,5 +1,5 @@
-import { check, construction, Mug, swirl } from '../src';
-import { MugError, ownKeysOfObjectLike } from '../src/mug';
+import { check, construction, Mug, MugError, swirl } from '../src';
+import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
   interface ObjectState {
@@ -55,8 +55,9 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
   });
 
   describe('ee05c41, first writes "the string field" with a different value', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let constructionBefore: any, constructionShallowCloneBefore: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    const constructionBefore = aMug[construction];
+    const constructionShallowCloneBefore = { ...aMug[construction] };
     const constructionDeepCloneBefore = {
       s: 'asd',
       o: {
@@ -73,8 +74,6 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
 
     test('[action]', () => {
       aStateBefore = check(aMug);
-      constructionBefore = aMug[construction];
-      constructionShallowCloneBefore = { ...aMug[construction] };
 
       swirl(aMug, { s: 'a31' });
 
@@ -101,7 +100,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     test('[verify] the construction and its fields stay unchanged in ref and value', () => {
       expect(aMug[construction]).toBe(constructionBefore);
       ownKeysOfObjectLike(constructionShallowCloneBefore).forEach((key) => {
-        expect((aMug[construction] as any)[key]).toBe(constructionShallowCloneBefore[key]);
+        expect(aMug[construction][key]).toBe(constructionShallowCloneBefore[key]);
       });
       expect(aMug[construction]).toStrictEqual(constructionDeepCloneBefore);
     });
@@ -343,7 +342,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
 
     describe('1d6dfa6, with a same-length dense array of full-fledged items one of which has a different string field value', () => {
-      let aStateBefore: any, aStateAfter: any;
+      let aStateBefore: AState, aStateAfter: AState;
 
       test('[action]', () => {
         swirl(aMug, {
@@ -398,7 +397,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
 
     describe('5eb2042, with a same-length sparse array of different full-fledged object items', () => {
-      let aStateBefore: any, aStateAfter: any;
+      let aStateBefore: AState, aStateAfter: AState;
 
       test('[action]', () => {
         swirl(aMug, {
@@ -437,7 +436,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
   });
 
   describe('1240350, writes "the object tuple field" with a sparse tuple of a partial object item that has a different string field value, [cite] .:ae8aba7', () => {
-    let aStateBefore: any, aStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -640,7 +639,7 @@ describe('18a9e96, operates "a class-defined" object mug by builtin ops', () => 
   });
 
   describe('85be01b, first writes "the string field" with a different value', () => {
-    let aStateBefore: any, aStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
       aStateBefore = check(aMug);
@@ -853,7 +852,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   };
 
   describe('635abca, reads the mug before write', () => {
-    let aState: any;
+    let aState: AState;
 
     test('[action]', () => {
       aState = check(aMug);
@@ -913,7 +912,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('59a67cf, first writes "the string field" with a different value', () => {
-    let aStateBefore: any, aStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
       aStateBefore = check(aMug);
@@ -955,8 +954,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('bf62d1f, first writes "the muggy object field_s string field" with a different value', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let objectStateBefore: any, objectStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
       aStateBefore = check(aMug);
@@ -1007,8 +1006,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('694282b, writes "the muggy object field_s string field" with a same value, [cite] .:bf62d1f', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let objectStateBefore: any, objectStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1046,8 +1045,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('33fb29a, writes "the latter mirror muggy object field_s string field" with a different value, [cite] .:bf62d1f', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let objectStateBefore: any, objectStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1088,8 +1087,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('7e06f81, simultaneously writes "the muggy object and the latter mirror muggy object fields_ string fields" with different values, [cite] .:bf62d1f', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let objectStateBefore: any, objectStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1131,8 +1130,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('fc86947, writes "the object mug_s string field" with a different value, [cite] .:bf62d1f', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let objectStateBefore: any, objectStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1294,8 +1293,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('5761e9a, first writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-0 item that has a different string field value', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       aStateBefore = check(aMug);
@@ -1344,8 +1343,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('29925d3, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-0 item that has a same string field value, [cite] .:5761e9a', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1378,7 +1377,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
 
     test('[verify] the muggy object array field_s items stay unchanged in ref and value', () => {
-      aStateAfter.muggyObjectArray.forEach((item: any, i: number) => {
+      aStateAfter.muggyObjectArray.forEach((item, i) => {
         expect(aStateBefore.muggyObjectArray[i]).toBe(item);
         expect(aStateBefore.muggyObjectArray[i]).toStrictEqual(item);
       });
@@ -1391,8 +1390,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('f311c76, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-1 item that has a different string field value, [cite] .:5761e9a', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1437,8 +1436,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('59b94c2, simultaneously writes "the muggy object array field" with a dense same-length array of full-fledged object items that have different string field values, [cite] .:5761e9a', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1486,8 +1485,8 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('b0fe53a, writes "the muggy object array item mug_s string field" with a different value, [cite] .:5761e9a', () => {
-    let aStateBefore: any, aStateAfter: any;
-    let muggyObjectArrayItemStateBefore: any, muggyObjectArrayItemStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
+    let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1515,11 +1514,11 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
 
     test('[verify] the muggy object array field_s items equals the mug_s state in ref and value before and after', () => {
-      aStateBefore.muggyObjectArray.forEach((item: any) => {
+      aStateBefore.muggyObjectArray.forEach((item) => {
         expect(item).toBe(muggyObjectArrayItemStateBefore);
         expect(item).toStrictEqual(muggyObjectArrayItemStateBefore);
       });
-      aStateAfter.muggyObjectArray.forEach((item: any) => {
+      aStateAfter.muggyObjectArray.forEach((item) => {
         expect(item).toBe(muggyObjectArrayItemStateAfter);
         expect(item).toStrictEqual(muggyObjectArrayItemStateAfter);
       });
@@ -1557,7 +1556,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
       ownKeysOfObjectLike(aStateBefore).forEach((key) => {
         expect(aStateAfter[key]).toBe(aStateBefore[key]);
       });
-      aStateBefore.muggyObjectArray.forEach((item: any, i: number) => {
+      aStateBefore.muggyObjectArray.forEach((item, i) => {
         expect(aStateAfter.muggyObjectArray[i]).toBe(item);
       });
       expect(aStateAfter).toStrictEqual(aStateBefore);
@@ -1577,7 +1576,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
         },
       };
 
-      swirl(aMug, { potentialMuggyObject: newObjectMug });
+      swirl(aMug, { potentialMuggyObject: newObjectMug as never });
 
       const aStateAfter = check(aMug);
 
@@ -1587,7 +1586,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('14b1d66, writes "the potential muggy object array field" with a dense bigger-length array of new object item mugs whose constructions have different field values', () => {
-    let aStateBefore: any, aStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1610,7 +1609,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
         { [construction]: { s: 'faf', o: { s: 'faf' } } },
       ];
       swirl(aMug, {
-        potentialMuggyObjectArray: newObjectMugArray,
+        potentialMuggyObjectArray: newObjectMugArray as never,
       });
 
       aStateAfter = check(aMug);
@@ -1624,7 +1623,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
 
     test('[verify] the existing field_s items stay unchanged in ref and value', () => {
-      aStateBefore.potentialMuggyObjectArray.forEach((item: any, i: number) => {
+      aStateBefore.potentialMuggyObjectArray.forEach((item, i) => {
         expect(aStateAfter.potentialMuggyObjectArray[i]).toBe(item);
         expect(aStateAfter.potentialMuggyObjectArray[i]).toStrictEqual(item);
       });
@@ -1636,7 +1635,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('cc093e5, writes "the potential muggy object array" field with a dense same-length array of new object item mugs whose constructions have different field values', () => {
-    let aStateBefore: any, aStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
       swirl(aMug, {
@@ -1658,7 +1657,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
         { [construction]: { s: 'ffa', o: { s: 'ffa' } } },
       ];
       swirl(aMug, {
-        potentialMuggyObjectArray: newObjectMugArray,
+        potentialMuggyObjectArray: newObjectMugArray as never,
       });
       aStateAfter = check(aMug);
     });
@@ -1671,7 +1670,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
 
     test('[verify] the field_s items stays unchanged in ref and value', () => {
-      aStateBefore.potentialMuggyObjectArray.forEach((item: any, i: number) => {
+      aStateBefore.potentialMuggyObjectArray.forEach((item, i) => {
         expect(aStateAfter.potentialMuggyObjectArray[i]).toBe(item);
         expect(aStateAfter.potentialMuggyObjectArray[i]).toStrictEqual(item);
       });
@@ -1679,7 +1678,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   });
 
   describe('1ecb1b4, first writes "the muggy object set field" with a new object mug set', () => {
-    let aStateBefore: any, aStateAfter: any;
+    let aStateBefore: AState, aStateAfter: AState;
 
     const newObjectMugSet = new Set<Mug<ObjectState>>([
       { [construction]: { s: 'cbb', o: { s: 'cbb' } } },
@@ -1690,7 +1689,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
       aStateBefore = check(aMug);
 
       swirl(aMug, {
-        objectMugSet: newObjectMugSet,
+        objectMugSet: newObjectMugSet as never,
       });
 
       aStateAfter = check(aMug);

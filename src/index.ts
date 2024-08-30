@@ -1,5 +1,5 @@
 export { check, swirl } from './builtin-ops';
-export { Mug, State, MugLike, construction } from './mug';
+export { Mug, MugError, MugLike, PossibleMug, PossibleMugLike, State, construction } from './mug';
 export { useOperator } from './react-integration';
 export { r, w } from './rw';
-export { tuple, EmptyItem } from './type-util';
+export { EmptyItem, tuple } from './type-utils';

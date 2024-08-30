@@ -11,44 +11,36 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     };
   }
 
-  interface AState extends ObjectState {
-    potentialMuggyObject: ObjectState;
-  }
-
   const tapHookReturn = jest.fn();
 
-  const readFn = jest.fn((aState: AState): AState => {
-    return { ...aState };
-  });
-
-  const readOp = r(readFn);
-
-  let checkedAStateAfter: any;
-  let readFnParamStateLatest: any;
-  let readFnReturnLatest: any;
-  let hookReturn1: any, hookReturn2: any;
-
   describe('8577c9b, a plain object mug_s state changes', () => {
+    interface AState extends ObjectState {}
+
     const aMug: Mug<AState> = {
       [construction]: {
         s: 'asd',
         o: {
           s: 'asd',
         },
-        potentialMuggyObject: {
-          s: 'asd',
-          o: {
-            s: 'asd',
-          },
-        },
       },
     };
+
+    const readFn = jest.fn((aState: AState): AState => {
+      return { ...aState };
+    });
+
+    const readOp = r(readFn);
 
     const AComponent = jest.fn(() => {
       const hookReturn = useOperator(readOp, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
+
+    let checkedAStateAfter: AState;
+    let readFnParamStateLatest: AState;
+    let readFnReturnLatest: AState;
+    let hookReturn1: AState, hookReturn2: AState;
 
     /**
      * Required variables: checkedAStateAfter, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
@@ -162,6 +154,10 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
   });
 
   describe('3c20440, a mug-nested object mug_s state changes', () => {
+    interface AState extends ObjectState {
+      muggyObject: ObjectState;
+    }
+
     const objectMug: Mug<ObjectState> = {
       [construction]: {
         s: 'asd',
@@ -171,21 +167,32 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const aMug: Mug<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+    const aMug: Mug<AState, { muggyObject: Mug<ObjectState> }> = {
       [construction]: {
         s: 'asd',
         o: {
           s: 'asd',
         },
-        potentialMuggyObject: objectMug,
+        muggyObject: objectMug,
       },
     };
+
+    const readFn = jest.fn((aState: AState): AState => {
+      return { ...aState };
+    });
+
+    const readOp = r(readFn);
 
     const AComponent = jest.fn(() => {
       const hookReturn = useOperator(readOp, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
+
+    let checkedAStateAfter: AState;
+    let readFnParamStateLatest: AState;
+    let readFnReturnLatest: AState;
+    let hookReturn1: AState, hookReturn2: AState;
 
     /**
      * Required variables: checkedAStateAfter, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
@@ -298,16 +305,16 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     describe('9740a8d, writes the muggy object field_s string field with a different value', () => {
       test('[action]', async () => {
-        swirl(aMug, { potentialMuggyObject: { s: 'e52' } });
+        swirl(aMug, { muggyObject: { s: 'e52' } });
         const checkedAStateBefore = check(aMug);
-        expect(checkedAStateBefore).toMatchObject({ potentialMuggyObject: { s: 'e52' } });
+        expect(checkedAStateBefore).toMatchObject({ muggyObject: { s: 'e52' } });
 
         render(<AComponent />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { potentialMuggyObject: { s: '7c1' } });
+          swirl(aMug, { muggyObject: { s: '7c1' } });
           checkedAStateAfter = check(aMug);
         });
         readFnParamStateLatest = readFn.mock.calls[0][0];
@@ -328,17 +335,17 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     describe('fa2c073, batch writes the muggy object field_s string field with different values', () => {
       test('[action]', async () => {
-        swirl(aMug, { potentialMuggyObject: { s: '071' } });
+        swirl(aMug, { muggyObject: { s: '071' } });
         const checkedAStateBefore = check(aMug);
-        expect(checkedAStateBefore).toMatchObject({ potentialMuggyObject: { s: '071' } });
+        expect(checkedAStateBefore).toMatchObject({ muggyObject: { s: '071' } });
 
         render(<AComponent />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(swirl(aMug, { potentialMuggyObject: { s: '7a3' } }), {
-            potentialMuggyObject: { s: 'b35' },
+          swirl(swirl(aMug, { muggyObject: { s: '7a3' } }), {
+            muggyObject: { s: 'b35' },
           });
           checkedAStateAfter = check(aMug);
         });
@@ -360,15 +367,15 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     describe('4394fb9, writes the muggy object field_s string field with a same value', () => {
       test('[action]', async () => {
-        swirl(aMug, { potentialMuggyObject: { s: '5da' } });
+        swirl(aMug, { muggyObject: { s: '5da' } });
         const checkedAStateBefore = check(aMug);
-        expect(checkedAStateBefore).toMatchObject({ potentialMuggyObject: { s: '5da' } });
+        expect(checkedAStateBefore).toMatchObject({ muggyObject: { s: '5da' } });
 
         render(<AComponent />);
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { potentialMuggyObject: { s: '5da' } });
+          swirl(aMug, { muggyObject: { s: '5da' } });
         });
       });
 
@@ -466,16 +473,16 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     describe('7fffdd2, simultaneously writes the string field and the muggy object field_s string field with different values', () => {
       test('[action]', async () => {
-        swirl(aMug, { s: '690', potentialMuggyObject: { s: '5ab' } });
+        swirl(aMug, { s: '690', muggyObject: { s: '5ab' } });
         const checkedAStateBefore = check(aMug);
-        expect(checkedAStateBefore).toMatchObject({ s: '690', potentialMuggyObject: { s: '5ab' } });
+        expect(checkedAStateBefore).toMatchObject({ s: '690', muggyObject: { s: '5ab' } });
 
         render(<AComponent />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { s: '74e', potentialMuggyObject: { s: 'd83' } });
+          swirl(aMug, { s: '74e', muggyObject: { s: 'd83' } });
           checkedAStateAfter = check(aMug);
         });
         readFnParamStateLatest = readFn.mock.calls[1][0];
@@ -496,18 +503,18 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     describe('dc3b350, simultaneously batch writes the string field and the muggy object field_s string field with different values', () => {
       test('[action]', async () => {
-        swirl(aMug, { s: '749', potentialMuggyObject: { s: 'b05' } });
+        swirl(aMug, { s: '749', muggyObject: { s: 'b05' } });
         const checkedAStateBefore = check(aMug);
-        expect(checkedAStateBefore).toMatchObject({ s: '749', potentialMuggyObject: { s: 'b05' } });
+        expect(checkedAStateBefore).toMatchObject({ s: '749', muggyObject: { s: 'b05' } });
 
         render(<AComponent />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(swirl(aMug, { s: 'dee', potentialMuggyObject: { s: '48b' } }), {
+          swirl(swirl(aMug, { s: 'dee', muggyObject: { s: '48b' } }), {
             s: '94c',
-            potentialMuggyObject: { s: '70f' },
+            muggyObject: { s: '70f' },
           });
           checkedAStateAfter = check(aMug);
         });
@@ -529,15 +536,15 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     describe('e009621, simultaneously writes the string field and the muggy object field_s string field with a same value', () => {
       test('[action]', async () => {
-        swirl(aMug, { s: '4a4', potentialMuggyObject: { s: '91b' } });
+        swirl(aMug, { s: '4a4', muggyObject: { s: '91b' } });
         const checkedAStateBefore = check(aMug);
-        expect(checkedAStateBefore).toMatchObject({ s: '4a4', potentialMuggyObject: { s: '91b' } });
+        expect(checkedAStateBefore).toMatchObject({ s: '4a4', muggyObject: { s: '91b' } });
 
         render(<AComponent />);
 
         jest.clearAllMocks();
         await act(async () => {
-          swirl(aMug, { s: '4a4', potentialMuggyObject: { s: '91b' } });
+          swirl(aMug, { s: '4a4', muggyObject: { s: '91b' } });
         });
       });
 
@@ -552,6 +559,8 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
   });
 
   describe('2c62e81, a constant mug-nested tuple mug-like_s state changes', () => {
+    type AState = [ObjectState, ObjectState];
+
     const objectMug1: Mug<ObjectState> = {
       [construction]: {
         s: 'asd',
@@ -572,11 +581,22 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     const aMugLike = tuple(objectMug1, objectMug2);
 
+    const readFn = jest.fn((aState: AState): AState => {
+      return [...aState];
+    });
+
+    const readOp = r(readFn);
+
     const AComponent = jest.fn(() => {
       const hookReturn = useOperator(readOp, aMugLike);
       tapHookReturn(hookReturn);
       return <div />;
     });
+
+    let checkedAStateAfter: AState;
+    let readFnParamStateLatest: AState;
+    let readFnReturnLatest: AState;
+    let hookReturn1: AState, hookReturn2: AState;
 
     /**
      * Required variables: checkedObjectState1After, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
@@ -584,7 +604,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     function sharedVerifyCasesOfReadFnCalledOnWrite() {
       test('[verify] the (latest) read fn param state and its items equal the after-write checked state and its items in ref and value', () => {
         expect(readFnParamStateLatest).toBe(checkedAStateAfter);
-        checkedAStateAfter.forEach((item: any, i: number) => {
+        checkedAStateAfter.forEach((item, i) => {
           expect(readFnParamStateLatest[i]).toBe(item);
         });
         expect(readFnParamStateLatest).toStrictEqual(checkedAStateAfter);
@@ -878,18 +898,29 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
+    const readFn = jest.fn((aState: [ObjectState, ObjectState]): [ObjectState, ObjectState] => {
+      return [...aState];
+    });
+
+    const readOp = r(readFn);
+
     const AComponent = jest.fn(() => {
       const hookReturn = useOperator(readOp, tuple(objectMug1, objectMug2));
       tapHookReturn(hookReturn);
       return <div />;
     });
 
+    let checkedAStateAfter: [ObjectState, ObjectState];
+    let readFnParamStateLatest: [ObjectState, ObjectState];
+    let readFnReturnLatest: [ObjectState, ObjectState];
+    let hookReturn1: [ObjectState, ObjectState], hookReturn2: [ObjectState, ObjectState];
+
     /**
      * Required variables: checkedObjectState1After, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
      */
     function sharedVerifyCasesOfReadFnCalledOnWrite() {
       test('[verify] the (latest) read fn param state_s items equal the after-write checked state_s items in ref and value', () => {
-        checkedAStateAfter.forEach((item: any, i: number) => {
+        checkedAStateAfter.forEach((item, i) => {
           expect(readFnParamStateLatest[i]).toBe(item);
           expect(readFnParamStateLatest[i]).toStrictEqual(item);
         });

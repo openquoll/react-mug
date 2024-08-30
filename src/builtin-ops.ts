@@ -1,4 +1,5 @@
 import {
+  AnyMug,
   isArray,
   isClassDefinedObject,
   isMug,
@@ -6,8 +7,16 @@ import {
   isPlainObject,
   ownKeysOfObjectLike,
   shallowCloneOfPlainObject,
+  State,
 } from './mug';
 import { r, w } from './rw';
+import {
+  AnyFunction,
+  AnyObjectLike,
+  AnyReadonlyArray,
+  AnyReadonlyTuple,
+  EmptyItem,
+} from './type-utils';
 
 export const check = r(<TState>(state: TState): TState => {
   return state;
@@ -80,6 +89,21 @@ function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-export const swirl = w((state: any, patch: any): any => {
+export type PossiblePatch<TState> = TState extends AnyFunction
+  ? never
+  : TState extends AnyMug
+    ? never
+    : TState extends AnyReadonlyTuple
+      ? { [TK in keyof TState]: PossiblePatch<TState[TK]> | EmptyItem }
+      : TState extends AnyReadonlyArray
+        ? { [TK in keyof TState]: TState[TK] | EmptyItem }
+        : TState extends AnyObjectLike
+          ? { [TK in keyof TState]?: PossiblePatch<TState[TK]> }
+          : TState;
+
+export const swirl = w(<TState>(state: TState, patch: PossiblePatch<TState>): TState => {
   return mergePatch(state, patch);
-});
+}) as <TMugLike, TPatch extends PossiblePatch<State<TMugLike>>>(
+  mugLike: TMugLike,
+  patch: TPatch,
+) => TMugLike;

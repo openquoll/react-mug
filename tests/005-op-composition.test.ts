@@ -145,8 +145,8 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
   }
 
   describe('c6e13d1, calls getCageValueOp', () => {
-    let checkedMarketState: any, checkedCageState: any;
-    let getCageValueOpReturn: any;
+    let checkedMarketState: MarketState, checkedCageState: CageState;
+    let getCageValueOpReturn: number;
 
     test('[action]', () => {
       checkedMarketState = check(marketMug);
@@ -159,7 +159,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] getCageValueFn param state_s items equal the checked market and cage states in ref and value', () => {
-      const items = getCageValueFn.mock.calls[0][0];
+      const items: [MarketState, CageState] = getCageValueFn.mock.calls[0][0];
       expect(items[0]).toBe(checkedMarketState);
       expect(items[0]).toStrictEqual(checkedMarketState);
       expect(items[1]).toBe(checkedCageState);
@@ -171,13 +171,13 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] getChickenValueFn param state equals the checked market state in ref and value', () => {
-      const state = getChickenValueFn.mock.calls[0][0];
+      const state: MarketState = getChickenValueFn.mock.calls[0][0];
       expect(state).toBe(checkedMarketState);
       expect(state).toStrictEqual(checkedMarketState);
     });
 
     test('[verify] getChickenValueFn param chickenCount equals the checked cage state_s chickenCount in value', () => {
-      const chickenCount = getChickenValueFn.mock.calls[0][1];
+      const chickenCount: number = getChickenValueFn.mock.calls[0][1];
       expect(chickenCount).toBe(checkedCageState.chickenCount);
     });
 
@@ -186,7 +186,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] getRabbitValueFn param state equals the checked market state in ref and value', () => {
-      const state = getRabbitValueFn.mock.calls[0][0];
+      const state: MarketState = getRabbitValueFn.mock.calls[0][0];
       expect(state).toBe(checkedMarketState);
       expect(state).toStrictEqual(checkedMarketState);
     });
@@ -202,10 +202,10 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
   });
 
   describe('75168d5, calls tradeChickensForRabbitsOp', () => {
-    let checkedMarketStateBefore: any, checkedMarketStateAfter: any;
-    let checkedCageStateBefore: any, checkedCageStateAfter: any;
-    let checkedWalletStateBefore: any, checkedWalletStateAfter: any;
-    let tradeChickensForRabbitsOpReturn: any;
+    let checkedMarketStateBefore: MarketState, checkedMarketStateAfter: MarketState;
+    let checkedCageStateBefore: CageState, checkedCageStateAfter: CageState;
+    let checkedWalletStateBefore: WalletState, checkedWalletStateAfter: WalletState;
+    let tradeChickensForRabbitsOpReturn: [Mug<MarketState>, Mug<CageState>, Mug<WalletState>];
 
     test('[action]', () => {
       swirl(marketMug, marketMug[construction]);
@@ -228,7 +228,8 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] tradeChickensForRabbitsFn param state_s items equal the before-write checked market, cage, and wallet states in ref and value', () => {
-      const items = tradeChickensForRabbitsFn.mock.calls[0][0];
+      const items: [MarketState, CageState, WalletState] =
+        tradeChickensForRabbitsFn.mock.calls[0][0];
       expect(items[0]).toBe(checkedMarketStateBefore);
       expect(items[0]).toStrictEqual(checkedMarketStateBefore);
       expect(items[1]).toBe(checkedCageStateBefore);
@@ -264,7 +265,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] sellChickensFn param state_s items equal the before-write checked market, cage, and wallet states in ref and value', () => {
-      const items = sellChickensFn.mock.calls[0][0];
+      const items: [MarketState, CageState, WalletState] = sellChickensFn.mock.calls[0][0];
       expect(items[0]).toBe(checkedMarketStateBefore);
       expect(items[0]).toStrictEqual(checkedMarketStateBefore);
       expect(items[1]).toBe(checkedCageStateBefore);
@@ -274,7 +275,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] sellChickensFn param chickenCount equals the before-write checked cage state_s chickenCount in value', () => {
-      const chickenCount = sellChickensFn.mock.calls[0][1];
+      const chickenCount: number = sellChickensFn.mock.calls[0][1];
       expect(chickenCount).toBe(checkedCageStateBefore.chickenCount);
     });
 
@@ -283,17 +284,19 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] buyRabbitsFn param state and its items equal sellChickensFn return and its items in ref and value', () => {
-      const buyRabbitsFnParamState = buyRabbitsFn.mock.calls[0][0];
-      const sellChickensFnReturn = sellChickensFn.mock.results[0].value;
+      const buyRabbitsFnParamState: [MarketState, CageState, WalletState] =
+        buyRabbitsFn.mock.calls[0][0];
+      const sellChickensFnReturn: [MarketState, CageState, WalletState] =
+        sellChickensFn.mock.results[0].value;
       expect(buyRabbitsFnParamState).toBe(sellChickensFnReturn);
-      sellChickensFnReturn.forEach((item: any, i: number) => {
+      sellChickensFnReturn.forEach((item, i) => {
         expect(buyRabbitsFnParamState[i]).toBe(item);
       });
       expect(buyRabbitsFnParamState).toStrictEqual(sellChickensFnReturn);
     });
 
     test('[verify] the after-write checked market, cage, and wallet states equal buyRabbitsFn return_s items in ref and value', () => {
-      const items = buyRabbitsFn.mock.results[0].value;
+      const items: [MarketState, CageState, WalletState] = buyRabbitsFn.mock.results[0].value;
       expect(checkedMarketStateAfter).toBe(items[0]);
       expect(checkedMarketStateAfter).toStrictEqual(items[0]);
       expect(checkedCageStateAfter).toBe(items[1]);
@@ -331,9 +334,9 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
   });
 
   describe('27703c0, calls tradeRabbitsForChickensProcedure', () => {
-    let checkedMarketStateBefore: any, checkedMarketStateAfter: any;
-    let checkedCageStateBefore: any, checkedCageStateAfter: any;
-    let checkedWalletStateBefore: any, checkedWalletStateAfter: any;
+    let checkedMarketStateBefore: MarketState, checkedMarketStateAfter: MarketState;
+    let checkedCageStateBefore: CageState, checkedCageStateAfter: CageState;
+    let checkedWalletStateBefore: WalletState, checkedWalletStateAfter: WalletState;
 
     test('[action]', () => {
       swirl(marketMug, marketMug[construction]);
@@ -356,20 +359,20 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] getRabbitValueFn param state keeps equal to the before-write checked market state in ref and value', () => {
-      const state1 = getRabbitValueFn.mock.calls[0][0];
+      const state1: MarketState = getRabbitValueFn.mock.calls[0][0];
       expect(state1).toBe(checkedMarketStateBefore);
       expect(state1).toStrictEqual(checkedMarketStateBefore);
 
-      const state2 = getRabbitValueFn.mock.calls[1][0];
+      const state2: MarketState = getRabbitValueFn.mock.calls[1][0];
       expect(state2).toBe(checkedMarketStateBefore);
       expect(state2).toStrictEqual(checkedMarketStateBefore);
     });
 
     test('[verify] getRabbitValueFn param rabbitCount keeps equal to the before-write checked cage state_s rabbitCount in value', () => {
-      const rabbitCount1 = getRabbitValueFn.mock.calls[0][1];
+      const rabbitCount1: number = getRabbitValueFn.mock.calls[0][1];
       expect(rabbitCount1).toBe(checkedCageStateBefore.rabbitCount);
 
-      const rabbitCount2 = getRabbitValueFn.mock.calls[1][1];
+      const rabbitCount2: number = getRabbitValueFn.mock.calls[1][1];
       expect(rabbitCount2).toBe(checkedCageStateBefore.rabbitCount);
     });
 
@@ -378,7 +381,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] sellRabbitsFn param state_s items equal the before-write checked market, cage, and wallet states in ref and value', () => {
-      const items = sellRabbitsFn.mock.calls[0][0];
+      const items: [MarketState, CageState, WalletState] = sellRabbitsFn.mock.calls[0][0];
       expect(items[0]).toBe(checkedMarketStateBefore);
       expect(items[0]).toStrictEqual(checkedMarketStateBefore);
       expect(items[1]).toBe(checkedCageStateBefore);
@@ -388,7 +391,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] sellRabbitsFn param rabbitCount equals the before-write checked cage state_s rabbitCount in value', () => {
-      const rabbitCount = sellRabbitsFn.mock.calls[0][1];
+      const rabbitCount: number = sellRabbitsFn.mock.calls[0][1];
       expect(rabbitCount).toBe(checkedCageStateBefore.rabbitCount);
     });
 
@@ -397,22 +400,26 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
     });
 
     test('[verify] buyChickensFn param state differs from sellRabbitsFn return in ref', () => {
-      const buyChickensFnParamState = buyChickensFn.mock.calls[0][0];
-      const sellRabbitsFnReturn = sellRabbitsFn.mock.results[0].value;
+      const buyChickensFnParamState: [MarketState, CageState, WalletState] =
+        buyChickensFn.mock.calls[0][0];
+      const sellRabbitsFnReturn: [MarketState, CageState, WalletState] =
+        sellRabbitsFn.mock.results[0].value;
       expect(buyChickensFnParamState).not.toBe(sellRabbitsFnReturn);
     });
 
     test('[verify] buyChickensFn param state_s items equal sellRabbitsFn return_s items in ref and value', () => {
-      const buyChickensFnParamState = buyChickensFn.mock.calls[0][0];
-      const sellRabbitsFnReturn = sellRabbitsFn.mock.results[0].value;
-      sellRabbitsFnReturn.forEach((item: any, i: number) => {
+      const buyChickensFnParamState: [MarketState, CageState, WalletState] =
+        buyChickensFn.mock.calls[0][0];
+      const sellRabbitsFnReturn: [MarketState, CageState, WalletState] =
+        sellRabbitsFn.mock.results[0].value;
+      sellRabbitsFnReturn.forEach((item, i) => {
         expect(buyChickensFnParamState[i]).toBe(item);
         expect(buyChickensFnParamState[i]).toStrictEqual(item);
       });
     });
 
     test('[verify] the after-write checked market, cage, and wallet states equal buyChickensFn return_s items in ref and value', () => {
-      const items = buyChickensFn.mock.results[0].value;
+      const items: [MarketState, CageState, WalletState] = buyChickensFn.mock.results[0].value;
       expect(checkedMarketStateAfter).toBe(items[0]);
       expect(checkedMarketStateAfter).toStrictEqual(items[0]);
       expect(checkedCageStateAfter).toBe(items[1]);

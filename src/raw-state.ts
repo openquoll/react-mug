@@ -1,5 +1,9 @@
 import { construction } from './mug';
 
+export type RawState<TMugLike> = TMugLike extends { [construction]: infer TConstruction }
+  ? TConstruction
+  : TMugLike;
+
 class RawStateStore {
   private _rawStatesByMug = new WeakMap<any, any>();
   private _changeListenerSetsByMug = new WeakMap<any, ((state: any) => void)[]>();
@@ -48,7 +52,3 @@ class RawStateStore {
 }
 
 export const rawStateStore = new RawStateStore();
-
-export type RawState<TMugLike> = TMugLike extends { [construction]: infer TConstruction }
-  ? TConstruction
-  : TMugLike;

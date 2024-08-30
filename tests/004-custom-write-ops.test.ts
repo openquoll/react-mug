@@ -20,9 +20,9 @@ describe('900ce35, operates by an object state custom write op', () => {
 
     const customWriteOp = w(customWriteFn);
 
-    let checkedAStateBefore: any, checkedAStateAfter: any;
-    let checkedObjectStateBefore: any, checkedObjectStateAfter: any;
-    let fnParamState: any, fnReturn: any, finalReturn: any;
+    let checkedAStateBefore: AState, checkedAStateAfter: AState;
+    let checkedObjectStateBefore: ObjectState, checkedObjectStateAfter: ObjectState;
+    let fnParamState: AState, fnReturn: AState, finalReturn: any;
 
     describe('5fb96fe, writes a constant plain object state, [cite] 002:31f3463', () => {
       const aState: AState = {
@@ -201,9 +201,9 @@ describe('900ce35, operates by an object state custom write op', () => {
 
     const customWriteOp = w(customWriteFn);
 
-    let checkedAStateBefore: any, checkedAStateAfter: any;
-    let checkedObjectStateBefore: any, checkedObjectStateAfter: any;
-    let opParamState: any, opReturn: any, finalReturn: any;
+    let checkedAStateBefore: AState, checkedAStateAfter: AState;
+    let checkedObjectStateBefore: ObjectState, checkedObjectStateAfter: ObjectState;
+    let opParamState: AState, opReturn: AState, finalReturn: any;
 
     describe('f4df6bd, writes a plain object state with a different string', () => {
       const aState: AState = {

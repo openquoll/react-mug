@@ -1,4 +1,4 @@
-import { AnyObjectLike, Conserve, NumAsStr } from './type-util';
+import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './type-utils';
 
 /**
  * A mug is a holder of states. Imagine mug cups containing states as liquid
@@ -39,72 +39,82 @@ export const construction = Symbol();
 
 export type AnyMug = { [construction]: any };
 
-const emptyMugOverride = Symbol();
-
-export type EmptyMugOverride = typeof emptyMugOverride;
-
-export type PossibleMugOverride<TMugLike> =
-  | EmptyMugOverride
-  | (TMugLike extends AnyMug
-      ? TMugLike
-      : TMugLike extends AnyObjectLike
-        ?
-            | { [construction]: TMugLike }
-            | {
-                [K in keyof TMugLike]?:
-                  | { [construction]: TMugLike[K] }
-                  | PossibleMugOverride<TMugLike[K]>;
-              }
-        : TMugLike);
-
-export type OverrideMugLike<
-  TMugLike,
-  TMugOverride extends PossibleMugOverride<TMugLike>,
-> = TMugLike extends AnyMug
-  ? TMugLike
-  : TMugOverride extends AnyMug
-    ? TMugOverride
-    : TMugLike extends AnyObjectLike
-      ? TMugOverride extends AnyObjectLike
-        ? { [K in keyof TMugLike]: OverrideMugLike<TMugLike[K], TMugOverride[K]> }
-        : TMugLike
-      : TMugLike;
-
-export type MugLike<
-  TMugLike,
-  TMugOverride extends PossibleMugOverride<TMugLike> = EmptyMugOverride,
-> = OverrideMugLike<TMugLike, TMugOverride>;
-
-export type Mug<
-  TConstruction,
-  TMugOverride extends PossibleMugOverride<TConstruction> = EmptyMugOverride,
-> = {
-  [construction]: OverrideMugLike<TConstruction, TMugOverride>;
-};
-
 /**
  * The union type of every possible concise mug-like type for a given mug-like type.
  */
-export type PossibleMugLike<TMugLike> = TMugLike extends { [construction]: infer TConstruction }
-  ? PossibleMugLike<TConstruction>
-  : TMugLike extends AnyObjectLike
-    ?
-        | { [construction]: { [K in keyof TMugLike]: PossibleMugLike<TMugLike[K]> } }
-        | { [K in keyof TMugLike]: PossibleMugLike<TMugLike[K]> }
-    : { [construction]: TMugLike } | TMugLike;
-
-type MessyState<TMugLike> = TMugLike extends { [construction]: infer TConstruction }
-  ? MessyState<TConstruction>
-  : TMugLike extends AnyObjectLike
-    ? { [K in keyof TMugLike]: MessyState<TMugLike[K]> }
-    : TMugLike;
+export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
+  ? TMugLike
+  : TMugLike extends { [construction]: infer TConstruction }
+    ? PossibleMugLike<TConstruction>
+    : TMugLike extends AnyObjectLike
+      ?
+          | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
+          | { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }
+      : { [construction]: TMugLike } | TMugLike;
 
 /**
- * The state type for a given mug-like type.
+ * The union type of every possible concise mug type for a given mug-like type.
  */
-export type State<TMugLike> = TMugLike extends { [construction]: infer TConstruction }
-  ? Conserve<TConstruction, MessyState<TConstruction>>
-  : Conserve<TMugLike, MessyState<TMugLike>>;
+export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
+  ? TMugLike
+  : TMugLike extends { [construction]: infer TConstruction }
+    ? PossibleMugLike<TConstruction>
+    : TMugLike extends AnyObjectLike
+      ? { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
+      : { [construction]: TMugLike };
+
+type NonEmptyPossibleMuggyOverride<TMugLike> = TMugLike extends AnyFunction
+  ? never
+  : TMugLike extends AnyMug
+    ? never
+    : TMugLike extends AnyObjectLike
+      ?
+          | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
+          | { [TK in keyof TMugLike]?: NonEmptyPossibleMuggyOverride<TMugLike[TK]> }
+      : { [construction]: TMugLike };
+
+export type PossibleMuggyOverride<TMugLike> = EmptyItem | NonEmptyPossibleMuggyOverride<TMugLike>;
+
+/**
+ * The mug-like type-extending helper.
+ */
+export type MugLike<
+  TMugLike,
+  TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem,
+> = TMugLike extends AnyFunction
+  ? TMugLike
+  : TMuggyOverride extends AnyFunction
+    ? TMugLike
+    : TMugLike extends AnyMug
+      ? TMugLike
+      : TMuggyOverride extends AnyMug
+        ? TMuggyOverride
+        : TMugLike extends AnyObjectLike
+          ? TMuggyOverride extends AnyObjectLike
+            ? { [TK in keyof TMugLike]: MugLike<TMugLike[TK], TMuggyOverride[TK]> }
+            : TMugLike
+          : TMugLike;
+
+/**
+ * The mug type-defining helper.
+ */
+export type Mug<
+  TConstruction,
+  TMuggyOverride extends PossibleMuggyOverride<TConstruction> = EmptyItem,
+> = {
+  [construction]: MugLike<TConstruction, TMuggyOverride>;
+};
+
+/**
+ * The state type-evaluating helper.
+ */
+export type State<TMugLike> = TMugLike extends AnyFunction
+  ? TMugLike
+  : TMugLike extends { [construction]: infer TConstruction }
+    ? Conserve<TConstruction, State<TConstruction>>
+    : TMugLike extends AnyObjectLike
+      ? Conserve<TMugLike, { [TK in keyof TMugLike]: State<TMugLike[TK]> }>
+      : TMugLike;
 
 export class MugError extends Error {
   public name: string = 'MugError';

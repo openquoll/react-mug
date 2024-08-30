@@ -7,8 +7,10 @@ import {
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
+  State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
+import { AnyFunction, Post0Params } from '../type-utils';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
   if (isMug(mugLike)) {
@@ -54,11 +56,18 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 }
 
-const noResult = Symbol();
-
+export function useOperator<TReadOp extends () => any>(readOp: TReadOp): ReturnType<TReadOp>;
+export function useOperator<
+  TReadOp extends <TMugLike>(mugLike: TMugLike, ...restArgs: any) => State<TMugLike>,
+  TMugLike,
+>(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
+export function useOperator<TReadOp extends AnyFunction>(
+  readOp: TReadOp,
+  ...readOpParams: Parameters<TReadOp>
+): ReturnType<TReadOp>;
 export function useOperator(
   readOp: (mugLike: any, ...restArgs: any) => any,
-  mugLike: any,
+  mugLike?: any,
   ...restArgs: any
 ): any {
   const readOpRef = useRef(readOp);

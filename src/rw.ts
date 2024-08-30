@@ -14,7 +14,7 @@ import {
   State,
 } from './mug';
 import { rawStateStore } from './raw-state';
-import { Param0, RestParams } from './type-util';
+import { AnyFunction, Param0, Post0Params } from './type-utils';
 
 class ValueStabilizer {
   private _staleValueByMugLike = new WeakMap();
@@ -164,14 +164,16 @@ class MugLikeWriteAction {
   }
 }
 
-export function r<TReadFn extends (state: any, ...restArgs: any) => any>(
+export function r<TReadFn extends AnyFunction>(
   readFn: TReadFn,
-): TReadFn extends <TState>(state: TState, ...restArgs: any) => TState
-  ? <TMugLike>(mugLike: TMugLike, ...restArgs: RestParams<TReadFn>) => State<TMugLike>
-  : (
-      mugLike: PossibleMugLike<Param0<TReadFn>>,
-      ...restArgs: RestParams<TReadFn>
-    ) => ReturnType<TReadFn>;
+): TReadFn extends () => any
+  ? () => ReturnType<TReadFn>
+  : TReadFn extends <TState>(state: TState, ...restArgs: any) => TState
+    ? <TMugLike>(mugLike: TMugLike, ...restArgs: Post0Params<TReadFn>) => State<TMugLike>
+    : (
+        mugLike: PossibleMugLike<Param0<TReadFn>>,
+        ...restArgs: Post0Params<TReadFn>
+      ) => ReturnType<TReadFn>;
 export function r(readFn: (state: any, ...restArgs: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the readFn as it is.
@@ -187,12 +189,16 @@ export function r(readFn: (state: any, ...restArgs: any) => any) {
   };
 }
 
-export function w<TWriteFn extends (state: any, ...restArgs: any) => Param0<TWriteFn>>(
+export function w<TWriteFn extends (...args: any) => Param0<TWriteFn>>(
   writeFn: TWriteFn,
-): <TMugLike extends PossibleMugLike<Param0<TWriteFn>>>(
-  mugLike: TMugLike,
-  ...restArgs: RestParams<TWriteFn>
-) => TMugLike;
+): TWriteFn extends () => any
+  ? <TMugLike extends PossibleMugLike<ReturnType<TWriteFn>>>(mugLike?: TMugLike) => TMugLike
+  : TWriteFn extends <TState>(state: TState, ...restArgs: any) => TState
+    ? <TMugLike>(mugLike: TMugLike, ...restArgs: Post0Params<TWriteFn>) => TMugLike
+    : <TMugLike extends PossibleMugLike<Param0<TWriteFn>>>(
+        mugLike: TMugLike,
+        ...restArgs: Post0Params<TWriteFn>
+      ) => TMugLike;
 export function w(writeFn: (state: any, ...restArgs: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.

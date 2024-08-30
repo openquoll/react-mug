@@ -32,12 +32,12 @@ describe('dd10061, operates by an object state custom read op', () => {
       },
     };
 
-    let checkedAState: any;
-    let checkedObjectState: any;
-    let fnParamState1: any, fnParamState2: any;
-    let fnParamExtra1: any, fnParamExtra2: any;
-    let fnReturn1: any, fnReturn2: any;
-    let finalReturn1: any, finalReturn2: any;
+    let checkedAState: AState;
+    let checkedObjectState: ObjectState;
+    let fnParamState1: AState, fnParamState2: AState;
+    let fnParamExtra1: Pick<ObjectState, 'o'>, fnParamExtra2: Pick<ObjectState, 'o'>;
+    let fnReturn1: Pick<ObjectState, 'o'>, fnReturn2: Pick<ObjectState, 'o'>;
+    let finalReturn1: Pick<ObjectState, 'o'>, finalReturn2: Pick<ObjectState, 'o'>;
 
     /**
      * Required variables:
@@ -277,7 +277,7 @@ describe('dd10061, operates by an object state custom read op', () => {
 
       test('[verify] the first fn-param state_s non-muggy fields equal the mug-like_s non-muggy fields in ref and value', () => {
         ownKeysOfObjectLike(aMugLike)
-          .filter((key: any) => key !== 'potentialMuggyObject')
+          .filter((key) => key !== 'potentialMuggyObject')
           .forEach((key) => {
             expect(fnParamState1[key]).toBe(aMugLike[key]);
             expect(fnParamState1[key]).toStrictEqual(aMugLike[key]);
@@ -337,7 +337,7 @@ describe('dd10061, operates by an object state custom read op', () => {
 
       test('[verify] the first fn-param state_s non-muggy fields equal the mug-like_s non-muggy fields in ref and value', () => {
         ownKeysOfObjectLike(aMugLike)
-          .filter((key: any) => key !== 'potentialMuggyObject')
+          .filter((key) => key !== 'potentialMuggyObject')
           .forEach((key) => {
             expect(fnParamState1[key]).toBe(aMugLike[key]);
             expect(fnParamState1[key]).toStrictEqual(aMugLike[key]);

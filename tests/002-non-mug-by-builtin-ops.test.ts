@@ -1,5 +1,5 @@
-import { check, construction, EmptyItem, Mug, swirl, tuple } from '../src';
-import { MugLike, ownKeysOfObjectLike } from '../src/mug';
+import { check, construction, EmptyItem, Mug, MugLike, swirl, tuple } from '../src';
+import { ownKeysOfObjectLike } from '../src/mug';
 
 interface ObjectState {
   s: string;

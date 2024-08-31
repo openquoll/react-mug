@@ -1,8 +1,7 @@
 import { render } from '@testing-library/react';
 
-import { check, construction, Mug, MugLike, r, useOperator } from '../src';
-import { ownKeysOfObjectLike, PossibleMugLike } from '../src/mug';
-import { AnyFunction } from '../src/type-utils';
+import { check, construction, Mug, MugLike, PossibleMugLike, r, useOperator } from '../src';
+import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('229a728, react renders on hook param changes', () => {
   interface ObjectState {

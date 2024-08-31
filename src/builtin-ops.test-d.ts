@@ -1,9 +1,9 @@
 import { expectType } from 'tsd';
 
 import { fake, from } from '../tests/type-utils';
-import { PossiblePatch, swirl } from './builtin-ops';
+import { PossibleStatePatch, swirl } from './builtin-ops';
 import { Mug, MugLike, PossibleMugLike } from './mug';
-import { AnyFunction, EmptyItem } from './type-utils';
+import { EmptyItem } from './type-utils';
 
 interface ObjectState {
   s: string;
@@ -14,7 +14,7 @@ interface ObjectState {
 
 type AFn = (...args: boolean[]) => boolean;
 
-test('PossiblePatch', () => {
+test('PossibleStatePatch', () => {
   interface AMugLike extends ObjectState {
     f: AFn;
     oa: ObjectState[];
@@ -24,7 +24,7 @@ test('PossiblePatch', () => {
     muggyObject: Mug<ObjectState>;
   }
 
-  type R314 = PossiblePatch<AMugLike>;
+  type R314 = PossibleStatePatch<AMugLike>;
   expectType<{
     s?: string;
     o?: { s?: string };

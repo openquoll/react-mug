@@ -3,12 +3,12 @@
   "version": "0.0.1-alpha.2",
   "license": "Apache-2.0",
   "files": [
-    "package.json",
-    "README.md",
-    "README.zh-Hans.md",
-    "LICENSE",
-    "dist/",
-    "tests/tsd.d.ts"
+    "./package.json",
+    "./README.md",
+    "./README.zh-Hans.md",
+    "./LICENSE",
+    "./dist/",
+    "./tests/tsd.d.ts"
   ],
   "exports": {
     ".": {

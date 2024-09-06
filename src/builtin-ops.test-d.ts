@@ -28,7 +28,7 @@ test('PossibleStatePatch', () => {
   expectType<{
     s?: string;
     o?: { s?: string };
-    f?: EmptyItem;
+    f?: AFn;
     oa?: (ObjectState | EmptyItem)[];
     roa?: readonly (ObjectState | EmptyItem)[];
     ot?: [{ s?: string; o?: { s?: string } } | EmptyItem];

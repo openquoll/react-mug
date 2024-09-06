@@ -9,15 +9,21 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     };
   }
 
+  type AFn = (...args: boolean[]) => boolean;
+
   interface AState extends ObjectState {
+    f: AFn;
     na: number[];
     nt: [x: number, y: number, z: number];
     oa: ObjectState[];
     ot: [ObjectState, ObjectState];
   }
 
+  const aFn = () => false;
+
   const aMug: Mug<AState> = {
     [construction]: {
+      f: aFn,
       s: 'asd',
       o: {
         s: 'asd',
@@ -63,6 +69,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
       o: {
         s: 'asd',
       },
+      f: aFn,
       na: [],
       nt: [300, 300, 300],
       oa: [],
@@ -87,6 +94,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
         o: {
           s: 'asd',
         },
+        f: aFn,
         na: [],
         nt: [300, 300, 300],
         oa: [],
@@ -129,6 +137,34 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
         expect(aStateAfter[key]).toBe(aStateBefore[key]);
       });
       expect(aStateAfter).toStrictEqual(aStateBefore);
+    });
+  });
+
+  describe(', first writes "the function field" with a different value', () => {
+    let aStateBefore: AState, aStateAfter: AState;
+
+    const newF = () => true;
+
+    test('[action]', () => {
+      aStateBefore = check(aMug);
+
+      swirl(aMug, { f: newF });
+
+      aStateAfter = check(aMug);
+    });
+
+    test('[verify] the field changes in ref and value', () => {
+      expect(aStateAfter.f).not.toBe(aStateBefore.f);
+      expect(aStateAfter.f).toBe(newF);
+    });
+
+    test('[verify] the rest fields stay unchanged in ref and value', () => {
+      ownKeysOfObjectLike(aStateBefore)
+        .filter((key) => key !== 'f')
+        .forEach((key) => {
+          expect(aStateAfter[key]).toBe(aStateBefore[key]);
+          expect(aStateAfter[key]).toStrictEqual(aStateBefore[key]);
+        });
     });
   });
 
@@ -1688,9 +1724,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     test('[action]', () => {
       aStateBefore = check(aMug);
 
-      swirl(aMug, {
-        objectMugSet: newObjectMugSet as never,
-      });
+      swirl(aMug, { objectMugSet: newObjectMugSet });
 
       aStateAfter = check(aMug);
     });
@@ -1702,7 +1736,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
 
     test('[verify] the field_s object mugs stay unevaluated', () => {
       expect(aStateAfter.objectMugSet.size).toBe(newObjectMugSet.size);
-      aStateAfter.objectMugSet.forEach((objectMug: Mug<ObjectState>) => {
+      aStateAfter.objectMugSet.forEach((objectMug) => {
         newObjectMugSet.has(objectMug);
         expect(objectMug).toStrictEqual({ [construction]: { s: 'cbb', o: { s: 'cbb' } } });
       });

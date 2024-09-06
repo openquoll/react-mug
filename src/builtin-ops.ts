@@ -90,7 +90,7 @@ function mergePatch(state: any, patch: any): any {
 }
 
 export type PossibleStatePatch<TState> = TState extends AnyFunction
-  ? never
+  ? TState
   : TState extends AnyMug
     ? never
     : TState extends AnyReadonlyTuple

@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.base",
   "compilerOptions": {
-    "target": "ES6",
+    "emitDeclarationOnly": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "outDir": "../dist/esm/"
+    "outDir": "../dist/types/"
   }
 }

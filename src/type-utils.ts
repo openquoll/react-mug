@@ -8,21 +8,15 @@ export type AnyArray = any[];
 
 export type AnyReadonlyArray = readonly any[];
 
-export function readonlyArray<T extends AnyArray>(...args: T): Readonly<T> {
-  return args;
-}
+export const readonlyArray = <T extends AnyArray>(...args: T): Readonly<T> => args;
 
 export type AnyTuple = [any, ...any[]];
 
-export function tuple<T extends AnyTuple>(...args: T): T {
-  return args;
-}
+export const tuple = <T extends AnyTuple>(...args: T): T => args;
 
 export type AnyReadonlyTuple = readonly [any, ...any[]];
 
-export function readonlyTuple<T extends AnyTuple>(...args: T): Readonly<T> {
-  return args;
-}
+export const readonlyTuple = <T extends AnyTuple>(...args: T): Readonly<T> => args;
 
 export type AnyFunction = (...args: any) => any;
 

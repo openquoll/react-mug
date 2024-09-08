@@ -1,3 +1,21 @@
+import {
+  _assignObject,
+  _captureErrorStackTrace,
+  _constructor,
+  _createObject,
+  _Error,
+  _forEach,
+  _getOwnPropertyNames,
+  _getOwnPropertySymbols,
+  _hasOwnProperty,
+  _includes,
+  _is,
+  _isArray,
+  _length,
+  _Object,
+  _reduce,
+  _setPrototypeOf,
+} from './shortcuts';
 import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './type-utils';
 
 /**
@@ -116,37 +134,27 @@ export type State<TMugLike> = TMugLike extends AnyFunction
       ? Conserve<TMugLike, { [TK in keyof TMugLike]: State<TMugLike[TK]> }>
       : TMugLike;
 
-export class MugError extends Error {
+export class MugError extends _Error {
   public name: string = 'MugError';
 
   constructor(message: string) {
     super(message);
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, MugError);
+    if (_captureErrorStackTrace) {
+      _captureErrorStackTrace(this, MugError);
     }
-
-    Object.setPrototypeOf(this, MugError.prototype);
+    _setPrototypeOf(this, MugError.prototype);
   }
 }
 
-export function isObjectLike(o: any): boolean {
-  return typeof o === 'object' && o !== null;
-}
+export const isObjectLike = (o: any): boolean => typeof o === 'object' && o !== null;
 
-export function isPlainObject(o: any): boolean {
-  return isObjectLike(o) && [Object, undefined].includes(o.constructor);
-}
+export const isPlainObject = (o: any): boolean =>
+  isObjectLike(o) && [_Object, undefined][_includes](o[_constructor]);
 
-export const isArray = Array.isArray;
+export const isClassDefinedObject = (o: any): boolean =>
+  isObjectLike(o) && !_isArray(o) && ![_Object, undefined][_includes](o[_constructor]);
 
-export function isClassDefinedObject(o: any): boolean {
-  return isObjectLike(o) && !isArray(o) && ![Object, undefined].includes(o.constructor);
-}
-
-export function isMug(o: any): o is AnyMug {
-  return isObjectLike(o) && Object.prototype.hasOwnProperty.call(o, construction);
-}
+export const isMug = (o: any): o is AnyMug => isObjectLike(o) && o[_hasOwnProperty](construction);
 
 export function isState(o: any): boolean {
   if (isMug(o)) {
@@ -154,33 +162,29 @@ export function isState(o: any): boolean {
   }
 
   if (isPlainObject(o)) {
-    return ownKeysOfObjectLike(o).reduce((result, key) => {
-      return result && isState(o[key]);
-    }, true);
+    return ownKeysOfObjectLike(o)[_reduce]((result, key) => result && isState(o[key]), true);
   }
 
-  if (isArray(o)) {
-    return o.reduce((result, value) => {
-      return result && isState(value);
-    }, true);
+  if (_isArray(o)) {
+    return o[_reduce]((result, value) => result && isState(value), true);
   }
 
   return true;
 }
 
 export function areEqualMugLikes(a: any, b: any): boolean {
-  if (Object.is(a, b)) {
+  if (_is(a, b)) {
     return true;
   }
 
   if (isMug(a) && isMug(b)) {
-    return Object.is(a, b);
+    return _is(a, b);
   }
 
   if (isPlainObject(a) && isPlainObject(b)) {
-    return ownKeysOfObjectLike({ ...a, ...b }).reduce((result, key) => {
-      const keyInA = a.hasOwnProperty(key);
-      const keyInB = b.hasOwnProperty(key);
+    return ownKeysOfObjectLike(_assignObject({}, a, b))[_reduce]((result, key) => {
+      const keyInA = a[_hasOwnProperty](key);
+      const keyInB = b[_hasOwnProperty](key);
 
       if (!keyInA || !keyInB) {
         return false;
@@ -190,15 +194,15 @@ export function areEqualMugLikes(a: any, b: any): boolean {
     }, true);
   }
 
-  if (isArray(a) && isArray(b)) {
-    if (a.length !== b.length) {
+  if (_isArray(a) && _isArray(b)) {
+    if (a[_length] !== b[_length]) {
       return false;
     }
 
     let result = true;
-    for (let i = 0, n = a.length; i < n; i++) {
-      const indexInA = a.hasOwnProperty(i);
-      const indexInB = b.hasOwnProperty(i);
+    for (let i = 0, n = a[_length]; i < n; i++) {
+      const indexInA = a[_hasOwnProperty](i);
+      const indexInB = b[_hasOwnProperty](i);
 
       if (!indexInA && !indexInB) {
         continue;
@@ -222,7 +226,7 @@ export function assignConservatively(mugLike: any, input: any): any {
     return mugLike;
   }
 
-  if (Object.is(mugLike, input)) {
+  if (_is(mugLike, input)) {
     return mugLike;
   }
 
@@ -230,9 +234,9 @@ export function assignConservatively(mugLike: any, input: any): any {
     const result = emptyCloneOfPlainObject(mugLike);
     let allFieldsFromMugLike = true;
     let allFieldsFromInput = true;
-    ownKeysOfObjectLike({ ...mugLike, ...input }).forEach((key) => {
-      const keyInMugLike = mugLike.hasOwnProperty(key);
-      const keyInInput = input.hasOwnProperty(key);
+    ownKeysOfObjectLike(_assignObject({}, mugLike, input))[_forEach]((key) => {
+      const keyInMugLike = mugLike[_hasOwnProperty](key);
+      const keyInInput = input[_hasOwnProperty](key);
 
       if (keyInMugLike && !keyInInput) {
         allFieldsFromMugLike = false;
@@ -251,14 +255,14 @@ export function assignConservatively(mugLike: any, input: any): any {
 
       result[key] = assignConservatively(mugLike[key], input[key]);
 
-      if (!Object.is(mugLike[key], result[key])) {
+      if (!_is(mugLike[key], result[key])) {
         allFieldsFromMugLike = false;
       }
 
-      if (!Object.is(input[key], result[key])) {
+      if (!_is(input[key], result[key])) {
         allFieldsFromInput = false;
       }
-    }, emptyCloneOfPlainObject(mugLike));
+    });
 
     if (allFieldsFromMugLike) {
       return mugLike;
@@ -271,14 +275,14 @@ export function assignConservatively(mugLike: any, input: any): any {
     return result;
   }
 
-  if (isArray(mugLike) && isArray(input)) {
+  if (_isArray(mugLike) && _isArray(input)) {
     const result: any[] = [];
-    result.length = input.length;
-    let allItemsFromMugLike = mugLike.length === result.length;
+    result[_length] = input[_length];
+    let allItemsFromMugLike = mugLike[_length] === result[_length];
     let allItemsFromInput = true;
-    for (let i = 0, n = result.length; i < n; i++) {
-      const indexInMugLike = mugLike.hasOwnProperty(i);
-      const indexInInput = input.hasOwnProperty(i);
+    for (let i = 0, n = result[_length]; i < n; i++) {
+      const indexInMugLike = mugLike[_hasOwnProperty](i);
+      const indexInInput = input[_hasOwnProperty](i);
 
       if (!indexInMugLike && !indexInInput) {
         continue;
@@ -301,11 +305,11 @@ export function assignConservatively(mugLike: any, input: any): any {
 
       result[i] = assignConservatively(mugLike[i], input[i]);
 
-      if (!Object.is(mugLike[i], result[i])) {
+      if (!_is(mugLike[i], result[i])) {
         allItemsFromMugLike = false;
       }
 
-      if (!Object.is(input[i], result[i])) {
+      if (!_is(input[i], result[i])) {
         allItemsFromInput = false;
       }
     }
@@ -324,21 +328,16 @@ export function assignConservatively(mugLike: any, input: any): any {
   return input;
 }
 
-export function emptyCloneOfPlainObject(o: any): any {
-  return Object.create(o.constructor?.prototype ?? null);
-}
+export const emptyCloneOfPlainObject = (o: any): any =>
+  _createObject(o[_constructor]?.prototype ?? null);
 
-export function shallowCloneOfPlainObject(o: any): any {
-  return ownKeysOfObjectLike(o).reduce((r, key) => {
+export const shallowCloneOfPlainObject = (o: any): any =>
+  ownKeysOfObjectLike(o)[_reduce]((r, key) => {
     r[key] = o[key];
     return r;
   }, emptyCloneOfPlainObject(o));
-}
 
-export function ownKeysOfObjectLike<T extends AnyObjectLike>(o: T): NumAsStr<keyof T>[] {
-  if (isObjectLike(o)) {
-    const ownKeys = [...Object.getOwnPropertyNames(o), ...Object.getOwnPropertySymbols(o)];
-    return ownKeys as NumAsStr<keyof T>[];
-  }
-  return [];
-}
+export const ownKeysOfObjectLike = <T extends AnyObjectLike>(o: T): NumAsStr<keyof T>[] =>
+  isObjectLike(o)
+    ? ([..._getOwnPropertyNames(o), ..._getOwnPropertySymbols(o)] as NumAsStr<keyof T>[])
+    : [];

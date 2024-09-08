@@ -3,31 +3,31 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   areEqualMugLikes,
   construction,
-  isArray,
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
   State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
+import { _current, _forEach, _isArray } from '../shortcuts';
 import { AnyFunction, Post0Params } from '../type-utils';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
   if (isMug(mugLike)) {
-    rawStateStore.addChangeListener(mugLike, changeListener);
+    rawStateStore._addChangeListener(mugLike, changeListener);
     subscribeTo(mugLike[construction], changeListener);
     return;
   }
 
   if (isPlainObject(mugLike)) {
-    ownKeysOfObjectLike(mugLike).forEach((mugLikeKey) => {
+    ownKeysOfObjectLike(mugLike)[_forEach]((mugLikeKey) => {
       subscribeTo(mugLike[mugLikeKey], changeListener);
     });
     return;
   }
 
-  if (isArray(mugLike)) {
-    mugLike.forEach((mugLikeItem) => {
+  if (_isArray(mugLike)) {
+    mugLike[_forEach]((mugLikeItem) => {
       subscribeTo(mugLikeItem, changeListener);
     });
     return;
@@ -36,20 +36,20 @@ function subscribeTo(mugLike: any, changeListener: () => void): void {
 
 function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   if (isMug(mugLike)) {
-    rawStateStore.removeChangeListener(mugLike, changeListener);
+    rawStateStore._removeChangeListener(mugLike, changeListener);
     unsubscribeFrom(mugLike[construction], changeListener);
     return;
   }
 
   if (isPlainObject(mugLike)) {
-    ownKeysOfObjectLike(mugLike).forEach((mugLikeKey) => {
+    ownKeysOfObjectLike(mugLike)[_forEach]((mugLikeKey) => {
       unsubscribeFrom(mugLike[mugLikeKey], changeListener);
     });
     return;
   }
 
-  if (isArray(mugLike)) {
-    mugLike.forEach((mugLikeItem) => {
+  if (_isArray(mugLike)) {
+    mugLike[_forEach]((mugLikeItem) => {
       unsubscribeFrom(mugLikeItem, changeListener);
     });
     return;
@@ -79,41 +79,37 @@ export function useOperator(
 
   const [, setNuance] = useState(0);
 
-  function makeResult() {
-    return readOpRef.current(mugLikeRef.current, ...restArgsRef.current);
-  }
+  const makeResult = () => readOpRef[_current](mugLikeRef[_current], ...restArgsRef[_current]);
 
-  function triggerRerender() {
-    setNuance((n) => (n + 1) % 1e8);
-  }
+  const triggerRerender = () => setNuance((n) => (n + 1) % 1e8);
 
   const changeListener = useCallback(() => {
     const newResult = makeResult();
 
-    if (areEqualMugLikes(resultRef.current, newResult)) {
+    if (areEqualMugLikes(resultRef[_current], newResult)) {
       return;
     }
 
-    resultRef.current = newResult;
+    resultRef[_current] = newResult;
     triggerRerender();
   }, []);
 
   useMemo(() => {
-    if (!resultMadeRef.current) {
-      resultRef.current = makeResult();
-      resultMadeRef.current = true;
+    if (!resultMadeRef[_current]) {
+      resultRef[_current] = makeResult();
+      resultMadeRef[_current] = true;
       return;
     }
 
     let anyPropChanged = false;
 
-    if (!areEqualMugLikes(mugLikeRef.current, mugLike)) {
-      mugLikeRef.current = mugLike;
+    if (!areEqualMugLikes(mugLikeRef[_current], mugLike)) {
+      mugLikeRef[_current] = mugLike;
       anyPropChanged = true;
     }
 
-    if (!areEqualMugLikes(restArgsRef.current, restArgs)) {
-      restArgsRef.current = restArgs;
+    if (!areEqualMugLikes(restArgsRef[_current], restArgs)) {
+      restArgsRef[_current] = restArgs;
       anyPropChanged = true;
     }
 
@@ -122,8 +118,8 @@ export function useOperator(
     }
 
     const newResult = makeResult();
-    if (!areEqualMugLikes(resultRef.current, newResult)) {
-      resultRef.current = newResult;
+    if (!areEqualMugLikes(resultRef[_current], newResult)) {
+      resultRef[_current] = newResult;
     }
   }, [mugLike, ...restArgs]);
 
@@ -134,5 +130,5 @@ export function useOperator(
     };
   }, [mugLike]);
 
-  return resultRef.current;
+  return resultRef[_current];
 }

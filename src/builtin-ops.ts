@@ -1,6 +1,5 @@
 import {
   AnyMug,
-  isArray,
   isClassDefinedObject,
   isMug,
   isObjectLike,
@@ -10,6 +9,7 @@ import {
   State,
 } from './mug';
 import { r, w } from './rw';
+import { _constructor, _hasOwnProperty, _is, _isArray, _length, _reduce } from './shortcuts';
 import {
   AnyFunction,
   AnyObjectLike,
@@ -18,22 +18,20 @@ import {
   EmptyItem,
 } from './type-utils';
 
-export const check = r(<TState>(state: TState): TState => {
-  return state;
-});
+export const check = r(<TState>(state: TState): TState => state);
 
 function mergePatch(state: any, patch: any): any {
   if (isMug(patch)) {
     return state;
   }
 
-  if (Object.is(state, patch)) {
+  if (_is(state, patch)) {
     return state;
   }
 
   if (isPlainObject(state) && isPlainObject(patch)) {
-    return ownKeysOfObjectLike(patch).reduce((result, patchKey) => {
-      const patchKeyInState = state.hasOwnProperty(patchKey);
+    return ownKeysOfObjectLike(patch)[_reduce]((result, patchKey) => {
+      const patchKeyInState = state[_hasOwnProperty](patchKey);
 
       if (!patchKeyInState) {
         if (isMug(patch[patchKey])) {
@@ -48,13 +46,13 @@ function mergePatch(state: any, patch: any): any {
     }, shallowCloneOfPlainObject(state));
   }
 
-  if (isArray(state) && isArray(patch)) {
+  if (_isArray(state) && _isArray(patch)) {
     const result: any[] = [];
-    result.length = patch.length;
+    result[_length] = patch[_length];
 
-    for (let i = 0, n = result.length; i < n; i++) {
-      const indexInState = state.hasOwnProperty(i);
-      const indexInPatch = patch.hasOwnProperty(i);
+    for (let i = 0, n = result[_length]; i < n; i++) {
+      const indexInState = state[_hasOwnProperty](i);
+      const indexInPatch = patch[_hasOwnProperty](i);
 
       if (!indexInState && !indexInPatch) {
         continue;
@@ -79,7 +77,7 @@ function mergePatch(state: any, patch: any): any {
   }
 
   if (isClassDefinedObject(state) && isObjectLike(patch)) {
-    if (patch.constructor !== state.constructor) {
+    if (patch[_constructor] !== state[_constructor]) {
       return state;
     }
 
@@ -105,9 +103,10 @@ export type PossibleStatePatch<TState> = null extends TState
               ? { [TK in keyof TState]?: PossibleStatePatch<TState[TK]> }
               : TState;
 
-export const swirl = w(<TState>(state: TState, statePatch: PossibleStatePatch<TState>): TState => {
-  return mergePatch(state, statePatch);
-}) as <TMugLike, TPatch extends PossibleStatePatch<State<TMugLike>>>(
+export const swirl = w(
+  <TState>(state: TState, statePatch: PossibleStatePatch<TState>): TState =>
+    mergePatch(state, statePatch),
+) as <TMugLike, TPatch extends PossibleStatePatch<State<TMugLike>>>(
   mugLike: TMugLike,
   patch: TPatch,
 ) => TMugLike;

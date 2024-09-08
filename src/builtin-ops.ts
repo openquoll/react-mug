@@ -89,17 +89,21 @@ function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-export type PossibleStatePatch<TState> = TState extends AnyFunction
+export type PossibleStatePatch<TState> = null extends TState
   ? TState
-  : TState extends AnyMug
-    ? never
-    : TState extends AnyReadonlyTuple
-      ? { [TK in keyof TState]: PossibleStatePatch<TState[TK]> | EmptyItem }
-      : TState extends AnyReadonlyArray
-        ? { [TK in keyof TState]: TState[TK] | EmptyItem }
-        : TState extends AnyObjectLike
-          ? { [TK in keyof TState]?: PossibleStatePatch<TState[TK]> }
-          : TState;
+  : undefined extends TState
+    ? TState
+    : TState extends AnyFunction
+      ? TState
+      : TState extends AnyMug
+        ? never
+        : TState extends AnyReadonlyTuple
+          ? { [TK in keyof TState]: PossibleStatePatch<TState[TK]> | EmptyItem }
+          : TState extends AnyReadonlyArray
+            ? { [TK in keyof TState]: TState[TK] | EmptyItem }
+            : TState extends AnyObjectLike
+              ? { [TK in keyof TState]?: PossibleStatePatch<TState[TK]> }
+              : TState;
 
 export const swirl = w(<TState>(state: TState, statePatch: PossibleStatePatch<TState>): TState => {
   return mergePatch(state, statePatch);

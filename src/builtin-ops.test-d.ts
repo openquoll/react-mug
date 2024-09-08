@@ -17,6 +17,7 @@ type AFn = (...args: boolean[]) => boolean;
 test('PossibleStatePatch', () => {
   interface AMugLike extends ObjectState {
     f: AFn;
+    nullable?: ObjectState;
     oa: ObjectState[];
     roa: readonly ObjectState[];
     ot: [ObjectState];
@@ -29,6 +30,7 @@ test('PossibleStatePatch', () => {
     s?: string;
     o?: { s?: string };
     f?: AFn;
+    nullable?: ObjectState;
     oa?: (ObjectState | EmptyItem)[];
     roa?: readonly (ObjectState | EmptyItem)[];
     ot?: [{ s?: string; o?: { s?: string } } | EmptyItem];

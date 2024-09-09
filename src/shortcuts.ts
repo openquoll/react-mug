@@ -23,7 +23,7 @@ export const _indexOf = 'indexOf';
 export const _splice = 'splice';
 
 export const _Error = Error;
-export const { captureStackTrace: _captureErrorStackTrace } = Error;
+export const { captureStackTrace: _captureErrorStackTrace } = _Error;
 
 export const _WeakMap = WeakMap;
 export const _Set = Set;

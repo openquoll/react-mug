@@ -1,4 +1,4 @@
-import { check, construction, Mug, MugError, swirl } from '../src';
+import { check, construction, Mug, MugError, nil, swirl } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
@@ -13,6 +13,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
 
   interface AState extends ObjectState {
     f: AFn;
+    no?: ObjectState['o'];
     na: number[];
     nt: [x: number, y: number, z: number];
     oa: ObjectState[];
@@ -140,7 +141,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
   });
 
-  describe(', first writes "the function field" with a different value', () => {
+  describe('e9ced33, first writes "the function field" with a different value', () => {
     let aStateBefore: AState, aStateAfter: AState;
 
     const newF = () => true;
@@ -153,7 +154,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
       aStateAfter = check(aMug);
     });
 
-    test('[verify] the field changes in ref and value', () => {
+    test('[verify] the field changes in ref, equals the new value in ref', () => {
       expect(aStateAfter.f).not.toBe(aStateBefore.f);
       expect(aStateAfter.f).toBe(newF);
     });
@@ -165,6 +166,37 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
           expect(aStateAfter[key]).toBe(aStateBefore[key]);
           expect(aStateAfter[key]).toStrictEqual(aStateBefore[key]);
         });
+    });
+  });
+
+  describe('456487d, first writes "the nullable object field" with a full-fledged value', () => {
+    test('[action, verify] the field changes in ref, equals the new value in ref and value', () => {
+      const newNo: ObjectState = { s: '97e', o: { s: '97e' } };
+
+      const aStateBefore = check(aMug);
+
+      swirl(aMug, { no: newNo });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.no).not.toBe(aStateBefore.no);
+      expect(aStateAfter.no).toBe(newNo);
+      expect(aStateAfter.no).toStrictEqual(newNo);
+    });
+  });
+
+  describe('2655a9f, writes "the nullable object field" with nil', () => {
+    test('[action, verify] the field changes in ref, is deleted', () => {
+      swirl(aMug, { no: { s: '802', o: { s: '802' } } });
+      const aStateBefore = check(aMug);
+      expect(aStateBefore).toMatchObject({ no: { s: '802', o: { s: '802' } } });
+
+      swirl(aMug, { no: nil });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.no).not.toBe(aStateBefore.no);
+      expect(aStateAfter).not.toHaveProperty('no');
     });
   });
 

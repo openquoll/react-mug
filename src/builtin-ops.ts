@@ -20,9 +20,15 @@ import {
 
 export const check = r(<TState>(state: TState): TState => state);
 
+export const nil = Symbol();
+
 function mergePatch(state: any, patch: any): any {
   if (isMug(patch)) {
     return state;
+  }
+
+  if (patch === nil) {
+    return undefined;
   }
 
   if (_is(state, patch)) {
@@ -37,7 +43,17 @@ function mergePatch(state: any, patch: any): any {
         if (isMug(patch[patchKey])) {
           return result;
         }
+
+        if (patch[patchKey] === nil) {
+          return result;
+        }
+
         result[patchKey] = patch[patchKey];
+        return result;
+      }
+
+      if (patch[patchKey] === nil) {
+        delete result[patchKey];
         return result;
       }
 
@@ -67,7 +83,17 @@ function mergePatch(state: any, patch: any): any {
         if (isMug(patch[i])) {
           continue;
         }
+
+        if (patch[i] === nil) {
+          continue;
+        }
+
         result[i] = patch[i];
+        continue;
+      }
+
+      if (patch[i] === nil) {
+        delete result[i];
         continue;
       }
 
@@ -87,9 +113,9 @@ function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-export type PossibleStatePatch<TState> = null extends TState
-  ? TState
-  : undefined extends TState
+export type PossibleStatePatch<TState> = undefined extends TState
+  ? TState | typeof nil
+  : null extends TState
     ? TState
     : TState extends AnyFunction
       ? TState

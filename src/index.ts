@@ -1,4 +1,4 @@
-export { PossibleStatePatch, check, swirl } from './builtin-ops';
+export { PossibleStatePatch, check, nil, swirl } from './builtin-ops';
 export {
   Mug,
   MugError,

@@ -9,7 +9,7 @@ import {
   State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
-import { _current, _forEach, _isArray } from '../shortcuts';
+import { _current, _false, _forEach, _isArray, _true } from '../shortcuts';
 import { AnyFunction, Post0Params } from '../type-utils';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
@@ -74,7 +74,7 @@ export function useOperator(
   const mugLikeRef = useRef(mugLike);
   const restArgsRef = useRef(restArgs);
 
-  const resultMadeRef = useRef(false);
+  const resultMadeRef = useRef(_false);
   const resultRef = useRef<any>();
 
   const [, setNuance] = useState(0);
@@ -97,20 +97,20 @@ export function useOperator(
   useMemo(() => {
     if (!resultMadeRef[_current]) {
       resultRef[_current] = makeResult();
-      resultMadeRef[_current] = true;
+      resultMadeRef[_current] = _true;
       return;
     }
 
-    let anyPropChanged = false;
+    let anyPropChanged = _false;
 
     if (!areEqualMugLikes(mugLikeRef[_current], mugLike)) {
       mugLikeRef[_current] = mugLike;
-      anyPropChanged = true;
+      anyPropChanged = _true;
     }
 
     if (!areEqualMugLikes(restArgsRef[_current], restArgs)) {
       restArgsRef[_current] = restArgs;
-      anyPropChanged = true;
+      anyPropChanged = _true;
     }
 
     if (!anyPropChanged) {

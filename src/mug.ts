@@ -4,6 +4,7 @@ import {
   _constructor,
   _createObject,
   _Error,
+  _false,
   _forEach,
   _getOwnPropertyNames,
   _getOwnPropertySymbols,
@@ -12,9 +13,12 @@ import {
   _is,
   _isArray,
   _length,
+  _null,
   _Object,
   _reduce,
   _setPrototypeOf,
+  _true,
+  _undefined,
 } from './shortcuts';
 import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './type-utils';
 
@@ -149,32 +153,32 @@ export class MugError extends _Error {
 export const isObjectLike = (o: any): boolean => typeof o === 'object' && o !== null;
 
 export const isPlainObject = (o: any): boolean =>
-  isObjectLike(o) && [_Object, undefined][_includes](o[_constructor]);
+  isObjectLike(o) && [_Object, _undefined][_includes](o[_constructor]);
 
 export const isClassDefinedObject = (o: any): boolean =>
-  isObjectLike(o) && !_isArray(o) && ![_Object, undefined][_includes](o[_constructor]);
+  isObjectLike(o) && !_isArray(o) && ![_Object, _undefined][_includes](o[_constructor]);
 
 export const isMug = (o: any): o is AnyMug => isObjectLike(o) && o[_hasOwnProperty](construction);
 
 export function isState(o: any): boolean {
   if (isMug(o)) {
-    return false;
+    return _false;
   }
 
   if (isPlainObject(o)) {
-    return ownKeysOfObjectLike(o)[_reduce]((result, key) => result && isState(o[key]), true);
+    return ownKeysOfObjectLike(o)[_reduce]((result, key) => result && isState(o[key]), _true);
   }
 
   if (_isArray(o)) {
-    return o[_reduce]((result, value) => result && isState(value), true);
+    return o[_reduce]((result, value) => result && isState(value), _true);
   }
 
-  return true;
+  return _true;
 }
 
 export function areEqualMugLikes(a: any, b: any): boolean {
   if (_is(a, b)) {
-    return true;
+    return _true;
   }
 
   if (isMug(a) && isMug(b)) {
@@ -187,19 +191,19 @@ export function areEqualMugLikes(a: any, b: any): boolean {
       const keyInB = b[_hasOwnProperty](key);
 
       if (!keyInA || !keyInB) {
-        return false;
+        return _false;
       }
 
       return result && areEqualMugLikes(a[key], b[key]);
-    }, true);
+    }, _true);
   }
 
   if (_isArray(a) && _isArray(b)) {
     if (a[_length] !== b[_length]) {
-      return false;
+      return _false;
     }
 
-    let result = true;
+    let result = _true;
     for (let i = 0, n = a[_length]; i < n; i++) {
       const indexInA = a[_hasOwnProperty](i);
       const indexInB = b[_hasOwnProperty](i);
@@ -209,7 +213,7 @@ export function areEqualMugLikes(a: any, b: any): boolean {
       }
 
       if (!indexInA || !indexInB) {
-        result = false;
+        result = _false;
         break;
       }
 
@@ -218,7 +222,7 @@ export function areEqualMugLikes(a: any, b: any): boolean {
     return result;
   }
 
-  return false;
+  return _false;
 }
 
 export function assignConservatively(mugLike: any, input: any): any {
@@ -232,23 +236,23 @@ export function assignConservatively(mugLike: any, input: any): any {
 
   if (isPlainObject(mugLike) && isPlainObject(input)) {
     const result = emptyCloneOfPlainObject(mugLike);
-    let allFieldsFromMugLike = true;
-    let allFieldsFromInput = true;
+    let allFieldsFromMugLike = _true;
+    let allFieldsFromInput = _true;
     ownKeysOfObjectLike(_assignObject({}, mugLike, input))[_forEach]((key) => {
       const keyInMugLike = mugLike[_hasOwnProperty](key);
       const keyInInput = input[_hasOwnProperty](key);
 
       if (keyInMugLike && !keyInInput) {
-        allFieldsFromMugLike = false;
+        allFieldsFromMugLike = _false;
         return;
       }
 
       if (!keyInMugLike && keyInInput) {
         if (isMug(input[key])) {
-          allFieldsFromInput = false;
+          allFieldsFromInput = _false;
           return;
         }
-        allFieldsFromMugLike = false;
+        allFieldsFromMugLike = _false;
         result[key] = input[key];
         return;
       }
@@ -256,11 +260,11 @@ export function assignConservatively(mugLike: any, input: any): any {
       result[key] = assignConservatively(mugLike[key], input[key]);
 
       if (!_is(mugLike[key], result[key])) {
-        allFieldsFromMugLike = false;
+        allFieldsFromMugLike = _false;
       }
 
       if (!_is(input[key], result[key])) {
-        allFieldsFromInput = false;
+        allFieldsFromInput = _false;
       }
     });
 
@@ -279,7 +283,7 @@ export function assignConservatively(mugLike: any, input: any): any {
     const result: any[] = [];
     result[_length] = input[_length];
     let allItemsFromMugLike = mugLike[_length] === result[_length];
-    let allItemsFromInput = true;
+    let allItemsFromInput = _true;
     for (let i = 0, n = result[_length]; i < n; i++) {
       const indexInMugLike = mugLike[_hasOwnProperty](i);
       const indexInInput = input[_hasOwnProperty](i);
@@ -289,16 +293,16 @@ export function assignConservatively(mugLike: any, input: any): any {
       }
 
       if (indexInMugLike && !indexInInput) {
-        allItemsFromMugLike = false;
+        allItemsFromMugLike = _false;
         continue;
       }
 
       if (!indexInMugLike && indexInInput) {
         if (isMug(input[i])) {
-          allItemsFromInput = false;
+          allItemsFromInput = _false;
           continue;
         }
-        allItemsFromMugLike = false;
+        allItemsFromMugLike = _false;
         result[i] = input[i];
         continue;
       }
@@ -306,11 +310,11 @@ export function assignConservatively(mugLike: any, input: any): any {
       result[i] = assignConservatively(mugLike[i], input[i]);
 
       if (!_is(mugLike[i], result[i])) {
-        allItemsFromMugLike = false;
+        allItemsFromMugLike = _false;
       }
 
       if (!_is(input[i], result[i])) {
-        allItemsFromInput = false;
+        allItemsFromInput = _false;
       }
     }
 
@@ -329,7 +333,7 @@ export function assignConservatively(mugLike: any, input: any): any {
 }
 
 export const emptyCloneOfPlainObject = (o: any): any =>
-  _createObject(o[_constructor]?.prototype ?? null);
+  _createObject(o[_constructor]?.prototype ?? _null);
 
 export const shallowCloneOfPlainObject = (o: any): any =>
   ownKeysOfObjectLike(o)[_reduce]((r, key) => {

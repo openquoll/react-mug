@@ -88,6 +88,18 @@ test('r', () => {
 
   // =-=-=
 
+  const read51c = r(<TState extends ObjectState>(state: TState): ObjectState => {
+    return state;
+  });
+
+  const r026 = read51c(fake<AState>());
+  expectType<ObjectState>(r026);
+
+  // @ts-expect-error
+  writed09(fake<{ s: string }>());
+
+  // =-=-=
+
   const read23e = r((aState: AState, s: string): ObjectState => {
     return aState.potentialMuggyObject;
   });
@@ -154,6 +166,18 @@ test('w', () => {
 
   // @ts-expect-error
   write8e6(fake<AState>(), fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const writed09 = w(<TState extends ObjectState>(state: TState): TState => {
+    return state;
+  });
+
+  const rb1e = writed09(fake<AState>());
+  expectType<AState>(rb1e);
+
+  // @ts-expect-error
+  writed09(fake<{ s: string }>());
 
   // =-=-=
 

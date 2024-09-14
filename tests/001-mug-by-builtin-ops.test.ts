@@ -1,4 +1,4 @@
-import { check, construction, Mug, MugError, nil, swirl } from '../src';
+import { check, construction, Mug, MugError, swirl, none } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
@@ -185,18 +185,33 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
   });
 
-  describe('2655a9f, writes "the nullable object field" with nil', () => {
-    test('[action, verify] the field changes in ref, is deleted', () => {
-      swirl(aMug, { no: { s: '802', o: { s: '802' } } });
+  describe('629d427, writes "the nullable object field" with undefined', () => {
+    test('[action, verify] the field stay unchanged in ref and value', () => {
+      swirl(aMug, { no: { s: '880' } });
       const aStateBefore = check(aMug);
-      expect(aStateBefore).toMatchObject({ no: { s: '802', o: { s: '802' } } });
+      expect(aStateBefore).toMatchObject({ no: { s: '880' } });
 
-      swirl(aMug, { no: nil });
+      swirl(aMug, { no: undefined });
+
+      const aStateAfter = check(aMug);
+
+      expect(aStateAfter.no).toBe(aStateBefore.no);
+      expect(aStateAfter.no).toStrictEqual(aStateBefore.no);
+    });
+  });
+
+  describe('2655a9f, writes "the nullable object field" with none', () => {
+    test('[action, verify] the field changes in ref, becomes undefined', () => {
+      swirl(aMug, { no: { s: '802' } });
+      const aStateBefore = check(aMug);
+      expect(aStateBefore).toMatchObject({ no: { s: '802' } });
+
+      swirl(aMug, { no: none });
 
       const aStateAfter = check(aMug);
 
       expect(aStateAfter.no).not.toBe(aStateBefore.no);
-      expect(aStateAfter).not.toHaveProperty('no');
+      expect(aStateAfter.no).toBe(undefined);
     });
   });
 

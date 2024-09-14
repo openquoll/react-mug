@@ -1,5 +1,5 @@
 import {
-  AnyMug,
+  construction,
   isClassDefinedObject,
   isMug,
   isObjectLike,
@@ -9,7 +9,15 @@ import {
   State,
 } from './mug';
 import { r, w } from './rw';
-import { _constructor, _hasOwnProperty, _is, _isArray, _length, _reduce } from './shortcuts';
+import {
+  _constructor,
+  _hasOwnProperty,
+  _is,
+  _isArray,
+  _length,
+  _reduce,
+  _undefined,
+} from './shortcuts';
 import {
   AnyFunction,
   AnyObjectLike,
@@ -20,15 +28,19 @@ import {
 
 export const check = r(<TState>(state: TState): TState => state);
 
-export const nil = Symbol();
+export const none = Symbol();
 
 function mergePatch(state: any, patch: any): any {
   if (isMug(patch)) {
     return state;
   }
 
-  if (patch === nil) {
-    return undefined;
+  if (patch === none) {
+    return _undefined;
+  }
+
+  if (patch === _undefined) {
+    return state;
   }
 
   if (_is(state, patch)) {
@@ -44,16 +56,12 @@ function mergePatch(state: any, patch: any): any {
           return result;
         }
 
-        if (patch[patchKey] === nil) {
+        if (patch[patchKey] === none) {
+          result[patchKey] = _undefined;
           return result;
         }
 
         result[patchKey] = patch[patchKey];
-        return result;
-      }
-
-      if (patch[patchKey] === nil) {
-        delete result[patchKey];
         return result;
       }
 
@@ -84,16 +92,12 @@ function mergePatch(state: any, patch: any): any {
           continue;
         }
 
-        if (patch[i] === nil) {
+        if (patch[i] === none) {
+          result[i] = _undefined;
           continue;
         }
 
         result[i] = patch[i];
-        continue;
-      }
-
-      if (patch[i] === nil) {
-        delete result[i];
         continue;
       }
 
@@ -113,26 +117,24 @@ function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-export type PossibleStatePatch<TState> = undefined extends TState
-  ? TState | typeof nil
-  : null extends TState
-    ? TState
-    : TState extends AnyFunction
-      ? TState
-      : TState extends AnyMug
-        ? never
-        : TState extends AnyReadonlyTuple
-          ? { [TK in keyof TState]: PossibleStatePatch<TState[TK]> | EmptyItem }
-          : TState extends AnyReadonlyArray
-            ? { [TK in keyof TState]: TState[TK] | EmptyItem }
-            : TState extends AnyObjectLike
-              ? { [TK in keyof TState]?: PossibleStatePatch<TState[TK]> }
-              : TState;
+type PossiblePatchOfNonNullable<TMugLike> = TMugLike extends AnyFunction
+  ? TMugLike
+  : TMugLike extends { [construction]: infer TConstruction }
+    ? PossiblePatch<TConstruction>
+    : TMugLike extends AnyReadonlyTuple
+      ? { [TK in keyof TMugLike]: PossiblePatch<TMugLike[TK]> | EmptyItem }
+      : TMugLike extends AnyReadonlyArray
+        ? { [TK in keyof TMugLike]?: State<TMugLike[TK]> }
+        : TMugLike extends AnyObjectLike
+          ? { [TK in keyof TMugLike]?: PossiblePatch<TMugLike[TK]> }
+          : TMugLike;
 
-export const swirl = w(
-  <TState>(state: TState, statePatch: PossibleStatePatch<TState>): TState =>
-    mergePatch(state, statePatch),
-) as <TMugLike, TPatch extends PossibleStatePatch<State<TMugLike>>>(
-  mugLike: TMugLike,
-  patch: TPatch,
-) => TMugLike;
+export type PossiblePatch<TMugLike> = undefined extends TMugLike
+  ? State<NonNullable<TMugLike>> | undefined | typeof none
+  : null extends TMugLike
+    ? State<NonNullable<TMugLike>> | null
+    : PossiblePatchOfNonNullable<TMugLike>;
+
+type Swirl = <TMugLike>(mugLike: TMugLike, patch: PossiblePatch<NoInfer<TMugLike>>) => TMugLike;
+
+export const swirl = w((state: any, patch: any) => mergePatch(state, patch)) as Swirl;

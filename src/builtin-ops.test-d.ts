@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { fake, from } from '../tests/type-utils';
-import { nil, PossibleStatePatch, swirl } from './builtin-ops';
+import { PossiblePatch, swirl, none } from './builtin-ops';
 import { Mug, MugLike, PossibleMugLike } from './mug';
 import { EmptyItem } from './type-utils';
 
@@ -14,7 +14,7 @@ interface ObjectState {
 
 type AFn = (...args: boolean[]) => boolean;
 
-test('PossibleStatePatch', () => {
+test('PossiblePatch', () => {
   interface AMugLike extends ObjectState {
     f: AFn;
     no?: ObjectState['o'];
@@ -25,17 +25,17 @@ test('PossibleStatePatch', () => {
     muggyObject: Mug<ObjectState>;
   }
 
-  type R314 = PossibleStatePatch<AMugLike>;
+  type R314 = PossiblePatch<AMugLike>;
   expectType<{
     s?: string;
     o?: { s?: string };
     f?: AFn;
-    no?: ObjectState['o'] | typeof nil;
+    no?: ObjectState['o'] | typeof none;
     oa?: (ObjectState | EmptyItem)[];
     roa?: readonly (ObjectState | EmptyItem)[];
     ot?: [{ s?: string; o?: { s?: string } } | EmptyItem];
     rot?: readonly [{ s?: string; o?: { s?: string } } | EmptyItem];
-    muggyObject?: EmptyItem;
+    muggyObject?: { s?: string; o?: { s?: string } };
   }>(from<R314>());
 });
 
@@ -44,7 +44,7 @@ test('swirl', () => {
     potentialMuggyObject: ObjectState;
   }
 
-  const patch = { potentialMuggyObject: { o: { s: 'sdf' } } };
+  const patch = { potentialMuggyObject: { o: { s: 'asd' } } };
 
   const r73a = swirl(fake<AState>(), patch);
   expectType<AState>(r73a);
@@ -61,11 +61,14 @@ test('swirl', () => {
   const rb02 = swirl(fake<PossibleMugLike<AState>>(), patch);
   expectType<PossibleMugLike<AState>>(rb02);
 
-  const r9fa = swirl(fake<ObjectState>(), { o: { s: 'sdf' } });
+  const r9fa = swirl(fake<ObjectState>(), { o: { s: 'asd' } });
   expectType<ObjectState>(r9fa);
 
   // @ts-expect-error
-  swirl(fake<AState>(), { n: 237 });
+  swirl(fake<AState>(), { n: 300 });
+
+  // @ts-expect-error
+  swirl(fake<AState>(), { s: 'asd', n: 300 });
 
   // @ts-expect-error
   swirl(fake<AState>());

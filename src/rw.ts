@@ -210,12 +210,10 @@ export function w<TWriteFn extends (...args: any) => Param0<TWriteFn>>(
   writeFn: TWriteFn,
 ): TWriteFn extends () => any
   ? <TMugLike extends PossibleMugLike<ReturnType<TWriteFn>>>(mugLike?: TMugLike) => TMugLike
-  : TWriteFn extends <TState>(state: TState, ...restArgs: any) => TState
-    ? <TMugLike>(mugLike: TMugLike, ...restArgs: Post0Params<TWriteFn>) => TMugLike
-    : <TMugLike extends PossibleMugLike<Param0<TWriteFn>>>(
-        mugLike: TMugLike,
-        ...restArgs: Post0Params<TWriteFn>
-      ) => TMugLike;
+  : <TMugLike extends PossibleMugLike<Param0<TWriteFn>>>(
+      mugLike: TMugLike,
+      ...restArgs: Post0Params<TWriteFn>
+    ) => TMugLike;
 export function w(writeFn: (state: any, ...restArgs: any) => any) {
   return (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.

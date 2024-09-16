@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import { check, construction, Mug, MugLike, PossibleMugLike, r, useOperator } from '../src';
+import { check, construction, Mug, MugLike, PossibleMugLike, r, useIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('229a728, react renders on hook param changes', () => {
@@ -50,7 +50,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const AComponent = jest.fn(({ readOp }: Props) => {
-      const hookReturn = useOperator(readOp, aMug);
+      const hookReturn = useIt(readOp, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -168,7 +168,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const AComponent = jest.fn(({ mugLike }: Props) => {
-      const hookReturn = useOperator(readOp, mugLike);
+      const hookReturn = useIt(readOp, mugLike);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -1161,7 +1161,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const AComponent = jest.fn(({ extra }: Props) => {
-      const hookReturn = useOperator(readOp, aMug, extra);
+      const hookReturn = useIt(readOp, aMug, extra);
       tapHookReturn(hookReturn);
       return <div />;
     });

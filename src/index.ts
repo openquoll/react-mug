@@ -9,6 +9,6 @@ export {
   State,
   construction,
 } from './mug';
-export { useOperator } from './react-integration';
+export { useIt } from './react-integration';
 export { r, w } from './rw';
 export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';

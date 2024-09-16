@@ -16,9 +16,7 @@ interface AState extends ObjectState {
 }
 
 test('r', () => {
-  const readbf7 = r(<TState>(state: TState): TState => {
-    return state;
-  });
+  const readbf7 = r(<TState>(state: TState): TState => state);
 
   const r992 = readbf7(fake<AState>());
   expectType<AState>(r992);
@@ -44,9 +42,7 @@ test('r', () => {
 
   // =-=-=
 
-  const readebe = r(<TState>(state: TState, s: string): TState => {
-    return state;
-  });
+  const readebe = r(<TState>(state: TState, s: string): TState => state);
 
   readebe(fake<AState>(), fake<string>());
 
@@ -61,9 +57,7 @@ test('r', () => {
 
   // =-=-=
 
-  const readc82 = r((aState: AState): ObjectState => {
-    return aState.potentialMuggyObject;
-  });
+  const readc82 = r((aState: AState) => fake<ObjectState>());
 
   const rd57 = readc82(fake<AState>());
   expectType<ObjectState>(rd57);
@@ -88,9 +82,7 @@ test('r', () => {
 
   // =-=-=
 
-  const read51c = r(<TState extends ObjectState>(state: TState): ObjectState => {
-    return state;
-  });
+  const read51c = r(<TState extends ObjectState>(state: TState) => fake<ObjectState>());
 
   const r026 = read51c(fake<AState>());
   expectType<ObjectState>(r026);
@@ -117,7 +109,7 @@ test('r', () => {
 
   // =-=-=
 
-  const readc5d = r((): number => 677);
+  const readc5d = r(() => fake<number>());
   expectType<number>(readc5d());
 
   // @ts-expect-error
@@ -125,9 +117,7 @@ test('r', () => {
 });
 
 test('w', () => {
-  const write73d = w(<TState>(state: TState): TState => {
-    return state;
-  });
+  const write73d = w(<TState>(state: TState): TState => state);
 
   const r022 = write73d(fake<AState>());
   expectType<AState>(r022);
@@ -152,9 +142,7 @@ test('w', () => {
 
   // =-=-=
 
-  const write8e6 = w(<TState>(state: TState, s: string): TState => {
-    return state;
-  });
+  const write8e6 = w(<TState>(state: TState, s: string): TState => state);
 
   write8e6(fake<AState>(), fake<string>());
 
@@ -169,9 +157,7 @@ test('w', () => {
 
   // =-=-=
 
-  const writed09 = w(<TState extends ObjectState>(state: TState): TState => {
-    return state;
-  });
+  const writed09 = w(<TState extends ObjectState>(state: TState): TState => state);
 
   const rb1e = writed09(fake<AState>());
   expectType<AState>(rb1e);
@@ -181,9 +167,7 @@ test('w', () => {
 
   // =-=-=
 
-  const writecdd = w((aState: AState): AState => {
-    return aState;
-  });
+  const writecdd = w((aState: AState) => aState);
 
   const r2cb = writecdd(fake<AState>());
   expectType<AState>(r2cb);
@@ -208,9 +192,7 @@ test('w', () => {
 
   // =-=-=
 
-  const write692 = w((aState: AState, s: string): AState => {
-    return aState;
-  });
+  const write692 = w((aState: AState, s: string) => aState);
 
   write692(fake<AState>(), fake<string>());
 
@@ -221,11 +203,11 @@ test('w', () => {
   write692(fake<AState>(), fake<number>());
 
   // @ts-expect-error
-  write692(fake<AState>(), fake<string>(), fake<string>());
+  write692(fake<AState>(), fake<string>(), fake<any>());
 
   // =-=-=
 
-  const write181 = w((): number => 842);
+  const write181 = w(() => fake<number>());
   expectType<number>(write181());
   expectType<number>(write181(fake<number>()));
   expectType<Mug<number>>(write181(fake<Mug<number>>()));
@@ -236,5 +218,5 @@ test('w', () => {
   // =-=-=
 
   // @ts-expect-error
-  w((aState: AState): ObjectState => aState.potentialMuggyObject);
+  w((aState: AState) => fake<ObjectState>());
 });

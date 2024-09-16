@@ -56,16 +56,16 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 }
 
-export function useOperator<TReadOp extends () => any>(readOp: TReadOp): ReturnType<TReadOp>;
-export function useOperator<
+export function useIt<TReadOp extends () => any>(readOp: TReadOp): ReturnType<TReadOp>;
+export function useIt<
   TReadOp extends <TMugLike>(mugLike: TMugLike, ...restArgs: any) => State<TMugLike>,
   TMugLike,
 >(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
-export function useOperator<TReadOp extends AnyFunction>(
+export function useIt<TReadOp extends AnyFunction>(
   readOp: TReadOp,
   ...readOpParams: Parameters<TReadOp>
 ): ReturnType<TReadOp>;
-export function useOperator(
+export function useIt(
   readOp: (mugLike: any, ...restArgs: any) => any,
   mugLike?: any,
   ...restArgs: any

@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { fake, from } from '../tests/type-utils';
-import { PossiblePatch, swirl, none } from './builtin-ops';
+import { none, PossiblePatch, swirl } from './builtin-ops';
 import { Mug, MugLike, PossibleMugLike } from './mug';
 import { EmptyItem } from './type-utils';
 
@@ -44,7 +44,7 @@ test('swirl', () => {
     potentialMuggyObject: ObjectState;
   }
 
-  const patch = { potentialMuggyObject: { o: { s: 'asd' } } };
+  const patch = { potentialMuggyObject: { o: { s: fake<string>() } } };
 
   const r73a = swirl(fake<AState>(), patch);
   expectType<AState>(r73a);
@@ -61,14 +61,14 @@ test('swirl', () => {
   const rb02 = swirl(fake<PossibleMugLike<AState>>(), patch);
   expectType<PossibleMugLike<AState>>(rb02);
 
-  const r9fa = swirl(fake<ObjectState>(), { o: { s: 'asd' } });
+  const r9fa = swirl(fake<ObjectState>(), { o: { s: fake<string>() } });
   expectType<ObjectState>(r9fa);
 
   // @ts-expect-error
-  swirl(fake<AState>(), { n: 300 });
+  swirl(fake<AState>(), { n: fake<number>() });
 
   // @ts-expect-error
-  swirl(fake<AState>(), { s: 'asd', n: 300 });
+  swirl(fake<AState>(), { s: fake<string>(), n: fake<number>() });
 
   // @ts-expect-error
   swirl(fake<AState>());

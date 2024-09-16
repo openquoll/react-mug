@@ -23,6 +23,7 @@ export const _forEach = 'forEach';
 export const _map = 'map';
 export const _reduce = 'reduce';
 export const _push = 'push';
+export const _slice = 'slice';
 export const _includes = 'includes';
 export const _indexOf = 'indexOf';
 export const _splice = 'splice';

@@ -20,6 +20,13 @@ test('upon/flat', () => {
 
   const [w, r, swirlA, checkA] = upon(fake<ANestedMug>());
 
+  const uponA = upon(fake<ANestedMug>());
+
+  expectType<typeof w>(uponA.w);
+  expectType<typeof r>(uponA.r);
+  expectType<typeof swirlA>(uponA.swirl);
+  expectType<typeof checkA>(uponA.check);
+
   // =-=-=
 
   const write30d = w((state) => {

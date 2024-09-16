@@ -57,7 +57,7 @@ test('r', () => {
 
   // =-=-=
 
-  const readc82 = r((aState: AState) => fake<ObjectState>());
+  const readc82 = r((state: AState) => fake<ObjectState>());
 
   const rd57 = readc82(fake<AState>());
   expectType<ObjectState>(rd57);
@@ -92,9 +92,7 @@ test('r', () => {
 
   // =-=-=
 
-  const read23e = r((aState: AState, s: string): ObjectState => {
-    return aState.potentialMuggyObject;
-  });
+  const read23e = r((state: AState, s: string) => fake<ObjectState>());
 
   read23e(fake<AState>(), fake<string>());
 
@@ -167,7 +165,7 @@ test('w', () => {
 
   // =-=-=
 
-  const writecdd = w((aState: AState) => aState);
+  const writecdd = w((state: AState) => state);
 
   const r2cb = writecdd(fake<AState>());
   expectType<AState>(r2cb);
@@ -192,7 +190,7 @@ test('w', () => {
 
   // =-=-=
 
-  const write692 = w((aState: AState, s: string) => aState);
+  const write692 = w((state: AState, s: string) => state);
 
   write692(fake<AState>(), fake<string>());
 
@@ -218,5 +216,5 @@ test('w', () => {
   // =-=-=
 
   // @ts-expect-error
-  w((aState: AState) => fake<ObjectState>());
+  w((state: AState) => fake<ObjectState>());
 });

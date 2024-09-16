@@ -9,7 +9,8 @@ import {
   State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
-import { _current, _false, _forEach, _isArray, _true } from '../shortcuts';
+import { _current, _false, _forEach, _isArray, _slice, _true } from '../shortcuts';
+import { internalMugLike, internalOp } from '../sugar';
 import { AnyFunction, Post0Params } from '../type-utils';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
@@ -56,21 +57,28 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 }
 
-export function useIt<TReadOp extends () => any>(readOp: TReadOp): ReturnType<TReadOp>;
+export function useIt<TRead extends () => any>(read: TRead): ReturnType<TRead>;
 export function useIt<
-  TReadOp extends <TMugLike>(mugLike: TMugLike, ...restArgs: any) => State<TMugLike>,
+  TRead extends <TMugLike>(mugLike: TMugLike, ...restArgs: any) => State<TMugLike>,
   TMugLike,
->(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
-export function useIt<TReadOp extends AnyFunction>(
-  readOp: TReadOp,
-  ...readOpParams: Parameters<TReadOp>
-): ReturnType<TReadOp>;
+>(read: TRead, mugLike: TMugLike, ...restArgs: Post0Params<TRead>): State<TMugLike>;
+export function useIt<TRead extends AnyFunction>(
+  read: TRead,
+  ...readArgs: Parameters<TRead>
+): ReturnType<TRead>;
 export function useIt(
-  readOp: (mugLike: any, ...restArgs: any) => any,
-  mugLike?: any,
-  ...restArgs: any
+  read: {
+    (...args: any): any;
+    [internalOp]?: any;
+    [internalMugLike]?: any;
+  },
+  ...readArgs: any
 ): any {
-  const readOpRef = useRef(readOp);
+  const [mugLike, restArgs] = read[internalMugLike]
+    ? [read[internalMugLike], readArgs]
+    : [readArgs[0], readArgs[_slice](1)];
+
+  const readOpRef = useRef(read[internalOp] ?? read);
   const mugLikeRef = useRef(mugLike);
   const restArgsRef = useRef(restArgs);
 

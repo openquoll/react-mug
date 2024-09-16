@@ -3,6 +3,7 @@ import { expectAssignable, expectType } from 'tsd';
 import { fake, from } from '../../tests/type-utils';
 import { Mug, MugLike, PossibleMugLike } from '../mug';
 import { r } from '../rw';
+import { upon } from '../sugar';
 import { useIt } from './useIt';
 
 interface ObjectState {
@@ -58,7 +59,7 @@ test('useIt', () => {
 
   // =-=-=
 
-  const read198 = r((aState: AState) => fake<ObjectState>());
+  const read198 = r((state: AState) => fake<ObjectState>());
 
   const r760 = useIt(read198, fake<AState>());
   expectType<ObjectState>(r760);
@@ -83,7 +84,7 @@ test('useIt', () => {
 
   // =-=-=
 
-  const readdbb = r((aState: AState, s: string) => fake<ObjectState>());
+  const readdbb = r((state: AState, s: string) => fake<ObjectState>());
 
   useIt(readdbb, fake<AState>(), fake<string>());
 
@@ -103,4 +104,22 @@ test('useIt', () => {
 
   // @ts-expect-error
   useIt(read81f, fake<any>());
+
+  // =-=-=
+
+  const uponA = upon(fake<Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
+
+  const read4be = uponA.r((state, s: string) => fake<ObjectState>());
+
+  const rd12 = useIt(read4be, fake<string>());
+  expectType<ObjectState>(rd12);
+
+  // @ts-expect-error
+  useIt(read4be);
+
+  // @ts-expect-error
+  useIt(read4be, fake<number>());
+
+  // @ts-expect-error
+  useIt(read4be, fake<string>(), fake<any>());
 });

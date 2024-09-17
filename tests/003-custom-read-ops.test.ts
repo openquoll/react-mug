@@ -37,7 +37,7 @@ describe('dd10061, operates by an object state custom read op', () => {
     let fnParamState1: AState, fnParamState2: AState;
     let fnParamExtra1: Pick<ObjectState, 'o'>, fnParamExtra2: Pick<ObjectState, 'o'>;
     let fnReturn1: Pick<ObjectState, 'o'>, fnReturn2: Pick<ObjectState, 'o'>;
-    let finalReturn1: Pick<ObjectState, 'o'>, finalReturn2: Pick<ObjectState, 'o'>;
+    let opReturn1: Pick<ObjectState, 'o'>, opReturn2: Pick<ObjectState, 'o'>;
 
     /**
      * Required variables:
@@ -45,7 +45,7 @@ describe('dd10061, operates by an object state custom read op', () => {
      * - opParamState1, opParamState2
      * - opParamExtra1, opParamExtra2
      * - opReturn1, opReturn2,
-     * - finalReturn1, finalReturn2
+     * - opReturn1, opReturn2
      */
     function sharedVerifyCases() {
       test('[verify] the first fn-param state and its fields equal the checked state and its fields in ref and value', () => {
@@ -80,26 +80,26 @@ describe('dd10061, operates by an object state custom read op', () => {
         expect(fnParamExtra2).toStrictEqual(fnParamExtra1);
       });
 
-      test('[verify] the final return and its fields keep equal to the fn return and its fields in ref and value', () => {
-        expect(finalReturn1).toBe(fnReturn1);
+      test('[verify] the op return and its fields keep equal to the fn return and its fields in ref and value', () => {
+        expect(opReturn1).toBe(fnReturn1);
         ownKeysOfObjectLike(fnReturn1).forEach((key) => {
-          expect(finalReturn1[key]).toBe(fnReturn1[key]);
+          expect(opReturn1[key]).toBe(fnReturn1[key]);
         });
-        expect(finalReturn1).toStrictEqual(fnReturn1);
+        expect(opReturn1).toStrictEqual(fnReturn1);
 
-        expect(finalReturn2).toBe(fnReturn2);
+        expect(opReturn2).toBe(fnReturn2);
         ownKeysOfObjectLike(fnReturn2).forEach((key) => {
-          expect(finalReturn2[key]).toBe(fnReturn2[key]);
+          expect(opReturn2[key]).toBe(fnReturn2[key]);
         });
-        expect(finalReturn2).toStrictEqual(fnReturn2);
+        expect(opReturn2).toStrictEqual(fnReturn2);
       });
 
-      test('[verify] the final return and its fields change in ref but not in value', () => {
-        expect(finalReturn2).not.toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).not.toBe(finalReturn1[key]);
+      test('[verify] the op return and its fields change in ref but not in value', () => {
+        expect(opReturn2).not.toBe(opReturn1);
+        ownKeysOfObjectLike(opReturn1).forEach((key) => {
+          expect(opReturn2[key]).not.toBe(opReturn1[key]);
         });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
+        expect(opReturn2).toStrictEqual(opReturn1);
       });
     }
 
@@ -120,12 +120,12 @@ describe('dd10061, operates by an object state custom read op', () => {
       test('[action]', () => {
         checkedAState = check(aState);
 
-        finalReturn1 = customReadOp(aState, extra);
+        opReturn1 = customReadOp(aState, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        finalReturn2 = customReadOp(aState, extra);
+        opReturn2 = customReadOp(aState, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -161,12 +161,12 @@ describe('dd10061, operates by an object state custom read op', () => {
       test('[action]', () => {
         checkedAState = check(aMug);
 
-        finalReturn1 = customReadOp(aMug, extra);
+        opReturn1 = customReadOp(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        finalReturn2 = customReadOp(aMug, extra);
+        opReturn2 = customReadOp(aMug, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -208,12 +208,12 @@ describe('dd10061, operates by an object state custom read op', () => {
           potentialMuggyObject: { s: 'sdf' },
         });
 
-        finalReturn1 = customReadOp(aMug, extra);
+        opReturn1 = customReadOp(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        finalReturn2 = customReadOp(aMug, extra);
+        opReturn2 = customReadOp(aMug, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -244,12 +244,12 @@ describe('dd10061, operates by an object state custom read op', () => {
         checkedAState = check(aMugLike);
         checkedObjectState = check(objectMug);
 
-        finalReturn1 = customReadOp(aMugLike, extra);
+        opReturn1 = customReadOp(aMugLike, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        finalReturn2 = customReadOp(aMugLike, extra);
+        opReturn2 = customReadOp(aMugLike, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -316,12 +316,12 @@ describe('dd10061, operates by an object state custom read op', () => {
         checkedObjectState = check(objectMug);
         expect(checkedObjectState).toMatchObject({ s: 'sdf' });
 
-        finalReturn1 = customReadOp(aMugLike, extra);
+        opReturn1 = customReadOp(aMugLike, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        finalReturn2 = customReadOp(aMugLike, extra);
+        opReturn2 = customReadOp(aMugLike, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -373,7 +373,7 @@ describe('dd10061, operates by an object state custom read op', () => {
         potentialMuggyObject: objectMug,
       };
 
-      test('[action, verify] the final return and its fields stay unchanged in ref and value', () => {
+      test('[action, verify] the op return and its fields stay unchanged in ref and value', () => {
         swirl(aMugLike, {
           potentialMuggyObject: { s: 'sdf' },
         });
@@ -384,15 +384,15 @@ describe('dd10061, operates by an object state custom read op', () => {
         const checkedObjectState = check(objectMug);
         expect(checkedObjectState).toMatchObject({ s: 'sdf' });
 
-        const finalReturn1 = customReadOp(aMugLike);
+        const opReturn1 = customReadOp(aMugLike);
 
-        const finalReturn2 = customReadOp(aMugLike);
+        const opReturn2 = customReadOp(aMugLike);
 
-        expect(finalReturn2).toBe(finalReturn1);
-        ownKeysOfObjectLike(finalReturn1).forEach((key) => {
-          expect(finalReturn2[key]).toBe(finalReturn1[key]);
+        expect(opReturn2).toBe(opReturn1);
+        ownKeysOfObjectLike(opReturn1).forEach((key) => {
+          expect(opReturn2[key]).toBe(opReturn1[key]);
         });
-        expect(finalReturn2).toStrictEqual(finalReturn1);
+        expect(opReturn2).toStrictEqual(opReturn1);
       });
     });
   });

@@ -63,17 +63,17 @@ class ValueStabilizer {
   public static readonly _ForMugLikeRead = new ValueStabilizer();
 }
 
-class MugLikeReadAction {
+class MugLikeReadTask {
   private _readingMugLikes = new _Set();
 
-  public _apply(mugLike: any): any {
+  public _run(mugLike: any): any {
     if (this._readingMugLikes[_has](mugLike)) {
       throw new MugError(errMsgCircularReferencedMugFound);
     }
 
     if (isMug(mugLike)) {
       this._readingMugLikes[_add](mugLike);
-      const state = this._apply(rawStateStore._getRawState(mugLike));
+      const state = this._run(rawStateStore._getRawState(mugLike));
       this._readingMugLikes[_delete](mugLike);
 
       return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
@@ -86,7 +86,7 @@ class MugLikeReadAction {
     if (isPlainObject(mugLike)) {
       this._readingMugLikes[_add](mugLike);
       const state = ownKeysOfObjectLike(mugLike)[_reduce]((result, key) => {
-        result[key] = this._apply(mugLike[key]);
+        result[key] = this._run(mugLike[key]);
         return result;
       }, emptyCloneOfPlainObject(mugLike));
       this._readingMugLikes[_delete](mugLike);
@@ -96,7 +96,7 @@ class MugLikeReadAction {
 
     if (_isArray(mugLike)) {
       this._readingMugLikes[_add](mugLike);
-      const state = mugLike[_map]((mugLikeItem) => this._apply(mugLikeItem));
+      const state = mugLike[_map]((mugLikeItem) => this._run(mugLikeItem));
       this._readingMugLikes[_delete](mugLike);
 
       return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
@@ -110,11 +110,11 @@ class MugLikeReadAction {
   }
 }
 
-class MugLikeWriteAction {
+class MugLikeWriteTask {
   private _writtenMugs = new _Set();
   private _writingMugLikes = new _Set();
 
-  public _apply(mugLike: any, input: any): void {
+  public _run(mugLike: any, input: any): void {
     if (this._writingMugLikes[_has](mugLike)) {
       throw new MugError(errMsgCircularReferencedMugFound);
     }
@@ -125,7 +125,7 @@ class MugLikeWriteAction {
 
     if (isMug(mugLike)) {
       this._writingMugLikes[_add](mugLike);
-      this._apply(mugLike[construction], input);
+      this._run(mugLike[construction], input);
       this._writingMugLikes[_delete](mugLike);
 
       if (this._writtenMugs[_has](mugLike)) {
@@ -155,7 +155,7 @@ class MugLikeWriteAction {
         if (!mugLikeKeyInInput) {
           return;
         }
-        this._apply(mugLike[mugLikeKey], input[mugLikeKey]);
+        this._run(mugLike[mugLikeKey], input[mugLikeKey]);
       });
       this._writingMugLikes[_delete](mugLike);
       return;
@@ -168,7 +168,7 @@ class MugLikeWriteAction {
         if (!indexInInput) {
           return;
         }
-        this._apply(mugLikeItem, input[i]);
+        this._run(mugLikeItem, input[i]);
       });
       this._writingMugLikes[_delete](mugLike);
       return;
@@ -198,9 +198,9 @@ export function r(readFn: (state: any, ...restArgs: any) => any) {
       return readFn(mugLike, ...restArgs);
     }
 
-    const rAction = new MugLikeReadAction();
-    const state = rAction._apply(mugLike);
-    rAction._clear();
+    const rTask = new MugLikeReadTask();
+    const state = rTask._run(mugLike);
+    rTask._clear();
 
     return readFn(state, ...restArgs);
   };
@@ -228,15 +228,15 @@ export function w(writeFn: (state: any, ...restArgs: any) => any) {
       return assignConservatively(mugLike, newState);
     }
 
-    const rAction = new MugLikeReadAction();
-    const oldState = rAction._apply(mugLike);
-    rAction._clear();
+    const rTask = new MugLikeReadTask();
+    const oldState = rTask._run(mugLike);
+    rTask._clear();
 
     const newState = writeFn(oldState, ...restArgs);
 
-    const wAction = new MugLikeWriteAction();
-    wAction._apply(mugLike, newState);
-    wAction._clear();
+    const wTask = new MugLikeWriteTask();
+    wTask._run(mugLike, newState);
+    wTask._clear();
 
     return assignConservatively(mugLike, newState);
   };

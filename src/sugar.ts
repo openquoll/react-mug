@@ -7,12 +7,8 @@ export const internalOp = Symbol();
 
 export const internalMugLike = Symbol();
 
-type UponOutput<TW, TR, TSwirl, TCheck> = [w: TW, r: TR, swirl: TSwirl, check: TCheck] & {
-  w: TW;
-  r: TR;
-  swirl: TSwirl;
-  check: TCheck;
-};
+type UponOutput<TW, TR, TSwirl, TCheck> = readonly [w: TW, r: TR, swirl: TSwirl, check: TCheck] &
+  Readonly<{ w: TW; r: TR; swirl: TSwirl; check: TCheck }>;
 
 type WriteAction<TMugLike, TWriteFn extends AnyFunction> = {
   (...args: Post0Params<TWriteFn>): TMugLike;

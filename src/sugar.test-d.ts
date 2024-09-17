@@ -27,6 +27,12 @@ test('upon/flat', () => {
   expectType<typeof swirlA>(uponA.swirl);
   expectType<typeof checkA>(uponA.check);
 
+  // @ts-expect-error
+  uponA.w = fake<any>;
+
+  // @ts-expect-error
+  uponA[0] = fake<any>;
+
   // =-=-=
 
   const write30d = w((state) => {

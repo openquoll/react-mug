@@ -15,10 +15,10 @@ describe('dd10061, operates by an object state custom read op', () => {
 
   describe('a9760b1, the op accepts a constant extra and generates a new return', () => {
     const customReadFn = jest.fn(
-      (aState: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
+      (state: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
         return {
           o: {
-            s: `${extra.o.s}:${aState.potentialMuggyObject.o.s}`,
+            s: `${extra.o.s}:${state.potentialMuggyObject.o.s}`,
           },
         };
       },
@@ -198,6 +198,110 @@ describe('dd10061, operates by an object state custom read op', () => {
           },
         },
       };
+
+      test('[action]', () => {
+        swirl(aMug, {
+          potentialMuggyObject: { s: 'sdf' },
+        });
+        checkedAState = check(aMug);
+        expect(checkedAState).toMatchObject({
+          potentialMuggyObject: { s: 'sdf' },
+        });
+
+        opReturn1 = customReadOp(aMug, extra);
+        fnParamState1 = customReadFn.mock.calls[0][0];
+        fnParamExtra1 = customReadFn.mock.calls[0][1];
+        fnReturn1 = customReadFn.mock.results[0].value;
+
+        opReturn2 = customReadOp(aMug, extra);
+        fnParamState2 = customReadFn.mock.calls[1][0];
+        fnParamExtra2 = customReadFn.mock.calls[1][1];
+        fnReturn2 = customReadFn.mock.results[1].value;
+      });
+
+      sharedVerifyCases();
+    });
+
+    describe('3c73402, continuously reads a class-defined object mug before write', () => {
+      class AMug implements Mug<AState> {
+        [construction] = {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+          potentialMuggyObject: {
+            s: 'asd',
+            o: {
+              s: 'asd',
+            },
+          },
+        };
+
+        b: boolean = false;
+
+        getB() {
+          return this.b;
+        }
+
+        setB(b: boolean) {
+          this.b = b;
+        }
+      }
+
+      const aMug = new AMug();
+
+      test('[action]', () => {
+        checkedAState = check(aMug);
+
+        opReturn1 = customReadOp(aMug, extra);
+        fnParamState1 = customReadFn.mock.calls[0][0];
+        fnParamExtra1 = customReadFn.mock.calls[0][1];
+        fnReturn1 = customReadFn.mock.results[0].value;
+
+        opReturn2 = customReadOp(aMug, extra);
+        fnParamState2 = customReadFn.mock.calls[1][0];
+        fnParamExtra2 = customReadFn.mock.calls[1][1];
+        fnReturn2 = customReadFn.mock.results[1].value;
+      });
+
+      test('[verify] the first fn-param state and its fields equal the mug_s construction and its fields in ref and value', () => {
+        expect(fnParamState1).toBe(aMug[construction]);
+        ownKeysOfObjectLike(aMug[construction]).forEach((key) => {
+          expect(fnParamState1[key]).toBe(aMug[construction][key]);
+        });
+        expect(fnParamState1).toStrictEqual(aMug[construction]);
+      });
+
+      sharedVerifyCases();
+    });
+
+    describe('e8d45b9, continuously reads a class-defined object mug after write', () => {
+      class AMug implements Mug<AState> {
+        [construction] = {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+          potentialMuggyObject: {
+            s: 'asd',
+            o: {
+              s: 'asd',
+            },
+          },
+        };
+
+        b: boolean = false;
+
+        getB() {
+          return this.b;
+        }
+
+        setB(b: boolean) {
+          this.b = b;
+        }
+      }
+
+      const aMug = new AMug();
 
       test('[action]', () => {
         swirl(aMug, {

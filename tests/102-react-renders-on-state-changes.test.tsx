@@ -25,9 +25,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const readFn = jest.fn((aState: AState): AState => {
-      return { ...aState };
-    });
+    const readFn = jest.fn((state: AState): AState => ({ ...state }));
 
     const readOp = r(readFn);
 
@@ -177,9 +175,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const readFn = jest.fn((aState: AState): AState => {
-      return { ...aState };
-    });
+    const readFn = jest.fn((state: AState): AState => ({ ...state }));
 
     const readOp = r(readFn);
 
@@ -581,9 +577,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     const aMugLike = tuple(objectMug1, objectMug2);
 
-    const readFn = jest.fn((aState: AState): AState => {
-      return [...aState];
-    });
+    const readFn = jest.fn((state: AState): AState => [...state]);
 
     const readOp = r(readFn);
 
@@ -898,9 +892,9 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const readFn = jest.fn((aState: [ObjectState, ObjectState]): [ObjectState, ObjectState] => {
-      return [...aState];
-    });
+    const readFn = jest.fn((state: [ObjectState, ObjectState]): [ObjectState, ObjectState] =>
+      tuple(...state),
+    );
 
     const readOp = r(readFn);
 

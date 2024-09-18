@@ -1,4 +1,4 @@
-import { check, construction, Mug, MugError, swirl, none } from '../src';
+import { check, construction, Mug, MugError, none, swirl } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
@@ -9,22 +9,22 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     };
   }
 
-  type AFn = (...args: boolean[]) => boolean;
+  type Func = (...args: boolean[]) => boolean;
 
   interface AState extends ObjectState {
-    f: AFn;
-    no?: ObjectState['o'];
+    f: Func;
+    no?: ObjectState;
     na: number[];
     nt: [x: number, y: number, z: number];
     oa: ObjectState[];
     ot: [ObjectState, ObjectState];
   }
 
-  const aFn = () => false;
+  const f = () => false;
 
   const aMug: Mug<AState> = {
     [construction]: {
-      f: aFn,
+      f,
       s: 'asd',
       o: {
         s: 'asd',
@@ -70,7 +70,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
       o: {
         s: 'asd',
       },
-      f: aFn,
+      f,
       na: [],
       nt: [300, 300, 300],
       oa: [],
@@ -95,7 +95,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
         o: {
           s: 'asd',
         },
-        f: aFn,
+        f,
         na: [],
         nt: [300, 300, 300],
         oa: [],
@@ -187,9 +187,9 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
 
   describe('629d427, writes "the nullable object field" with undefined', () => {
     test('[action, verify] the field stay unchanged in ref and value', () => {
-      swirl(aMug, { no: { s: '880' } });
+      swirl(aMug, { no: { s: '880', o: { s: '880' } } });
       const aStateBefore = check(aMug);
-      expect(aStateBefore).toMatchObject({ no: { s: '880' } });
+      expect(aStateBefore).toMatchObject({ no: { s: '880', o: { s: '880' } } });
 
       swirl(aMug, { no: undefined });
 
@@ -202,9 +202,9 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
 
   describe('2655a9f, writes "the nullable object field" with none', () => {
     test('[action, verify] the field changes in ref, becomes undefined', () => {
-      swirl(aMug, { no: { s: '802' } });
+      swirl(aMug, { no: { s: '802', o: { s: '802' } } });
       const aStateBefore = check(aMug);
-      expect(aStateBefore).toMatchObject({ no: { s: '802' } });
+      expect(aStateBefore).toMatchObject({ no: { s: '802', o: { s: '802' } } });
 
       swirl(aMug, { no: none });
 
@@ -708,6 +708,16 @@ describe('18a9e96, operates "a class-defined" object mug by builtin ops', () => 
       },
       position: new Point3D(),
     };
+
+    b: boolean = false;
+
+    getB() {
+      return this.b;
+    }
+
+    setB(b: boolean) {
+      this.b = b;
+    }
   }
 
   const aMug = new AMug();

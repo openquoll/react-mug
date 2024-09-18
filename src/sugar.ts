@@ -7,10 +7,7 @@ export const internalOp = Symbol();
 
 export const internalMugLike = Symbol();
 
-type UponOutput<TW, TR, TSwirl, TCheck> = readonly [w: TW, r: TR, swirl: TSwirl, check: TCheck] &
-  Readonly<{ w: TW; r: TR; swirl: TSwirl; check: TCheck }>;
-
-type WriteAction<TMugLike, TWriteFn extends AnyFunction> = {
+export type WriteAction<TMugLike, TWriteFn extends AnyFunction> = {
   (...args: Post0Params<TWriteFn>): TMugLike;
   readonly [internalOp]: <TFlatMugLike extends PossibleMugLike<TMugLike>>(
     mugLike: TFlatMugLike,
@@ -19,7 +16,7 @@ type WriteAction<TMugLike, TWriteFn extends AnyFunction> = {
   readonly [internalMugLike]: TMugLike;
 };
 
-type ReadAction<TMugLike, TReadFn extends AnyFunction> = {
+export type ReadAction<TMugLike, TReadFn extends AnyFunction> = {
   (...args: Post0Params<TReadFn>): ReturnType<TReadFn>;
   readonly [internalOp]: (
     mugLike: PossibleMugLike<TMugLike>,
@@ -28,24 +25,32 @@ type ReadAction<TMugLike, TReadFn extends AnyFunction> = {
   readonly [internalMugLike]: TMugLike;
 };
 
-type SwirlAction<TMugLike> = {
+export type SwirlAction<TMugLike> = {
   (patch: PossiblePatch<NoInfer<TMugLike>>): TMugLike;
-  readonly [internalOp]: <TFlatMugLike extends PossibleMugLike<TMugLike>>(
-    mugLike: TFlatMugLike,
-    patch: PossiblePatch<NoInfer<TMugLike>>,
-  ) => TFlatMugLike;
+  readonly [internalOp]: <TOpMugLike extends PossibleMugLike<TMugLike>>(
+    mugLike: TOpMugLike,
+    patch: PossiblePatch<NoInfer<TOpMugLike>>,
+  ) => TOpMugLike;
   readonly [internalMugLike]: TMugLike;
 };
 
-type CheckAction<TMugLike> = {
+export type CheckAction<TMugLike> = {
   (): State<TMugLike>;
-  readonly [internalOp]: (mugLike: PossibleMugLike<TMugLike>) => State<TMugLike>;
+  readonly [internalOp]: <TOpMugLike extends PossibleMugLike<TMugLike>>(
+    mugLike: TOpMugLike,
+  ) => State<TOpMugLike>;
   readonly [internalMugLike]: TMugLike;
 };
 
-export function upon<TMugLike>(
-  mugLike: TMugLike,
-): UponOutput<
+type ImperativeToolbeltFormat<TW, TR, TSwirl, TCheck> = readonly [
+  w: TW,
+  r: TR,
+  swirl: TSwirl,
+  check: TCheck,
+] &
+  Readonly<{ w: TW; r: TR; swirl: TSwirl; check: TCheck }>;
+
+export type ImperativeToolbelt<TMugLike> = ImperativeToolbeltFormat<
   <TWriteFn extends (state: State<TMugLike>, ...restArgs: any) => State<TMugLike>>(
     writeFn: TWriteFn,
   ) => WriteAction<TMugLike, TWriteFn>,
@@ -55,6 +60,8 @@ export function upon<TMugLike>(
   SwirlAction<TMugLike>,
   CheckAction<TMugLike>
 >;
+
+export function upon<TMugLike>(mugLike: TMugLike): ImperativeToolbelt<TMugLike>;
 export function upon(mugLike: any): any {
   function _w(writeFn: (state: any, ...restArgs: any) => any) {
     const writeOp = w(writeFn);

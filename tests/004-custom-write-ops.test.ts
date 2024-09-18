@@ -14,7 +14,7 @@ describe('900ce35, operates by an object state custom write op', () => {
   }
 
   describe('0deb0f9, the fn directly returns the input state', () => {
-    const customWriteFn = jest.fn((state: AState) => state);
+    const customWriteFn = jest.fn((state: AState): AState => state);
 
     const customWriteOp = w(customWriteFn);
 
@@ -74,6 +74,70 @@ describe('900ce35, operates by an object state custom write op', () => {
           },
         },
       };
+
+      test('[action]', () => {
+        checkedAStateBefore = check(aMug);
+
+        opReturn = customWriteOp(aMug);
+        fnParamState = customWriteFn.mock.calls[0][0];
+        fnReturn = customWriteFn.mock.results[0].value;
+
+        checkedAStateAfter = check(aMug);
+      });
+
+      test('[verify] the fn-param state and its fields equal before-write checked state and its fields in ref and value', () => {
+        expect(fnParamState).toBe(checkedAStateBefore);
+        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
+          expect(fnParamState[key]).toBe(checkedAStateBefore[key]);
+        });
+        expect(fnParamState).toStrictEqual(checkedAStateBefore);
+      });
+
+      test('[verify] the checked state and its fields stays unchanged in ref and value', () => {
+        expect(checkedAStateAfter).toBe(checkedAStateBefore);
+        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
+          expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
+        });
+        expect(checkedAStateAfter).toStrictEqual(checkedAStateBefore);
+      });
+
+      test('[verify] the op return differs from the fn return in ref', () => {
+        expect(opReturn).not.toBe(fnReturn);
+      });
+
+      test('[verify] the op return equals the mug in ref and value', () => {
+        expect(opReturn).toBe(aMug);
+        expect(opReturn).toStrictEqual(aMug);
+      });
+    });
+
+    describe('e783e85, writes a class-defined object mug, [cite] 001:18a9e96', () => {
+      class AMug implements Mug<AState> {
+        [construction] = {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+          potentialMuggyObject: {
+            s: 'asd',
+            o: {
+              s: 'asd',
+            },
+          },
+        };
+
+        b: boolean = false;
+
+        getB() {
+          return this.b;
+        }
+
+        setB(b: boolean) {
+          this.b = b;
+        }
+      }
+
+      const aMug = new AMug();
 
       test('[action]', () => {
         checkedAStateBefore = check(aMug);

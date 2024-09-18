@@ -3,6 +3,7 @@ import { expectAssignable, expectType } from 'tsd';
 import { from } from '../tests/type-utils';
 import {
   AnyMug,
+  Cleanse,
   construction,
   Mug,
   MugLike,
@@ -20,12 +21,13 @@ interface ObjectState {
   };
 }
 
-type AFn = (...args: boolean[]) => boolean;
+type Func = (...args: boolean[]) => boolean;
 
 test('PossibleMuggyOverride', () => {
   interface AMugLike extends ObjectState {
-    f: AFn;
+    f: Func;
     muggyObject: { [construction]: ObjectState };
+    dirtyMuggyObject: { [construction]: ObjectState; b: boolean };
   }
 
   expectType<
@@ -34,8 +36,9 @@ test('PossibleMuggyOverride', () => {
         [construction]: {
           s: PossibleMugLike<AMugLike['s']>;
           o: PossibleMugLike<AMugLike['o']>;
-          f: AFn;
+          f: Func;
           muggyObject: PossibleMugLike<AMugLike['muggyObject']>;
+          dirtyMuggyObject: PossibleMugLike<AMugLike['dirtyMuggyObject']>;
         };
       }
     | {
@@ -45,6 +48,7 @@ test('PossibleMuggyOverride', () => {
           | { s?: { [construction]: string } };
         f?: EmptyItem;
         muggyObject?: EmptyItem;
+        dirtyMuggyObject?: EmptyItem;
       }
   >(from<PossibleMuggyOverride<AMugLike>>());
 
@@ -68,9 +72,19 @@ test('PossibleMuggyOverride', () => {
 });
 
 test('MugLike', () => {
+  interface ObjectMug {
+    [construction]: ObjectState;
+  }
+
+  interface DirtyObjectMug {
+    [construction]: ObjectState;
+    b: boolean;
+  }
+
   interface AMugLike extends ObjectState {
-    f: AFn;
-    muggyObject: { [construction]: ObjectState };
+    f: Func;
+    muggyObject: ObjectMug;
+    dirtyMuggyObject: DirtyObjectMug;
     potentialMuggyObject: ObjectState;
   }
 
@@ -81,18 +95,31 @@ test('MugLike', () => {
     o: {
       s: string;
     };
-    f: AFn;
-    muggyObject: { [construction]: ObjectState };
-    potentialMuggyObject: { [construction]: ObjectState };
-  }>(from<MugLike<AMugLike, { potentialMuggyObject: { [construction]: ObjectState } }>>());
+    f: Func;
+    muggyObject: ObjectMug;
+    dirtyMuggyObject: DirtyObjectMug;
+    potentialMuggyObject: ObjectMug;
+  }>(from<MugLike<AMugLike, { potentialMuggyObject: ObjectMug }>>());
 
   expectType<{
     s: string;
     o: {
       s: string;
     };
-    f: AFn;
-    muggyObject: { [construction]: ObjectState };
+    f: Func;
+    muggyObject: ObjectMug;
+    dirtyMuggyObject: DirtyObjectMug;
+    potentialMuggyObject: DirtyObjectMug;
+  }>(from<MugLike<AMugLike, { potentialMuggyObject: DirtyObjectMug }>>());
+
+  expectType<{
+    s: string;
+    o: {
+      s: string;
+    };
+    f: Func;
+    muggyObject: ObjectMug;
+    dirtyMuggyObject: DirtyObjectMug;
     potentialMuggyObject: {
       [construction]: {
         s: string;
@@ -157,9 +184,19 @@ test('MugLike', () => {
 });
 
 test('Mug', () => {
+  interface ObjectMug {
+    [construction]: ObjectState;
+  }
+
+  interface DirtyObjectMug {
+    [construction]: ObjectState;
+    b: boolean;
+  }
+
   interface AMugLike extends ObjectState {
-    f: AFn;
-    muggyObject: { [construction]: ObjectState };
+    f: Func;
+    muggyObject: ObjectMug;
+    dirtyMuggyObject: DirtyObjectMug;
     potentialMuggyObject: ObjectState;
   }
 
@@ -171,11 +208,12 @@ test('Mug', () => {
       o: {
         s: string;
       };
-      f: AFn;
-      muggyObject: { [construction]: ObjectState };
-      potentialMuggyObject: { [construction]: ObjectState };
+      f: Func;
+      muggyObject: ObjectMug;
+      dirtyMuggyObject: DirtyObjectMug;
+      potentialMuggyObject: ObjectMug;
     };
-  }>(from<Mug<AMugLike, { potentialMuggyObject: { [construction]: ObjectState } }>>());
+  }>(from<Mug<AMugLike, { potentialMuggyObject: ObjectMug }>>());
 
   expectType<{
     [construction]: {
@@ -183,8 +221,22 @@ test('Mug', () => {
       o: {
         s: string;
       };
-      f: AFn;
-      muggyObject: { [construction]: ObjectState };
+      f: Func;
+      muggyObject: ObjectMug;
+      dirtyMuggyObject: DirtyObjectMug;
+      potentialMuggyObject: DirtyObjectMug;
+    };
+  }>(from<Mug<AMugLike, { potentialMuggyObject: DirtyObjectMug }>>());
+
+  expectType<{
+    [construction]: {
+      s: string;
+      o: {
+        s: string;
+      };
+      f: Func;
+      muggyObject: ObjectMug;
+      dirtyMuggyObject: DirtyObjectMug;
       potentialMuggyObject: {
         [construction]: {
           s: string;
@@ -256,21 +308,79 @@ test('Mug', () => {
 
 test('State', () => {
   interface AState extends ObjectState {
-    f: AFn;
+    f: Func;
     potentialMuggyObject: ObjectState;
   }
 
-  type Rf06 = State<Mug<AState>>;
+  type AMug = Mug<AState>;
+
+  type NestedAMug = Mug<AState, { potentialMuggyObject: { [construction]: ObjectState } }>;
+
+  type AMugLike = MugLike<AState, { potentialMuggyObject: { [construction]: ObjectState } }>;
+
+  type PossibleAMug = PossibleMug<AState>;
+
+  type PossibleAMugLike = PossibleMugLike<AState>;
+
+  interface DirtyAMug {
+    [construction]: {
+      s: string;
+      o: {
+        s: string;
+      };
+      f: Func;
+      potentialMuggyObject: {
+        [construction]: ObjectState;
+        b: boolean;
+      };
+    };
+    b: boolean;
+  }
+
+  type Rf06 = State<AMug>;
   expectType<AState>(from<Rf06>());
 
-  type R1ee = State<Mug<AState, { potentialMuggyObject: { [construction]: ObjectState } }>>;
+  type R1ee = State<NestedAMug>;
   expectType<AState>(from<R1ee>());
 
-  type R6f9 = State<PossibleMug<AState>>;
+  type R7a1 = State<AMugLike>;
+  expectType<AState>(from<R7a1>());
+
+  type R6f9 = State<PossibleAMug>;
   expectAssignable<R6f9>(from<AState>());
   expectAssignable<AState>(from<R6f9>());
 
-  type Rd2d = State<PossibleMugLike<AState>>;
+  type Rd2d = State<PossibleAMugLike>;
   expectAssignable<Rd2d>(from<AState>());
   expectAssignable<AState>(from<Rd2d>());
+
+  type Rff5 = State<DirtyAMug>;
+  expectType<AState>(from<Rff5>());
+});
+
+test('Cleanse', () => {
+  interface DirtyAMug {
+    [construction]: {
+      s: string;
+      o: {
+        s: string;
+      };
+      muggyObject: {
+        [construction]: ObjectState;
+        b: boolean;
+      };
+    };
+    b: boolean;
+  }
+
+  type Rb78 = Cleanse<DirtyAMug>;
+  expectType<{
+    [construction]: {
+      s: string;
+      o: {
+        s: string;
+      };
+      muggyObject: { [construction]: ObjectState };
+    };
+  }>(from<Rb78>());
 });

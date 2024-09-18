@@ -18,15 +18,11 @@ describe('229a728, react renders on hook param changes', () => {
   const tapHookReturn = jest.fn();
 
   describe('cbf2e14, the read op changes', () => {
-    const readFn1 = jest.fn((aState: AState): ObjectState['o'] => {
-      return { s: 'ba9' };
-    });
+    const readFn1 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'ba9' }));
 
     const readOp1 = r(readFn1);
 
-    const readFn2 = jest.fn((aState: AState): ObjectState['o'] => {
-      return { s: 'c50' };
-    });
+    const readFn2 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'c50' }));
 
     const readOp2 = r(readFn2);
 
@@ -157,9 +153,7 @@ describe('229a728, react renders on hook param changes', () => {
   });
 
   describe('0e73ab1, the mug-like changes', () => {
-    const readFn = jest.fn((aState: AState): AState => {
-      return aState;
-    });
+    const readFn = jest.fn((state: AState): AState => state);
 
     const readOp = r(readFn);
 
@@ -1145,10 +1139,10 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const readFn = jest.fn(
-      (aState: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
+      (state: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
         return {
           o: {
-            s: `${extra.o.s}:${aState.potentialMuggyObject.o.s}`,
+            s: `${extra.o.s}:${state.potentialMuggyObject.o.s}`,
           },
         };
       },

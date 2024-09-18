@@ -1,7 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake, from } from '../../tests/type-utils';
-import { Mug, MugLike, PossibleMugLike } from '../mug';
+import { construction, Mug, MugLike, PossibleMug, PossibleMugLike } from '../mug';
 import { r } from '../rw';
 import { upon } from '../sugar';
 import { useIt } from './useIt';
@@ -17,24 +17,55 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
+type AMug = Mug<AState>;
+
+type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+
+type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+
+type PossibleAMug = PossibleMug<AState>;
+
+type PossibleAMugLike = PossibleMugLike<AState>;
+
+interface DirtyAMug {
+  [construction]: {
+    s: string;
+    o: {
+      s: string;
+    };
+    potentialMuggyObject: {
+      [construction]: ObjectState;
+      b: boolean;
+    };
+  };
+  b: boolean;
+}
+
 test('useIt', () => {
   const readf23 = r(<TState>(state: TState): TState => state);
 
   const r5ba = useIt(readf23, fake<AState>());
   expectType<AState>(r5ba);
 
-  const r580 = useIt(readf23, fake<Mug<AState>>());
+  const r580 = useIt(readf23, fake<AMug>());
   expectType<AState>(r580);
 
-  const ra1e = useIt(readf23, fake<Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
+  const ra1e = useIt(readf23, fake<NestedAMug>());
   expectType<AState>(ra1e);
 
-  const r6d8 = useIt(readf23, fake<MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
+  const r6d8 = useIt(readf23, fake<AMugLike>());
   expectType<AState>(r6d8);
 
-  const r649 = useIt(readf23, fake<PossibleMugLike<AState>>());
+  const r711 = useIt(readf23, fake<PossibleAMug>());
+  expectAssignable<AState>(r711);
+  expectAssignable<typeof r711>(from<AState>());
+
+  const r649 = useIt(readf23, fake<PossibleAMugLike>());
+  expectAssignable<AState>(r649);
   expectAssignable<typeof r649>(from<AState>());
-  expectAssignable<AState>(from<typeof r649>());
+
+  const rf77 = useIt(readf23, fake<DirtyAMug>());
+  expectType<AState>(rf77);
 
   const r893 = useIt(readf23, fake<ObjectState>());
   expectType<ObjectState>(r893);

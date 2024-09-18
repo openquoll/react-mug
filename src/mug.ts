@@ -135,7 +135,25 @@ export type State<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends { [construction]: infer TConstruction }
     ? Conserve<TConstruction, State<TConstruction>>
     : TMugLike extends AnyObjectLike
-      ? Conserve<TMugLike, { [TK in keyof TMugLike]: State<TMugLike[TK]> }>
+      ? Conserve<
+          TMugLike,
+          {
+            [TK in keyof TMugLike]: Conserve<TMugLike[TK], State<TMugLike[TK]>>;
+          }
+        >
+      : TMugLike;
+
+export type Cleanse<TMugLike> = TMugLike extends AnyFunction
+  ? TMugLike
+  : TMugLike extends { [construction]: infer TConstruction }
+    ? { [construction]: Conserve<TConstruction, Cleanse<TConstruction>> }
+    : TMugLike extends AnyObjectLike
+      ? Conserve<
+          TMugLike,
+          {
+            [TK in keyof TMugLike]: Conserve<TMugLike[TK], Cleanse<TMugLike[TK]>>;
+          }
+        >
       : TMugLike;
 
 export class MugError extends _Error {

@@ -43,7 +43,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     /**
      * Required variables: checkedAStateAfter, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
      */
-    function sharedVerifyCasesOfReadFnCalledOnWrite() {
+    function sharedVerifyCasesOf_read_fn_called_on_write() {
       test('[verify] the (latest) read fn param state and its fields equal the after-write checked state and its fields in ref and value', () => {
         expect(readFnParamStateLatest).toBe(checkedAStateAfter);
         ownKeysOfObjectLike(checkedAStateAfter).forEach((key) => {
@@ -93,7 +93,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('2ede0c2, batch writes the string field with different values', () => {
@@ -124,7 +124,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('900bc99, writes the string field with a same value', () => {
@@ -193,7 +193,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     /**
      * Required variables: checkedAStateAfter, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
      */
-    function sharedVerifyCasesOfReadFnCalledOnWrite() {
+    function sharedVerifyCasesOf_read_fn_called_on_write() {
       test('[verify] the (latest) read fn param state and its fields equal the after-write checked state and its fields in ref and value', () => {
         expect(readFnParamStateLatest).toBe(checkedAStateAfter);
         ownKeysOfObjectLike(checkedAStateAfter).forEach((key) => {
@@ -243,7 +243,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('e961946, batch writes the string field with different values', () => {
@@ -273,7 +273,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('76b5dcc, writes the string field with a same value', () => {
@@ -326,7 +326,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('fa2c073, batch writes the muggy object field_s string field with different values', () => {
@@ -358,7 +358,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('4394fb9, writes the muggy object field_s string field with a same value', () => {
@@ -411,7 +411,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('ba25504, batch writes the object mug_s string field with different values', () => {
@@ -441,7 +441,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('29eb09d, writes the object mug_s string field with a same value', () => {
@@ -494,7 +494,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('dc3b350, simultaneously batch writes the string field and the muggy object field_s string field with different values', () => {
@@ -527,7 +527,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(4);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('e009621, simultaneously writes the string field and the muggy object field_s string field with a same value', () => {
@@ -593,9 +593,9 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     let hookReturn1: AState, hookReturn2: AState;
 
     /**
-     * Required variables: checkedObjectState1After, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
+     * Required variables: checkedAStateAfter, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
      */
-    function sharedVerifyCasesOfReadFnCalledOnWrite() {
+    function sharedVerifyCasesOf_read_fn_called_on_write() {
       test('[verify] the (latest) read fn param state and its items equal the after-write checked state and its items in ref and value', () => {
         expect(readFnParamStateLatest).toBe(checkedAStateAfter);
         checkedAStateAfter.forEach((item, i) => {
@@ -645,7 +645,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('a16daf5, batch writes with sparse tuples of partial object index-0 items that have different string field values', () => {
@@ -675,7 +675,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('8746c70, writes with a sparse tuple of a partial object index-0 item that has a same string field value', () => {
@@ -729,7 +729,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('c94ec9b, batch writes the index-0_s object mug_s string field with different values', () => {
@@ -761,7 +761,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('c56dfe8, writes the index-0_s object mug_s string field with a same value', () => {
@@ -815,7 +815,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('ec1fc89, batch writes with a dense tuple of partial object items that have different string field values', () => {
@@ -845,7 +845,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(4);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('514231d, writes with a dense tuple of partial object items that have a same string field value', () => {
@@ -910,9 +910,9 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     let hookReturn1: [ObjectState, ObjectState], hookReturn2: [ObjectState, ObjectState];
 
     /**
-     * Required variables: checkedObjectState1After, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
+     * Required variables: checkedAStateAfter, readFnParamStateLatest, readFnReturnLatest, hookReturn1, hookReturn2,
      */
-    function sharedVerifyCasesOfReadFnCalledOnWrite() {
+    function sharedVerifyCasesOf_read_fn_called_on_write() {
       test('[verify] the (latest) read fn param state_s items equal the after-write checked state_s items in ref and value', () => {
         checkedAStateAfter.forEach((item, i) => {
           expect(readFnParamStateLatest[i]).toBe(item);
@@ -961,7 +961,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('1fb2671, batch writes the index-0_s object mug_s string field with different values', () => {
@@ -991,7 +991,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
         expect(readFn).toHaveBeenCalledTimes(2);
       });
 
-      sharedVerifyCasesOfReadFnCalledOnWrite();
+      sharedVerifyCasesOf_read_fn_called_on_write();
     });
 
     describe('0c06d13, writes the index-0_s object mug_s string field with a same value', () => {

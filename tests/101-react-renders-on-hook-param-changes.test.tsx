@@ -142,7 +142,7 @@ describe('229a728, react renders on hook param changes', () => {
         expect(AComponent).toHaveBeenCalledTimes(2);
       });
 
-      test('[verify] the read fn return and its fields stay unchanged in ref and value', () => {
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
         expect(hookReturn2).toBe(hookReturn1);
         ownKeysOfObjectLike(hookReturn1).forEach((key) => {
           expect(hookReturn2[key]).toBe(hookReturn1[key]);
@@ -175,7 +175,7 @@ describe('229a728, react renders on hook param changes', () => {
     /**
      * Required variables: hookReturn1, hookReturn2
      */
-    function sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged() {
+    function sharedVerifyCasesOf_read_fn_not_called_on_rerender_and_hook_return_unchanged() {
       test('[verify] the read fn is not called on rerender', () => {
         expect(readFn).not.toHaveBeenCalled();
       });
@@ -184,7 +184,7 @@ describe('229a728, react renders on hook param changes', () => {
         expect(AComponent).toHaveBeenCalledTimes(2);
       });
 
-      test('[verify] the read fn return and its fields stay unchanged in ref and value', () => {
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
         expect(hookReturn2).toBe(hookReturn1);
         ownKeysOfObjectLike(hookReturn1).forEach((key) => {
           expect(hookReturn2[key]).toBe(hookReturn1[key]);
@@ -196,7 +196,7 @@ describe('229a728, react renders on hook param changes', () => {
     /**
      * Required variables: readFnReturn2, hookReturn1, hookReturn2
      */
-    function sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged() {
+    function sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed() {
       test('[verify] the read fn is called 1 time on rerender', () => {
         expect(readFn).toHaveBeenCalledTimes(1);
       });
@@ -205,12 +205,12 @@ describe('229a728, react renders on hook param changes', () => {
         expect(AComponent).toHaveBeenCalledTimes(2);
       });
 
-      test('[verify] the hook result changes in ref and value', () => {
+      test('[verify] the hook return changes in ref and value', () => {
         expect(hookReturn2).not.toBe(hookReturn1);
         expect(hookReturn2).not.toStrictEqual(hookReturn1);
       });
 
-      test('[verify] the hook on-rerender result and its fields equal the read fn on-rerender return in ref and value', () => {
+      test('[verify] the hook on-rerender return and its fields equal the read fn on-rerender return in ref and value', () => {
         expect(hookReturn2).toBe(readFnReturn2);
         ownKeysOfObjectLike(readFnReturn2).forEach((key) => {
           expect(hookReturn2[key]).toBe(readFnReturn2[key]);
@@ -222,7 +222,7 @@ describe('229a728, react renders on hook param changes', () => {
     /**
      * Required variables: readFnReturn2, hookReturn1, hookReturn2
      */
-    function sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged() {
+    function sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged() {
       test('[verify] the read fn is called 1 time on rerender', () => {
         expect(readFn).toHaveBeenCalledTimes(1);
       });
@@ -231,7 +231,7 @@ describe('229a728, react renders on hook param changes', () => {
         expect(AComponent).toHaveBeenCalledTimes(2);
       });
 
-      test('[verify] the hook result and its fields stay unchanged in ref and value', () => {
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
         expect(hookReturn2).toBe(hookReturn1);
         ownKeysOfObjectLike(hookReturn1).forEach((key) => {
           expect(hookReturn2[key]).toBe(hookReturn1[key]);
@@ -324,7 +324,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
       test('[verify] the read fn on-rerender param state and its fields equal the second input state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(aState2);
@@ -376,7 +376,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
       test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -428,7 +428,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
       test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -475,7 +475,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged();
+      sharedVerifyCasesOf_read_fn_not_called_on_rerender_and_hook_return_unchanged();
     });
 
     describe('29c2555, initially renders with a state, rerenders with a mug-nested mug-like equal in evaluated value, [cite] .:7a6562a', () => {
@@ -518,7 +518,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
       test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -570,7 +570,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
       test('[verify] read fn on-rerender param state and its fields equal the mug_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -604,7 +604,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged();
+      sharedVerifyCasesOf_read_fn_not_called_on_rerender_and_hook_return_unchanged();
     });
 
     describe('f0432c9, initially renders with a mug', () => {
@@ -699,7 +699,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
       test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -753,7 +753,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
       test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -806,7 +806,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
       test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -859,7 +859,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
       test('[verify] read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -895,7 +895,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged();
+      sharedVerifyCasesOf_read_fn_not_called_on_rerender_and_hook_return_unchanged();
     });
 
     describe('90dde99, initially renders with a mug-nested mug-like', () => {
@@ -990,7 +990,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderAndHookResultChanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
       test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -1043,7 +1043,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnCalledOnRerenderButHookResultUnhanged();
+      sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
       test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
         expect(readFnParamState2).toBe(checkedState2);
@@ -1090,7 +1090,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged();
+      sharedVerifyCasesOf_read_fn_not_called_on_rerender_and_hook_return_unchanged();
     });
 
     describe('8cfdabb, initially renders with a mug-nested mug-like, rerenders with the same mug-like, [cite] .:90dde99', () => {
@@ -1118,7 +1118,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
-      sharedVerifyCasesOfReadFnNotCalledOnRerenderAndHookResultUnchanged();
+      sharedVerifyCasesOf_read_fn_not_called_on_rerender_and_hook_return_unchanged();
     });
   });
 

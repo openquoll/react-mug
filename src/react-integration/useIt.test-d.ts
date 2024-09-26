@@ -1,9 +1,9 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake, from } from '../../tests/type-utils';
-import { construction, Mug, MugLike, PossibleMug, PossibleMugLike } from '../mug';
-import { r } from '../rw';
-import { upon } from '../sugar';
+import { upon } from '../actions';
+import { _readFn, _readOp, construction, Mug, MugLike, PossibleMug, PossibleMugLike } from '../mug';
+import { r, w } from '../op-mech';
 import { useIt } from './useIt';
 
 interface ObjectState {
@@ -15,6 +15,10 @@ interface ObjectState {
 
 interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
+}
+
+interface SuperState extends AState {
+  n: number;
 }
 
 type AMug = Mug<AState>;
@@ -44,17 +48,10 @@ interface DirtyAMug {
 test('useIt', () => {
   const readf23 = r(<TState>(state: TState): TState => state);
 
-  const r5ba = useIt(readf23, fake<AState>());
-  expectType<AState>(r5ba);
-
-  const r580 = useIt(readf23, fake<AMug>());
-  expectType<AState>(r580);
-
-  const ra1e = useIt(readf23, fake<NestedAMug>());
-  expectType<AState>(ra1e);
-
-  const r6d8 = useIt(readf23, fake<AMugLike>());
-  expectType<AState>(r6d8);
+  expectType<AState>(useIt(readf23, fake<AState>()));
+  expectType<AState>(useIt(readf23, fake<AMug>()));
+  expectType<AState>(useIt(readf23, fake<NestedAMug>()));
+  expectType<AState>(useIt(readf23, fake<AMugLike>()));
 
   const r711 = useIt(readf23, fake<PossibleAMug>());
   expectAssignable<AState>(r711);
@@ -64,14 +61,15 @@ test('useIt', () => {
   expectAssignable<AState>(r649);
   expectAssignable<typeof r649>(from<AState>());
 
-  const rf77 = useIt(readf23, fake<DirtyAMug>());
-  expectType<AState>(rf77);
-
-  const r893 = useIt(readf23, fake<ObjectState>());
-  expectType<ObjectState>(r893);
+  expectType<AState>(useIt(readf23, fake<DirtyAMug>()));
+  expectType<ObjectState>(useIt(readf23, fake<ObjectState>()));
+  expectType<SuperState>(useIt(readf23, fake<SuperState>()));
 
   // @ts-expect-error
   useIt(readf23);
+
+  // @ts-expect-error
+  useIt();
 
   // =-=-=
 
@@ -92,20 +90,14 @@ test('useIt', () => {
 
   const read198 = r((state: AState) => fake<ObjectState>());
 
-  const r760 = useIt(read198, fake<AState>());
-  expectType<ObjectState>(r760);
-
-  const r6dd = useIt(read198, fake<Mug<AState>>());
-  expectType<ObjectState>(r6dd);
-
-  const r439 = useIt(read198, fake<Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
-  expectType<ObjectState>(r439);
-
-  const ra6f = useIt(read198, fake<MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
-  expectType<ObjectState>(ra6f);
-
-  const r866 = useIt(read198, fake<PossibleMugLike<AState>>());
-  expectType<ObjectState>(r866);
+  expectType<ObjectState>(useIt(read198, fake<AState>()));
+  expectType<ObjectState>(useIt(read198, fake<AMug>()));
+  expectType<ObjectState>(useIt(read198, fake<NestedAMug>()));
+  expectType<ObjectState>(useIt(read198, fake<AMugLike>()));
+  expectType<ObjectState>(useIt(read198, fake<PossibleAMug>()));
+  expectType<ObjectState>(useIt(read198, fake<PossibleAMugLike>()));
+  expectType<ObjectState>(useIt(read198, fake<DirtyAMug>()));
+  expectType<ObjectState>(useIt(read198, fake<SuperState>()));
 
   // @ts-expect-error
   useIt(read198, fake<ObjectState>());
@@ -130,27 +122,57 @@ test('useIt', () => {
 
   // =-=-=
 
-  const read81f = r(() => fake<number>());
-  expectType<number>(useIt(read81f));
+  const read69c = r(<TState extends AState>(state: TState): TState => state);
+
+  expectType<AState>(useIt(read69c, fake<AState>()));
+
+  expectType<SuperState>(useIt(read69c, fake<SuperState>()));
 
   // @ts-expect-error
-  useIt(read81f, fake<any>());
+  useIt(read69c, fake<ObjectState>());
 
   // =-=-=
 
-  const uponA = upon(fake<Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
+  const read81f = r(() => fake<AState>());
 
-  const read4be = uponA.r((state, s: string) => fake<ObjectState>());
+  expectType<AState>(useIt(read81f));
+  expectType<AState>(useIt(read81f, fake<unknown>()));
 
-  const rd12 = useIt(read4be, fake<string>());
-  expectType<ObjectState>(rd12);
+  // =-=-=
+
+  const [_r] = upon(fake<NestedAMug>());
+
+  // =-=-=
+
+  const readde2 = _r();
+
+  expectType<AState>(useIt(readde2));
+
+  // =-=-=
+
+  const read4be = _r((state) => fake<ObjectState>());
+
+  expectType<ObjectState>(useIt(read4be));
+
+  // =-=-=
+
+  const read95a = _r((state, s: string) => fake<ObjectState>());
+
+  useIt(read95a, fake<string>());
 
   // @ts-expect-error
-  useIt(read4be);
+  useIt(read95a);
 
   // @ts-expect-error
-  useIt(read4be, fake<number>());
+  useIt(read95a, fake<number>());
 
   // @ts-expect-error
-  useIt(read4be, fake<string>(), fake<any>());
+  useIt(read95a, fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const write23e = w((state: AState) => state);
+
+  // @ts-expect-error
+  useIt(write23e);
 });

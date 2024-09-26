@@ -1,7 +1,8 @@
 import { render } from '@testing-library/react';
 
-import { check, construction, Mug, MugLike, PossibleMugLike, r, useIt } from '../src';
+import { construction, getIt, Mug, MugLike, PossibleMugLike, r, upon, useIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
+import { ReadOp } from '../src/op-mech';
 
 describe('229a728, react renders on hook param changes', () => {
   interface ObjectState {
@@ -17,7 +18,7 @@ describe('229a728, react renders on hook param changes', () => {
 
   const tapHookReturn = jest.fn();
 
-  describe('cbf2e14, the read op changes', () => {
+  describe('cbf2e14, the read op changes, the mug-like keeps unchanged', () => {
     const readFn1 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'ba9' }));
 
     const readOp1 = r(readFn1);
@@ -41,9 +42,7 @@ describe('229a728, react renders on hook param changes', () => {
       },
     };
 
-    type Props = {
-      readOp: (mugLike: PossibleMugLike<AState>) => ObjectState['o'];
-    };
+    type Props = { readOp: ReadOp<(state: AState) => ObjectState['o']> };
 
     const AComponent = jest.fn(({ readOp }: Props) => {
       const hookReturn = useIt(readOp, aMug);
@@ -52,12 +51,12 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('ff6702a, initially renders with read op#1', () => {
-      let checkedState1: AState;
+      let gotState1: AState;
       let readFn1ParamState1: AState, readFn1Return1: ObjectState['o'];
       let hookReturn1: ObjectState['o'];
 
       test('[action]', () => {
-        checkedState1 = check(aMug);
+        gotState1 = getIt(aMug);
         render(<AComponent readOp={readOp1} />);
         readFn1ParamState1 = readFn1.mock.calls[0][0];
         readFn1Return1 = readFn1.mock.results[0].value;
@@ -68,12 +67,12 @@ describe('229a728, react renders on hook param changes', () => {
         expect(readFn1).toHaveBeenCalledTimes(1);
       });
 
-      test('[verify] read fn#1 param state and its fields equal the checked state and its fields in ref and value', () => {
-        expect(readFn1ParamState1).toBe(checkedState1);
-        ownKeysOfObjectLike(checkedState1).forEach((key) => {
-          expect(readFn1ParamState1[key]).toBe(checkedState1[key]);
+      test('[verify] read fn#1 param state and its fields equal the got state and its fields in ref and value', () => {
+        expect(readFn1ParamState1).toBe(gotState1);
+        ownKeysOfObjectLike(gotState1).forEach((key) => {
+          expect(readFn1ParamState1[key]).toBe(gotState1[key]);
         });
-        expect(readFn1ParamState1).toStrictEqual(checkedState1);
+        expect(readFn1ParamState1).toStrictEqual(gotState1);
       });
 
       test('[verify] the component render is called 1 time', () => {
@@ -152,7 +151,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
   });
 
-  describe('0e73ab1, the mug-like changes', () => {
+  describe('0e73ab1, the read op keeps unchanged, the mug-like changes', () => {
     const readFn = jest.fn((state: AState): AState => state);
 
     const readOp = r(readFn);
@@ -167,7 +166,7 @@ describe('229a728, react renders on hook param changes', () => {
       return <div />;
     });
 
-    let checkedState1: AState, checkedState2: AState;
+    let gotState1: AState, gotState2: AState;
     let readFnParamState1: AState, readFnParamState2: AState;
     let readFnReturn1: AState, readFnReturn2: AState;
     let hookReturn1: AState, hookReturn2: AState;
@@ -368,7 +367,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aState} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMugLike);
+        gotState2 = getIt(aMugLike);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMugLike} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -378,12 +377,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -420,7 +419,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aState} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMug);
+        gotState2 = getIt(aMug);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMug} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -430,12 +429,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -512,7 +511,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         readFn.mockClear();
-        checkedState2 = check(aMugLike);
+        gotState2 = getIt(aMugLike);
         rerender(<AComponent mugLike={aMugLike} />);
         readFnParamState2 = readFn.mock.calls[0][0];
         hookReturn2 = tapHookReturn.mock.calls[1][0];
@@ -520,12 +519,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -563,7 +562,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         readFn.mockClear();
-        checkedState2 = check(aMug);
+        gotState2 = getIt(aMug);
         rerender(<AComponent mugLike={aMug} />);
         readFnParamState2 = readFn.mock.calls[0][0];
         readFnReturn2 = readFn.mock.results[0].value;
@@ -572,12 +571,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
-      test('[verify] read fn on-rerender param state and its fields equal the mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] read fn on-rerender param state and its fields equal the mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -624,7 +623,7 @@ describe('229a728, react renders on hook param changes', () => {
       };
 
       test('[action]', () => {
-        checkedState1 = check(aMug);
+        gotState1 = getIt(aMug);
         render(<AComponent mugLike={aMug} />);
         readFnParamState1 = readFn.mock.calls[0][0];
         readFnReturn1 = readFn.mock.results[0].value;
@@ -635,12 +634,12 @@ describe('229a728, react renders on hook param changes', () => {
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      test('[verify] the read fn param state and its fields equal the mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState1).toBe(checkedState1);
-        ownKeysOfObjectLike(checkedState1).forEach((key) => {
-          expect(checkedState1[key]).toBe(readFnParamState1[key]);
+      test('[verify] the read fn param state and its fields equal the mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState1).toBe(gotState1);
+        ownKeysOfObjectLike(gotState1).forEach((key) => {
+          expect(gotState1[key]).toBe(readFnParamState1[key]);
         });
-        expect(readFnParamState1).toStrictEqual(checkedState1);
+        expect(readFnParamState1).toStrictEqual(gotState1);
       });
 
       test('[verify] the component render is called 1 time', () => {
@@ -691,7 +690,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aMug1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMug2);
+        gotState2 = getIt(aMug2);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMug2} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -701,12 +700,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -745,7 +744,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aMug} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMugLike);
+        gotState2 = getIt(aMugLike);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMugLike} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -755,12 +754,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the mug-like_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -799,7 +798,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aMug1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMug2);
+        gotState2 = getIt(aMug2);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMug2} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -808,12 +807,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -853,7 +852,7 @@ describe('229a728, react renders on hook param changes', () => {
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         readFn.mockClear();
-        checkedState2 = check(aMugLike);
+        gotState2 = getIt(aMugLike);
         rerender(<AComponent mugLike={aMugLike} />);
         readFnParamState2 = readFn.mock.calls[0][0];
         hookReturn2 = tapHookReturn.mock.calls[1][0];
@@ -861,12 +860,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
-      test('[verify] read fn on-rerender param state and its fields equal the mug-like_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] read fn on-rerender param state and its fields equal the mug-like_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -915,7 +914,7 @@ describe('229a728, react renders on hook param changes', () => {
       };
 
       test('[action]', () => {
-        checkedState1 = check(aMugLike);
+        gotState1 = getIt(aMugLike);
         render(<AComponent mugLike={aMugLike} />);
         readFnParamState1 = readFn.mock.calls[0][0];
         readFnReturn1 = readFn.mock.results[0].value;
@@ -926,12 +925,12 @@ describe('229a728, react renders on hook param changes', () => {
         expect(readFn).toHaveBeenCalledTimes(1);
       });
 
-      test('[verify] the read fn param state and its fields equal the mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState1).toBe(checkedState1);
-        ownKeysOfObjectLike(checkedState1).forEach((key) => {
-          expect(checkedState1[key]).toBe(readFnParamState1[key]);
+      test('[verify] the read fn param state and its fields equal the mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState1).toBe(gotState1);
+        ownKeysOfObjectLike(gotState1).forEach((key) => {
+          expect(gotState1[key]).toBe(readFnParamState1[key]);
         });
-        expect(readFnParamState1).toStrictEqual(checkedState1);
+        expect(readFnParamState1).toStrictEqual(gotState1);
       });
 
       test('[verify] the component render is called 1 time', () => {
@@ -982,7 +981,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aMugLike1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMugLike2);
+        gotState2 = getIt(aMugLike2);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMugLike2} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -992,12 +991,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_and_hook_return_changed();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -1036,7 +1035,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aMugLike1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMugLike2);
+        gotState2 = getIt(aMugLike2);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMugLike2} />);
         readFnParamState2 = readFn.mock.calls[0][0];
@@ -1045,12 +1044,12 @@ describe('229a728, react renders on hook param changes', () => {
 
       sharedVerifyCasesOf_read_fn_called_on_rerender_but_hook_return_unhanged();
 
-      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s checked state and its fields in ref and value', () => {
-        expect(readFnParamState2).toBe(checkedState2);
-        ownKeysOfObjectLike(checkedState2).forEach((key) => {
-          expect(readFnParamState2[key]).toBe(checkedState2[key]);
+      test('[verify] the read fn on-rerender param state and its fields equal the second mug_s got state and its fields in ref and value', () => {
+        expect(readFnParamState2).toBe(gotState2);
+        ownKeysOfObjectLike(gotState2).forEach((key) => {
+          expect(readFnParamState2[key]).toBe(gotState2[key]);
         });
-        expect(readFnParamState2).toStrictEqual(checkedState2);
+        expect(readFnParamState2).toStrictEqual(gotState2);
       });
     });
 
@@ -1084,7 +1083,7 @@ describe('229a728, react renders on hook param changes', () => {
         const { rerender } = render(<AComponent mugLike={aMugLike1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
-        checkedState2 = check(aMugLike2);
+        gotState2 = getIt(aMugLike2);
         readFn.mockClear();
         rerender(<AComponent mugLike={aMugLike2} />);
         hookReturn2 = tapHookReturn.mock.calls[1][0];
@@ -1122,7 +1121,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
   });
 
-  describe('adfe9bc, the rest args change', () => {
+  describe('adfe9bc, the read op and the mug-like keep unchanged, the rest args change', () => {
     const aMug: Mug<AState> = {
       [construction]: {
         s: 'asd',
@@ -1303,6 +1302,359 @@ describe('229a728, react renders on hook param changes', () => {
     });
 
     describe('c5d656a, initially renders with an extra, rerenders with the same extra, [cite] .:3d70420', () => {
+      const extra: Pick<ObjectState, 'o'> = {
+        o: {
+          s: 'asd',
+        },
+      };
+
+      let hookReturn1: Pick<ObjectState, 'o'>, hookReturn2: Pick<ObjectState, 'o'>;
+
+      test('[action]', () => {
+        const { rerender } = render(<AComponent extra={extra} />);
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+
+        readFn.mockClear();
+        rerender(<AComponent extra={extra} />);
+        hookReturn2 = tapHookReturn.mock.calls[1][0];
+      });
+
+      test('[verify] the read fn is not called on rerender', () => {
+        expect(readFn).not.toHaveBeenCalled();
+      });
+
+      test('[verify] the component render is called 2 times', () => {
+        expect(AComponent).toHaveBeenCalledTimes(2);
+      });
+
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
+        expect(hookReturn2).toBe(hookReturn1);
+        ownKeysOfObjectLike(hookReturn1).forEach((key) => {
+          expect(hookReturn2[key]).toBe(hookReturn1[key]);
+        });
+        expect(hookReturn2).toStrictEqual(hookReturn1);
+      });
+    });
+  });
+
+  describe('a11c7f9, the read action changes, [cite] .:cbf2e14', () => {
+    const aMug: Mug<AState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+        potentialMuggyObject: {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+        },
+      },
+    };
+
+    const [r] = upon(aMug);
+
+    const readFn1 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'ba9' }));
+
+    const readAction1 = r(readFn1);
+
+    const readFn2 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'c50' }));
+
+    const readAction2 = r(readFn2);
+
+    type Props = { readAction: any };
+
+    const AComponent = jest.fn(({ readAction }: Props) => {
+      const hookReturn = useIt(readAction);
+      tapHookReturn(hookReturn);
+      return <div />;
+    });
+
+    describe('d66f8ed, initially renders with read action#1', () => {
+      let gotState1: AState;
+      let readFn1ParamState1: AState, readFn1Return1: ObjectState['o'];
+      let hookReturn1: ObjectState['o'];
+
+      test('[action]', () => {
+        gotState1 = getIt(aMug);
+        render(<AComponent readAction={readAction1} />);
+        readFn1ParamState1 = readFn1.mock.calls[0][0];
+        readFn1Return1 = readFn1.mock.results[0].value;
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+      });
+
+      test('[verify] read fn#1 is called 1 time', () => {
+        expect(readFn1).toHaveBeenCalledTimes(1);
+      });
+
+      test('[verify] read fn#1 param state and its fields equal the got state and its fields in ref and value', () => {
+        expect(readFn1ParamState1).toBe(gotState1);
+        ownKeysOfObjectLike(gotState1).forEach((key) => {
+          expect(readFn1ParamState1[key]).toBe(gotState1[key]);
+        });
+        expect(readFn1ParamState1).toStrictEqual(gotState1);
+      });
+
+      test('[verify] the component render is called 1 time', () => {
+        expect(AComponent).toHaveBeenCalledTimes(1);
+      });
+
+      test('[verify] the hook return equals read fn#1 return in ref and value', () => {
+        expect(hookReturn1).toBe(readFn1Return1);
+        ownKeysOfObjectLike(readFn1Return1).forEach((key) => {
+          expect(hookReturn1[key]).toBe(readFn1Return1[key]);
+        });
+        expect(hookReturn1).toStrictEqual(readFn1Return1);
+      });
+    });
+
+    describe('b12755e, initially renders with read action#1, rerenders with read action#2, [cite] .:d66f8ed', () => {
+      let hookReturn1: ObjectState['o'], hookReturn2: ObjectState['o'];
+
+      test('[action]', () => {
+        const { rerender } = render(<AComponent readAction={readAction1} />);
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+
+        readFn1.mockClear();
+        rerender(<AComponent readAction={readAction2} />);
+        hookReturn2 = tapHookReturn.mock.calls[1][0];
+      });
+
+      test('[verify] read fn#1 is not called on rerender', () => {
+        expect(readFn1).not.toHaveBeenCalled();
+      });
+
+      test('[verify] read fn#2 is not called', () => {
+        expect(readFn2).not.toHaveBeenCalled();
+      });
+
+      test('[verify] the component render is called 2 times', () => {
+        expect(AComponent).toHaveBeenCalledTimes(2);
+      });
+
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
+        expect(hookReturn2).toBe(hookReturn1);
+        ownKeysOfObjectLike(hookReturn1).forEach((key) => {
+          expect(hookReturn2[key]).toBe(hookReturn1[key]);
+        });
+        expect(hookReturn2).toStrictEqual(hookReturn1);
+      });
+    });
+
+    describe('a5f4e60, initially renders and rerenders with read action#1, [cite] .:d66f8ed', () => {
+      let hookReturn1: ObjectState['o'], hookReturn2: ObjectState['o'];
+
+      test('[action]', () => {
+        const { rerender } = render(<AComponent readAction={readAction1} />);
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+
+        readFn1.mockClear();
+        rerender(<AComponent readAction={readAction1} />);
+        hookReturn2 = tapHookReturn.mock.calls[1][0];
+      });
+
+      test('[verify] read fn#1 is not called on rerender', () => {
+        expect(readFn1).not.toHaveBeenCalled();
+      });
+
+      test('[verify] the component render is called 2 times', () => {
+        expect(AComponent).toHaveBeenCalledTimes(2);
+      });
+
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
+        expect(hookReturn2).toBe(hookReturn1);
+        ownKeysOfObjectLike(hookReturn1).forEach((key) => {
+          expect(hookReturn2[key]).toBe(hookReturn1[key]);
+        });
+        expect(hookReturn2).toStrictEqual(hookReturn1);
+      });
+    });
+  });
+
+  describe('6c88bf9, the read action keeps unchanged, the rest args change, [cite] .:adfe9bc', () => {
+    const aMug: Mug<AState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+        potentialMuggyObject: {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+        },
+      },
+    };
+
+    const [r] = upon(aMug);
+
+    const readFn = jest.fn(
+      (state: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
+        return {
+          o: {
+            s: `${extra.o.s}:${state.potentialMuggyObject.o.s}`,
+          },
+        };
+      },
+    );
+
+    const readAction = r(readFn);
+
+    type Props = {
+      extra: Pick<ObjectState, 'o'>;
+    };
+
+    const AComponent = jest.fn(({ extra }: Props) => {
+      const hookReturn = useIt(readAction, extra);
+      tapHookReturn(hookReturn);
+      return <div />;
+    });
+
+    describe('95ac077, initially renders with an extra', () => {
+      const extra: Pick<ObjectState, 'o'> = {
+        o: {
+          s: 'asd',
+        },
+      };
+
+      let readFnParamExtra1: Pick<ObjectState, 'o'>;
+      let readFnReturn1: Pick<ObjectState, 'o'>;
+      let hookReturn1: Pick<ObjectState, 'o'>;
+
+      test('[action]', () => {
+        render(<AComponent extra={extra} />);
+        readFnParamExtra1 = readFn.mock.calls[0][1];
+        readFnReturn1 = readFn.mock.results[0].value;
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+      });
+
+      test('[verify] the read fn is called 1 time', () => {
+        expect(readFn).toHaveBeenCalledTimes(1);
+      });
+
+      test('[verify] the read fn param extra and its fields equal the input extra and its fields in ref and value', () => {
+        expect(readFnParamExtra1).toBe(extra);
+        ownKeysOfObjectLike(extra).forEach((key) => {
+          expect(readFnParamExtra1[key]).toBe(extra[key]);
+        });
+        expect(readFnParamExtra1).toStrictEqual(extra);
+      });
+
+      test('[verify] the component render is called 1 time', () => {
+        expect(AComponent).toHaveBeenCalledTimes(1);
+      });
+
+      test('[verify] the hook return and its fields equal the read fn return and its fields in ref and value', () => {
+        expect(hookReturn1).toBe(readFnReturn1);
+        ownKeysOfObjectLike(readFnReturn1).forEach((key) => {
+          expect(readFnReturn1[key]).toBe(hookReturn1[key]);
+        });
+        expect(readFnReturn1).toStrictEqual(hookReturn1);
+      });
+    });
+
+    describe('4989f19, initially renders with an extra, rerenders with a second extra different in ref and value, [cite] .:95ac077', () => {
+      const extra1: Pick<ObjectState, 'o'> = {
+        o: {
+          s: 'asd',
+        },
+      };
+
+      const extra2: Pick<ObjectState, 'o'> = {
+        o: {
+          s: 'sdf',
+        },
+      };
+
+      let readFnParamExtra2: Pick<ObjectState, 'o'>;
+      let readFnReturn2: Pick<ObjectState, 'o'>;
+      let hookReturn1: Pick<ObjectState, 'o'>, hookReturn2: Pick<ObjectState, 'o'>;
+
+      test('[action]', () => {
+        const { rerender } = render(<AComponent extra={extra1} />);
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+
+        readFn.mockClear();
+        rerender(<AComponent extra={extra2} />);
+        readFnParamExtra2 = readFn.mock.calls[0][1];
+        readFnReturn2 = readFn.mock.results[0].value;
+        hookReturn2 = tapHookReturn.mock.calls[1][0];
+      });
+
+      test('[verify] the read fn is called 1 time on rerender', () => {
+        expect(readFn).toHaveBeenCalledTimes(1);
+      });
+
+      test('[verify] the component render is called 2 times', () => {
+        expect(AComponent).toHaveBeenCalledTimes(2);
+      });
+
+      test('[verify] the read fn on-rerender param extra and its fields equal the second input extra and its fields in ref and value', () => {
+        expect(readFnParamExtra2).toBe(extra2);
+        ownKeysOfObjectLike(extra2).forEach((key) => {
+          expect(readFnParamExtra2[key]).toBe(extra2[key]);
+        });
+        expect(readFnParamExtra2).toStrictEqual(extra2);
+      });
+
+      test('[verify] the hook result changes in ref and value', () => {
+        expect(hookReturn2).not.toBe(hookReturn1);
+        expect(hookReturn2).not.toStrictEqual(hookReturn1);
+      });
+
+      test('[verify] the hook on-rerender result and its fields equal the read fn on-rerender return in ref and value', () => {
+        expect(hookReturn2).toBe(readFnReturn2);
+        ownKeysOfObjectLike(readFnReturn2).forEach((key) => {
+          expect(hookReturn2[key]).toBe(readFnReturn2[key]);
+        });
+        expect(hookReturn2).toStrictEqual(readFnReturn2);
+      });
+    });
+
+    describe('773afbd, initially renders with an extra, rerenders with a second extra different in ref but equal in value, [cite] .:95ac077', () => {
+      const extra1: Pick<ObjectState, 'o'> = {
+        o: {
+          s: 'asd',
+        },
+      };
+
+      const extra2: Pick<ObjectState, 'o'> = {
+        o: {
+          s: 'asd',
+        },
+      };
+
+      let hookReturn1: Pick<ObjectState, 'o'>, hookReturn2: Pick<ObjectState, 'o'>;
+
+      test('[action]', () => {
+        const { rerender } = render(<AComponent extra={extra1} />);
+        hookReturn1 = tapHookReturn.mock.calls[0][0];
+
+        readFn.mockClear();
+        rerender(<AComponent extra={extra2} />);
+        hookReturn2 = tapHookReturn.mock.calls[1][0];
+      });
+
+      test('[verify] the read fn is not called on rerender', () => {
+        expect(readFn).not.toHaveBeenCalled();
+      });
+
+      test('[verify] the component render is called 2 times', () => {
+        expect(AComponent).toHaveBeenCalledTimes(2);
+      });
+
+      test('[verify] the hook return and its fields stay unchanged in ref and value', () => {
+        expect(hookReturn2).toBe(hookReturn1);
+        ownKeysOfObjectLike(hookReturn1).forEach((key) => {
+          expect(hookReturn2[key]).toBe(hookReturn1[key]);
+        });
+        expect(hookReturn2).toStrictEqual(hookReturn1);
+      });
+    });
+
+    describe('c5d656a, initially renders with an extra, rerenders with the same extra, [cite] .:95ac077', () => {
       const extra: Pick<ObjectState, 'o'> = {
         o: {
           s: 'asd',

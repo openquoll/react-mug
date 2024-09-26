@@ -1,8 +1,10 @@
 export type EmptyItem = undefined;
 
-export type AnyPlainObject = { [k: keyof any]: any } & Partial<{ length: never }>;
-
 export type AnyObjectLike = { [k: keyof any]: any };
+
+export type NotArray = { length?: never };
+
+export type AnyPlainObject = AnyObjectLike & NotArray;
 
 export type AnyArray = any[];
 
@@ -36,9 +38,11 @@ export type Post0Params<TFn extends AnyFunction> = TFn extends (
 
 export type Conserve<TA, TB> = TA extends TB ? (TB extends TA ? TA : TB) : TB;
 
-export type NumAsStr<T> = T extends number ? `${T}` : T;
+export type NumAsStrOnNumber<T extends number> = `${T}`;
 
-type MessyRange<
+export type NumAsStr<T> = T extends number ? NumAsStrOnNumber<T> : T;
+
+export type MessyRange<
   TEnd extends number,
   TCounter extends AnyReadonlyArray = [],
 > = TCounter['length'] extends TEnd

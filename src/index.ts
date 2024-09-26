@@ -1,6 +1,16 @@
-export { PossiblePatch, check, none, swirl } from './builtin-ops';
-export { Mug, MugError, MugLike, PossibleMug, PossibleMugLike, State, construction } from './mug';
+export { upon } from './actions';
+export { PossiblePatch, getIt, none, setIt } from './builtin-ops';
+export {
+  Mug,
+  MugError,
+  MugLike,
+  PossibleMug,
+  PossibleMugLike,
+  State,
+  construction,
+  flat,
+  pure,
+} from './mug';
+export { r, w } from './op-mech';
 export { useIt } from './react-integration';
-export { r, w } from './rw';
-export { flat, upon } from './sugar';
 export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';

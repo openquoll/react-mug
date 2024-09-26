@@ -1,4 +1,4 @@
-import { check, construction, Mug, MugLike, r, swirl } from '../src';
+import { construction, flat, getIt, Mug, MugLike, pure, r, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('dd10061, operates by an object state custom read op', () => {
@@ -32,8 +32,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       },
     };
 
-    let checkedAState: AState;
-    let checkedObjectState: ObjectState;
+    let gotAState: AState;
     let fnParamState1: AState, fnParamState2: AState;
     let fnParamExtra1: Pick<ObjectState, 'o'>, fnParamExtra2: Pick<ObjectState, 'o'>;
     let fnReturn1: Pick<ObjectState, 'o'>, fnReturn2: Pick<ObjectState, 'o'>;
@@ -41,19 +40,19 @@ describe('dd10061, operates by an object state custom read op', () => {
 
     /**
      * Required variables:
-     * - checkedAState
+     * - gotAState
      * - opParamState1, opParamState2
      * - opParamExtra1, opParamExtra2
      * - opReturn1, opReturn2,
      * - opReturn1, opReturn2
      */
     function sharedVerifyCases() {
-      test('[verify] the first fn-param state and its fields equal the checked state and its fields in ref and value', () => {
-        expect(fnParamState1).toBe(checkedAState);
-        ownKeysOfObjectLike(checkedAState).forEach((key) => {
-          expect(fnParamState1[key]).toBe(checkedAState[key]);
+      test('[verify] the first fn-param state and its fields equal the got state and its fields in ref and value', () => {
+        expect(fnParamState1).toBe(gotAState);
+        ownKeysOfObjectLike(gotAState).forEach((key) => {
+          expect(fnParamState1[key]).toBe(gotAState[key]);
         });
-        expect(fnParamState1).toStrictEqual(checkedAState);
+        expect(fnParamState1).toStrictEqual(gotAState);
       });
 
       test('[verify] the fn-param state and its fields stay unchanged in ref and value', () => {
@@ -103,7 +102,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       });
     }
 
-    describe('efdaecb, continuously reads a constant plain object state', () => {
+    describe('efdaecb, continuously reads a constant plain object state, [cite] 002', () => {
       const aState: AState = {
         s: 'asd',
         o: {
@@ -118,7 +117,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       };
 
       test('[action]', () => {
-        checkedAState = check(aState);
+        gotAState = getIt(aState);
 
         opReturn1 = customReadOp(aState, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
@@ -131,18 +130,10 @@ describe('dd10061, operates by an object state custom read op', () => {
         fnReturn2 = customReadFn.mock.results[1].value;
       });
 
-      test('[verify] the first fn-param state and its fields equal the input state and its fields in ref and value', () => {
-        expect(fnParamState1).toBe(aState);
-        ownKeysOfObjectLike(aState).forEach((key) => {
-          expect(fnParamState1[key]).toBe(aState[key]);
-        });
-        expect(fnParamState1).toStrictEqual(aState);
-      });
-
       sharedVerifyCases();
     });
 
-    describe('c2f5436, continuously reads a plain object mug before write', () => {
+    describe('c2f5436, continuously reads a plain object mug before write, [cite] 001', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -159,7 +150,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       };
 
       test('[action]', () => {
-        checkedAState = check(aMug);
+        gotAState = getIt(aMug);
 
         opReturn1 = customReadOp(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
@@ -172,18 +163,10 @@ describe('dd10061, operates by an object state custom read op', () => {
         fnReturn2 = customReadFn.mock.results[1].value;
       });
 
-      test('[verify] the first fn-param state and its fields equal the mug_s construction and its fields in ref and value', () => {
-        expect(fnParamState1).toBe(aMug[construction]);
-        ownKeysOfObjectLike(aMug[construction]).forEach((key) => {
-          expect(fnParamState1[key]).toBe(aMug[construction][key]);
-        });
-        expect(fnParamState1).toStrictEqual(aMug[construction]);
-      });
-
       sharedVerifyCases();
     });
 
-    describe('888be13, continuously reads a plain object mug after write', () => {
+    describe('888be13, continuously reads a plain object mug after write, [cite] 001', () => {
       const aMug: Mug<AState> = {
         [construction]: {
           s: 'asd',
@@ -200,11 +183,11 @@ describe('dd10061, operates by an object state custom read op', () => {
       };
 
       test('[action]', () => {
-        swirl(aMug, {
+        setIt(aMug, {
           potentialMuggyObject: { s: 'sdf' },
         });
-        checkedAState = check(aMug);
-        expect(checkedAState).toMatchObject({
+        gotAState = getIt(aMug);
+        expect(gotAState).toMatchObject({
           potentialMuggyObject: { s: 'sdf' },
         });
 
@@ -222,7 +205,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       sharedVerifyCases();
     });
 
-    describe('3c73402, continuously reads a class-defined object mug before write', () => {
+    describe('3c73402, continuously reads a class-defined object mug before write, [cite] 001', () => {
       class AMug implements Mug<AState> {
         [construction] = {
           s: 'asd',
@@ -251,7 +234,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       const aMug = new AMug();
 
       test('[action]', () => {
-        checkedAState = check(aMug);
+        gotAState = getIt(aMug);
 
         opReturn1 = customReadOp(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
@@ -264,18 +247,10 @@ describe('dd10061, operates by an object state custom read op', () => {
         fnReturn2 = customReadFn.mock.results[1].value;
       });
 
-      test('[verify] the first fn-param state and its fields equal the mug_s construction and its fields in ref and value', () => {
-        expect(fnParamState1).toBe(aMug[construction]);
-        ownKeysOfObjectLike(aMug[construction]).forEach((key) => {
-          expect(fnParamState1[key]).toBe(aMug[construction][key]);
-        });
-        expect(fnParamState1).toStrictEqual(aMug[construction]);
-      });
-
       sharedVerifyCases();
     });
 
-    describe('e8d45b9, continuously reads a class-defined object mug after write', () => {
+    describe('e8d45b9, continuously reads a class-defined object mug after write, [cite] 001', () => {
       class AMug implements Mug<AState> {
         [construction] = {
           s: 'asd',
@@ -304,11 +279,11 @@ describe('dd10061, operates by an object state custom read op', () => {
       const aMug = new AMug();
 
       test('[action]', () => {
-        swirl(aMug, {
+        setIt(aMug, {
           potentialMuggyObject: { s: 'sdf' },
         });
-        checkedAState = check(aMug);
-        expect(checkedAState).toMatchObject({
+        gotAState = getIt(aMug);
+        expect(gotAState).toMatchObject({
           potentialMuggyObject: { s: 'sdf' },
         });
 
@@ -326,7 +301,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       sharedVerifyCases();
     });
 
-    describe('6e9b3ce, continuously reads a constant mug-nested object mug-like before write', () => {
+    describe('6e9b3ce, continuously reads a constant mug-nested object mug-like before write, [cite] 002', () => {
       const objectMug: Mug<ObjectState> = {
         [construction]: {
           s: 'asd',
@@ -345,8 +320,7 @@ describe('dd10061, operates by an object state custom read op', () => {
       };
 
       test('[action]', () => {
-        checkedAState = check(aMugLike);
-        checkedObjectState = check(objectMug);
+        gotAState = getIt(aMugLike);
 
         opReturn1 = customReadOp(aMugLike, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
@@ -357,41 +331,12 @@ describe('dd10061, operates by an object state custom read op', () => {
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
-      });
-
-      test('[verify] the first fn-param state differs from the mug-like in ref', () => {
-        expect(fnParamState1).not.toBe(aMugLike);
-      });
-
-      test('[verify] the first fn-param state_s muggy object field and its child fields equal the object mug_s construction and its fields in ref and value', () => {
-        expect(fnParamState1.potentialMuggyObject).toBe(objectMug[construction]);
-        ownKeysOfObjectLike(objectMug[construction]).forEach((key) => {
-          expect(fnParamState1.potentialMuggyObject[key]).toBe(objectMug[construction][key]);
-        });
-        expect(fnParamState1.potentialMuggyObject).toStrictEqual(objectMug[construction]);
-      });
-
-      test('[verify] the first fn-param state_s muggy object field and its child fields equal the checked object state and its fields in ref and value', () => {
-        expect(fnParamState1.potentialMuggyObject).toBe(checkedObjectState);
-        ownKeysOfObjectLike(objectMug[construction]).forEach((key) => {
-          expect(fnParamState1.potentialMuggyObject[key]).toBe(checkedObjectState[key]);
-        });
-        expect(fnParamState1.potentialMuggyObject).toStrictEqual(checkedObjectState);
-      });
-
-      test('[verify] the first fn-param state_s non-muggy fields equal the mug-like_s non-muggy fields in ref and value', () => {
-        ownKeysOfObjectLike(aMugLike)
-          .filter((key) => key !== 'potentialMuggyObject')
-          .forEach((key) => {
-            expect(fnParamState1[key]).toBe(aMugLike[key]);
-            expect(fnParamState1[key]).toStrictEqual(aMugLike[key]);
-          });
       });
 
       sharedVerifyCases();
     });
 
-    describe('25cfa11, continuously reads a constant mug-nested object mug-like after write', () => {
+    describe('25cfa11, continuously reads a constant mug-nested object mug-like after write, [cite] 002', () => {
       const objectMug: Mug<ObjectState> = {
         [construction]: {
           s: 'asd',
@@ -410,15 +355,13 @@ describe('dd10061, operates by an object state custom read op', () => {
       };
 
       test('[action]', () => {
-        swirl(aMugLike, {
+        setIt(aMugLike, {
           potentialMuggyObject: { s: 'sdf' },
         });
-        checkedAState = check(aMugLike);
-        expect(checkedAState).toMatchObject({
+        gotAState = getIt(aMugLike);
+        expect(gotAState).toMatchObject({
           potentialMuggyObject: { s: 'sdf' },
         });
-        checkedObjectState = check(objectMug);
-        expect(checkedObjectState).toMatchObject({ s: 'sdf' });
 
         opReturn1 = customReadOp(aMugLike, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
@@ -431,24 +374,25 @@ describe('dd10061, operates by an object state custom read op', () => {
         fnReturn2 = customReadFn.mock.results[1].value;
       });
 
-      test('[verify] the first fn-param state_s muggy object field and its child fields equal the checked object state and its fields in ref and value', () => {
-        expect(fnParamState1.potentialMuggyObject).toBe(checkedObjectState);
-        ownKeysOfObjectLike(checkedObjectState).forEach((key) => {
-          expect(fnParamState1.potentialMuggyObject[key]).toBe(checkedObjectState[key]);
-        });
-        expect(fnParamState1.potentialMuggyObject).toStrictEqual(checkedObjectState);
-      });
-
-      test('[verify] the first fn-param state_s non-muggy fields equal the mug-like_s non-muggy fields in ref and value', () => {
-        ownKeysOfObjectLike(aMugLike)
-          .filter((key) => key !== 'potentialMuggyObject')
-          .forEach((key) => {
-            expect(fnParamState1[key]).toBe(aMugLike[key]);
-            expect(fnParamState1[key]).toStrictEqual(aMugLike[key]);
-          });
-      });
-
       sharedVerifyCases();
+    });
+
+    describe('87d8b65, calls "r" with the op', () => {
+      test('[action, verify] the return equals the op in ref', () => {
+        expect(r(customReadOp)).toBe(customReadOp);
+      });
+    });
+
+    describe('cf2f9b9, calls "flat" with the op', () => {
+      test('[action, verify] the return equals the op in ref', () => {
+        expect(flat(customReadOp)).toBe(customReadOp);
+      });
+    });
+
+    describe('9e9d139, calls "pure" with the op', () => {
+      test('[action, verify] the return equals the fn in ref', () => {
+        expect(pure(customReadOp)).toBe(customReadFn);
+      });
     });
   });
 
@@ -478,15 +422,15 @@ describe('dd10061, operates by an object state custom read op', () => {
       };
 
       test('[action, verify] the op return and its fields stay unchanged in ref and value', () => {
-        swirl(aMugLike, {
+        setIt(aMugLike, {
           potentialMuggyObject: { s: 'sdf' },
         });
-        const checkedAState = check(aMugLike);
-        expect(checkedAState).toMatchObject({
+        const gotAState = getIt(aMugLike);
+        expect(gotAState).toMatchObject({
           potentialMuggyObject: { s: 'sdf' },
         });
-        const checkedObjectState = check(objectMug);
-        expect(checkedObjectState).toMatchObject({ s: 'sdf' });
+        const gotObjectState = getIt(objectMug);
+        expect(gotObjectState).toMatchObject({ s: 'sdf' });
 
         const opReturn1 = customReadOp(aMugLike);
 

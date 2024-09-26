@@ -1,4 +1,4 @@
-import { check, construction, Mug, MugLike, w } from '../src';
+import { construction, flat, getIt, Mug, MugLike, pure, w } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('900ce35, operates by an object state custom write op', () => {
@@ -18,8 +18,8 @@ describe('900ce35, operates by an object state custom write op', () => {
 
     const customWriteOp = w(customWriteFn);
 
-    let checkedAStateBefore: AState, checkedAStateAfter: AState;
-    let checkedObjectStateBefore: ObjectState, checkedObjectStateAfter: ObjectState;
+    let gotAStateBefore: AState, gotAStateAfter: AState;
+    let gotObjectStateBefore: ObjectState, gotObjectStateAfter: ObjectState;
     let fnParamState: AState, fnReturn: AState, opReturn: any;
 
     describe('5fb96fe, writes a constant plain object state, [cite] 002:31f3463', () => {
@@ -76,29 +76,29 @@ describe('900ce35, operates by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMug);
+        gotAStateBefore = getIt(aMug);
 
         opReturn = customWriteOp(aMug);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMug);
+        gotAStateAfter = getIt(aMug);
       });
 
-      test('[verify] the fn-param state and its fields equal before-write checked state and its fields in ref and value', () => {
-        expect(fnParamState).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(fnParamState[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the fn-param state and its fields equal before-write got state and its fields in ref and value', () => {
+        expect(fnParamState).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(fnParamState[key]).toBe(gotAStateBefore[key]);
         });
-        expect(fnParamState).toStrictEqual(checkedAStateBefore);
+        expect(fnParamState).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the checked state and its fields stays unchanged in ref and value', () => {
-        expect(checkedAStateAfter).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the got state and its fields stays unchanged in ref and value', () => {
+        expect(gotAStateAfter).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
         });
-        expect(checkedAStateAfter).toStrictEqual(checkedAStateBefore);
+        expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -140,29 +140,29 @@ describe('900ce35, operates by an object state custom write op', () => {
       const aMug = new AMug();
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMug);
+        gotAStateBefore = getIt(aMug);
 
         opReturn = customWriteOp(aMug);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMug);
+        gotAStateAfter = getIt(aMug);
       });
 
-      test('[verify] the fn-param state and its fields equal before-write checked state and its fields in ref and value', () => {
-        expect(fnParamState).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(fnParamState[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the fn-param state and its fields equal before-write got state and its fields in ref and value', () => {
+        expect(fnParamState).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(fnParamState[key]).toBe(gotAStateBefore[key]);
         });
-        expect(fnParamState).toStrictEqual(checkedAStateBefore);
+        expect(fnParamState).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the checked state and its fields stays unchanged in ref and value', () => {
-        expect(checkedAStateAfter).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the got state and its fields stays unchanged in ref and value', () => {
+        expect(gotAStateAfter).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
         });
-        expect(checkedAStateAfter).toStrictEqual(checkedAStateBefore);
+        expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -194,45 +194,45 @@ describe('900ce35, operates by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMugLike);
-        checkedObjectStateBefore = check(objectMug);
+        gotAStateBefore = getIt(aMugLike);
+        gotObjectStateBefore = getIt(objectMug);
 
         opReturn = customWriteOp(aMugLike);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMugLike);
-        checkedObjectStateAfter = check(objectMug);
+        gotAStateAfter = getIt(aMugLike);
+        gotObjectStateAfter = getIt(objectMug);
       });
 
-      test('[verify] the fn-param state and its fields equal before-write checked state and its fields in ref and value', () => {
-        expect(fnParamState).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(fnParamState[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the fn-param state and its fields equal before-write got state and its fields in ref and value', () => {
+        expect(fnParamState).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(fnParamState[key]).toBe(gotAStateBefore[key]);
         });
-        expect(fnParamState).toStrictEqual(checkedAStateBefore);
+        expect(fnParamState).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the checked state and its fields stays unchanged in ref and value', () => {
-        expect(checkedAStateAfter).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the got state and its fields stays unchanged in ref and value', () => {
+        expect(gotAStateAfter).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
         });
-        expect(checkedAStateAfter).toStrictEqual(checkedAStateBefore);
+        expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the checked state_s muggy object field and its child fields keep equal to the object mug_s checked state and its fields in ref and value', () => {
-        expect(checkedAStateBefore.potentialMuggyObject).toBe(checkedObjectStateBefore);
-        ownKeysOfObjectLike(checkedObjectStateBefore).forEach((key) => {
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toBe(checkedObjectStateBefore[key]);
+      test('[verify] the got state_s muggy object field and its child fields keep equal to the object mug_s got state and its fields in ref and value', () => {
+        expect(gotAStateBefore.potentialMuggyObject).toBe(gotObjectStateBefore);
+        ownKeysOfObjectLike(gotObjectStateBefore).forEach((key) => {
+          expect(gotAStateBefore.potentialMuggyObject[key]).toBe(gotObjectStateBefore[key]);
         });
-        expect(checkedAStateBefore.potentialMuggyObject).toStrictEqual(checkedObjectStateBefore);
+        expect(gotAStateBefore.potentialMuggyObject).toStrictEqual(gotObjectStateBefore);
 
-        expect(checkedAStateAfter.potentialMuggyObject).toBe(checkedObjectStateAfter);
-        ownKeysOfObjectLike(checkedObjectStateAfter).forEach((key) => {
-          expect(checkedAStateAfter.potentialMuggyObject[key]).toBe(checkedObjectStateAfter[key]);
+        expect(gotAStateAfter.potentialMuggyObject).toBe(gotObjectStateAfter);
+        ownKeysOfObjectLike(gotObjectStateAfter).forEach((key) => {
+          expect(gotAStateAfter.potentialMuggyObject[key]).toBe(gotObjectStateAfter[key]);
         });
-        expect(checkedAStateAfter.potentialMuggyObject).toStrictEqual(checkedObjectStateAfter);
+        expect(gotAStateAfter.potentialMuggyObject).toStrictEqual(gotObjectStateAfter);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -245,6 +245,24 @@ describe('900ce35, operates by an object state custom write op', () => {
           expect(opReturn[key]).toBe(aMugLike[key]);
         });
         expect(opReturn).toStrictEqual(aMugLike);
+      });
+    });
+
+    describe('87d8b65, calls "w" with the op', () => {
+      test('[action, verify] the return equals the op in ref', () => {
+        expect(w(customWriteOp)).toBe(customWriteOp);
+      });
+    });
+
+    describe('cf2f9b9, calls "flat" with the op', () => {
+      test('[action, verify] the return equals the op in ref', () => {
+        expect(flat(customWriteOp)).toBe(customWriteOp);
+      });
+    });
+
+    describe('9e9d139, calls "pure" with the op', () => {
+      test('[action, verify] the return equals the fn in ref', () => {
+        expect(pure(customWriteOp)).toBe(customWriteFn);
       });
     });
   });
@@ -263,8 +281,8 @@ describe('900ce35, operates by an object state custom write op', () => {
 
     const customWriteOp = w(customWriteFn);
 
-    let checkedAStateBefore: AState, checkedAStateAfter: AState;
-    let checkedObjectStateBefore: ObjectState, checkedObjectStateAfter: ObjectState;
+    let gotAStateBefore: AState, gotAStateAfter: AState;
+    let gotObjectStateBefore: ObjectState, gotObjectStateAfter: ObjectState;
     let fnParamState: AState, fnReturn: AState, opReturn: any;
 
     describe('f4df6bd, writes a plain object state with a different string', () => {
@@ -342,13 +360,13 @@ describe('900ce35, operates by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMug);
+        gotAStateBefore = getIt(aMug);
 
         opReturn = customWriteOp(aMug, 'sdf');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMug);
+        gotAStateAfter = getIt(aMug);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -360,25 +378,25 @@ describe('900ce35, operates by an object state custom write op', () => {
         expect(opReturn).toStrictEqual(aMug);
       });
 
-      test('[verify] the before-write checked state differs from the fn return in ref', () => {
-        expect(checkedAStateBefore).not.toBe(fnReturn);
+      test('[verify] the before-write got state differs from the fn return in ref', () => {
+        expect(gotAStateBefore).not.toBe(fnReturn);
       });
 
-      test('[verify] the before-write checked state_s object field and potential muggy object field_s object field equal the fn return_s counterpart fields in ref and value', () => {
-        expect(checkedAStateBefore.o).toBe(fnReturn.o);
-        expect(checkedAStateBefore.o).toStrictEqual(fnReturn.o);
-        expect(checkedAStateBefore.potentialMuggyObject.o).toBe(fnReturn.potentialMuggyObject.o);
-        expect(checkedAStateBefore.potentialMuggyObject.o).toStrictEqual(
+      test('[verify] the before-write got state_s object field and potential muggy object field_s object field equal the fn return_s counterpart fields in ref and value', () => {
+        expect(gotAStateBefore.o).toBe(fnReturn.o);
+        expect(gotAStateBefore.o).toStrictEqual(fnReturn.o);
+        expect(gotAStateBefore.potentialMuggyObject.o).toBe(fnReturn.potentialMuggyObject.o);
+        expect(gotAStateBefore.potentialMuggyObject.o).toStrictEqual(
           fnReturn.potentialMuggyObject.o,
         );
       });
 
-      test('[verify] the after-write checked state and its fields equal the fn return and its fields in ref and value', () => {
-        expect(checkedAStateAfter).toBe(fnReturn);
+      test('[verify] the after-write got state and its fields equal the fn return and its fields in ref and value', () => {
+        expect(gotAStateAfter).toBe(fnReturn);
         ownKeysOfObjectLike(fnReturn).forEach((key) => {
-          expect(checkedAStateAfter[key]).toBe(fnReturn[key]);
+          expect(gotAStateAfter[key]).toBe(fnReturn[key]);
         });
-        expect(checkedAStateAfter).toStrictEqual(fnReturn);
+        expect(gotAStateAfter).toStrictEqual(fnReturn);
       });
     });
 
@@ -399,13 +417,13 @@ describe('900ce35, operates by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMug);
+        gotAStateBefore = getIt(aMug);
 
         opReturn = customWriteOp(aMug, 'asd');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMug);
+        gotAStateAfter = getIt(aMug);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -417,30 +435,30 @@ describe('900ce35, operates by an object state custom write op', () => {
         expect(opReturn).toStrictEqual(aMug);
       });
 
-      test('[verify] the before-write checked state and its potential muggy object field differ from the fn return and its counterpart field in ref', () => {
-        expect(checkedAStateBefore).not.toBe(fnReturn);
+      test('[verify] the before-write got state and its potential muggy object field differ from the fn return and its counterpart field in ref', () => {
+        expect(gotAStateBefore).not.toBe(fnReturn);
       });
 
-      test('[verify] the before-write checked state_s string field, object field, and the potential muggy object field_s child fields equal the fn return_s counterpart fields in ref and value', () => {
-        expect(checkedAStateBefore.s).toBe(fnReturn.s);
-        expect(checkedAStateBefore.o).toBe(fnReturn.o);
-        expect(checkedAStateBefore.o).toStrictEqual(fnReturn.o);
+      test('[verify] the before-write got state_s string field, object field, and the potential muggy object field_s child fields equal the fn return_s counterpart fields in ref and value', () => {
+        expect(gotAStateBefore.s).toBe(fnReturn.s);
+        expect(gotAStateBefore.o).toBe(fnReturn.o);
+        expect(gotAStateBefore.o).toStrictEqual(fnReturn.o);
         ownKeysOfObjectLike(fnReturn.potentialMuggyObject).forEach((key) => {
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toBe(
+          expect(gotAStateBefore.potentialMuggyObject[key]).toBe(
             fnReturn.potentialMuggyObject[key],
           );
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toStrictEqual(
+          expect(gotAStateBefore.potentialMuggyObject[key]).toStrictEqual(
             fnReturn.potentialMuggyObject[key],
           );
         });
       });
 
-      test('[verify] the checked state stays unchanged in ref and value', () => {
-        expect(checkedAStateAfter).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the got state stays unchanged in ref and value', () => {
+        expect(gotAStateAfter).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
         });
-        expect(checkedAStateAfter).toStrictEqual(checkedAStateBefore);
+        expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
     });
 
@@ -463,15 +481,15 @@ describe('900ce35, operates by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMugLike);
-        checkedObjectStateBefore = check(objectMug);
+        gotAStateBefore = getIt(aMugLike);
+        gotObjectStateBefore = getIt(objectMug);
 
         opReturn = customWriteOp(aMugLike, 'sdf');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMugLike);
-        checkedObjectStateAfter = check(objectMug);
+        gotAStateAfter = getIt(aMugLike);
+        gotObjectStateAfter = getIt(objectMug);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -496,63 +514,57 @@ describe('900ce35, operates by an object state custom write op', () => {
         expect(opReturn.potentialMuggyObject).toStrictEqual(objectMug);
       });
 
-      test('[verify] the before-write checked state differs from the fn return in ref', () => {
-        expect(checkedAStateBefore).not.toBe(fnReturn);
+      test('[verify] the before-write got state differs from the fn return in ref', () => {
+        expect(gotAStateBefore).not.toBe(fnReturn);
       });
 
-      test('[verify] the before-write checked state_s object field and muggy object field_s object field equal the fn return_s counterpart fields in ref and value', () => {
-        expect(checkedAStateBefore.o).toBe(fnReturn.o);
-        expect(checkedAStateBefore.o).toStrictEqual(fnReturn.o);
-        expect(checkedAStateBefore.potentialMuggyObject.o).toBe(fnReturn.potentialMuggyObject.o);
-        expect(checkedAStateBefore.potentialMuggyObject.o).toStrictEqual(
+      test('[verify] the before-write got state_s object field and muggy object field_s object field equal the fn return_s counterpart fields in ref and value', () => {
+        expect(gotAStateBefore.o).toBe(fnReturn.o);
+        expect(gotAStateBefore.o).toStrictEqual(fnReturn.o);
+        expect(gotAStateBefore.potentialMuggyObject.o).toBe(fnReturn.potentialMuggyObject.o);
+        expect(gotAStateBefore.potentialMuggyObject.o).toStrictEqual(
           fnReturn.potentialMuggyObject.o,
         );
       });
 
-      test('[verify] the after-write checked state differs from the fn return in ref', () => {
-        expect(checkedAStateAfter).not.toBe(fnReturn);
+      test('[verify] the after-write got state differs from the fn return in ref', () => {
+        expect(gotAStateAfter).not.toBe(fnReturn);
       });
 
-      test('[verify] the after-write checked state_s muggy object field and its child fields equal the fn return_s counterpart field and its child fields in ref and value', () => {
-        expect(checkedAStateAfter.potentialMuggyObject).toBe(fnReturn.potentialMuggyObject);
+      test('[verify] the after-write got state_s muggy object field and its child fields equal the fn return_s counterpart field and its child fields in ref and value', () => {
+        expect(gotAStateAfter.potentialMuggyObject).toBe(fnReturn.potentialMuggyObject);
         ownKeysOfObjectLike(fnReturn.potentialMuggyObject).forEach((key) => {
-          expect(checkedAStateAfter.potentialMuggyObject[key]).toBe(
-            fnReturn.potentialMuggyObject[key],
-          );
+          expect(gotAStateAfter.potentialMuggyObject[key]).toBe(fnReturn.potentialMuggyObject[key]);
         });
-        expect(checkedAStateAfter.potentialMuggyObject).toStrictEqual(
-          fnReturn.potentialMuggyObject,
-        );
+        expect(gotAStateAfter.potentialMuggyObject).toStrictEqual(fnReturn.potentialMuggyObject);
       });
 
-      test('[verify] the checked state_s non-muggy fields and muggy object field_s object field stay unchanged in ref and value', () => {
-        ownKeysOfObjectLike(checkedAStateBefore)
+      test('[verify] the got state_s non-muggy fields and muggy object field_s object field stay unchanged in ref and value', () => {
+        ownKeysOfObjectLike(gotAStateBefore)
           .filter((key) => key !== 'potentialMuggyObject')
           .forEach((key) => {
-            expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
-            expect(checkedAStateAfter[key]).toStrictEqual(checkedAStateBefore[key]);
+            expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
+            expect(gotAStateAfter[key]).toStrictEqual(gotAStateBefore[key]);
           });
 
-        expect(checkedAStateAfter.potentialMuggyObject.o).toBe(
-          checkedAStateBefore.potentialMuggyObject.o,
-        );
-        expect(checkedAStateAfter.potentialMuggyObject.o).toStrictEqual(
-          checkedAStateBefore.potentialMuggyObject.o,
+        expect(gotAStateAfter.potentialMuggyObject.o).toBe(gotAStateBefore.potentialMuggyObject.o);
+        expect(gotAStateAfter.potentialMuggyObject.o).toStrictEqual(
+          gotAStateBefore.potentialMuggyObject.o,
         );
       });
 
-      test('[verify] the checked state_s muggy object field and its child fields keep equal to the object mug_s checked state and its fields in ref and value', () => {
-        expect(checkedAStateBefore.potentialMuggyObject).toBe(checkedObjectStateBefore);
-        ownKeysOfObjectLike(checkedObjectStateBefore).forEach((key) => {
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toBe(checkedObjectStateBefore[key]);
+      test('[verify] the got state_s muggy object field and its child fields keep equal to the object mug_s got state and its fields in ref and value', () => {
+        expect(gotAStateBefore.potentialMuggyObject).toBe(gotObjectStateBefore);
+        ownKeysOfObjectLike(gotObjectStateBefore).forEach((key) => {
+          expect(gotAStateBefore.potentialMuggyObject[key]).toBe(gotObjectStateBefore[key]);
         });
-        expect(checkedAStateBefore.potentialMuggyObject).toStrictEqual(checkedObjectStateBefore);
+        expect(gotAStateBefore.potentialMuggyObject).toStrictEqual(gotObjectStateBefore);
 
-        expect(checkedAStateAfter.potentialMuggyObject).toBe(checkedObjectStateAfter);
-        ownKeysOfObjectLike(checkedObjectStateAfter).forEach((key) => {
-          expect(checkedAStateAfter.potentialMuggyObject[key]).toBe(checkedObjectStateAfter[key]);
+        expect(gotAStateAfter.potentialMuggyObject).toBe(gotObjectStateAfter);
+        ownKeysOfObjectLike(gotObjectStateAfter).forEach((key) => {
+          expect(gotAStateAfter.potentialMuggyObject[key]).toBe(gotObjectStateAfter[key]);
         });
-        expect(checkedAStateAfter.potentialMuggyObject).toStrictEqual(checkedObjectStateAfter);
+        expect(gotAStateAfter.potentialMuggyObject).toStrictEqual(gotObjectStateAfter);
       });
     });
 
@@ -575,15 +587,15 @@ describe('900ce35, operates by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        checkedAStateBefore = check(aMugLike);
-        checkedObjectStateBefore = check(objectMug);
+        gotAStateBefore = getIt(aMugLike);
+        gotObjectStateBefore = getIt(objectMug);
 
         opReturn = customWriteOp(aMugLike, 'asd');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
-        checkedAStateAfter = check(aMugLike);
-        checkedObjectStateAfter = check(objectMug);
+        gotAStateAfter = getIt(aMugLike);
+        gotObjectStateAfter = getIt(objectMug);
       });
 
       test('[verify] the op return differs from the fn return in ref', () => {
@@ -608,44 +620,44 @@ describe('900ce35, operates by an object state custom write op', () => {
         expect(opReturn.potentialMuggyObject).toStrictEqual(objectMug);
       });
 
-      test('[verify] the before-write checked state and its potential muggy object field differ from the fn return and its counterpart field in ref', () => {
-        expect(checkedAStateBefore).not.toBe(fnReturn);
+      test('[verify] the before-write got state and its potential muggy object field differ from the fn return and its counterpart field in ref', () => {
+        expect(gotAStateBefore).not.toBe(fnReturn);
       });
 
-      test('[verify] the before-write checked state_s string field, object field, and the muggy object field_s child fields equal the fn return_s counterpart fields in ref and value', () => {
-        expect(checkedAStateBefore.s).toBe(fnReturn.s);
-        expect(checkedAStateBefore.o).toBe(fnReturn.o);
-        expect(checkedAStateBefore.o).toStrictEqual(fnReturn.o);
+      test('[verify] the before-write got state_s string field, object field, and the muggy object field_s child fields equal the fn return_s counterpart fields in ref and value', () => {
+        expect(gotAStateBefore.s).toBe(fnReturn.s);
+        expect(gotAStateBefore.o).toBe(fnReturn.o);
+        expect(gotAStateBefore.o).toStrictEqual(fnReturn.o);
         ownKeysOfObjectLike(fnReturn.potentialMuggyObject).forEach((key) => {
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toBe(
+          expect(gotAStateBefore.potentialMuggyObject[key]).toBe(
             fnReturn.potentialMuggyObject[key],
           );
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toStrictEqual(
+          expect(gotAStateBefore.potentialMuggyObject[key]).toStrictEqual(
             fnReturn.potentialMuggyObject[key],
           );
         });
       });
 
-      test('[verify] the checked state and its fields stay unchanged in ref and value', () => {
-        expect(checkedAStateAfter).toBe(checkedAStateBefore);
-        ownKeysOfObjectLike(checkedAStateBefore).forEach((key) => {
-          expect(checkedAStateAfter[key]).toBe(checkedAStateBefore[key]);
+      test('[verify] the got state and its fields stay unchanged in ref and value', () => {
+        expect(gotAStateAfter).toBe(gotAStateBefore);
+        ownKeysOfObjectLike(gotAStateBefore).forEach((key) => {
+          expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
         });
-        expect(checkedAStateAfter).toStrictEqual(checkedAStateBefore);
+        expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the checked state_s muggy object field and its child fields keep equal to the object mug_s checked state and its fields in ref and value', () => {
-        expect(checkedAStateBefore.potentialMuggyObject).toBe(checkedObjectStateBefore);
-        ownKeysOfObjectLike(checkedObjectStateBefore).forEach((key) => {
-          expect(checkedAStateBefore.potentialMuggyObject[key]).toBe(checkedObjectStateBefore[key]);
+      test('[verify] the got state_s muggy object field and its child fields keep equal to the object mug_s got state and its fields in ref and value', () => {
+        expect(gotAStateBefore.potentialMuggyObject).toBe(gotObjectStateBefore);
+        ownKeysOfObjectLike(gotObjectStateBefore).forEach((key) => {
+          expect(gotAStateBefore.potentialMuggyObject[key]).toBe(gotObjectStateBefore[key]);
         });
-        expect(checkedAStateBefore.potentialMuggyObject).toStrictEqual(checkedObjectStateBefore);
+        expect(gotAStateBefore.potentialMuggyObject).toStrictEqual(gotObjectStateBefore);
 
-        expect(checkedAStateAfter.potentialMuggyObject).toBe(checkedObjectStateAfter);
-        ownKeysOfObjectLike(checkedObjectStateAfter).forEach((key) => {
-          expect(checkedAStateAfter.potentialMuggyObject[key]).toBe(checkedObjectStateAfter[key]);
+        expect(gotAStateAfter.potentialMuggyObject).toBe(gotObjectStateAfter);
+        ownKeysOfObjectLike(gotObjectStateAfter).forEach((key) => {
+          expect(gotAStateAfter.potentialMuggyObject[key]).toBe(gotObjectStateAfter[key]);
         });
-        expect(checkedAStateAfter.potentialMuggyObject).toStrictEqual(checkedObjectStateAfter);
+        expect(gotAStateAfter.potentialMuggyObject).toStrictEqual(gotObjectStateAfter);
       });
     });
   });

@@ -1,4 +1,8 @@
 import {
+  _readFn,
+  _writeFn,
+  AnyReadOp,
+  AnyWriteOp,
   areEqualMugLikes,
   assignConservatively,
   construction,
@@ -6,11 +10,17 @@ import {
   isMug,
   isObjectLike,
   isPlainObject,
+  isReadOp,
   isState,
+  isWriteOp,
   MugError,
+  NotAction,
+  NotOp,
   ownKeysOfObjectLike,
   PossibleMugLike,
+  ReadOpMeta,
   State,
+  WriteOpMeta,
 } from './mug';
 import { rawStateStore } from './raw-state';
 import {
@@ -31,7 +41,7 @@ import {
 } from './shortcuts';
 import { AnyFunction, Param0, Post0Params } from './type-utils';
 
-const errMsgCircularReferencedMugFound = 'Circular-referenced mug found.';
+const errMsgOf_circular_referenced_mug_found = 'Circular-referenced mug found.';
 
 class ValueStabilizer {
   private _staleValueByMugLike = new _WeakMap();
@@ -68,7 +78,7 @@ class MugLikeReadTask {
 
   public _run(mugLike: any): any {
     if (this._readingMugLikes[_has](mugLike)) {
-      throw new MugError(errMsgCircularReferencedMugFound);
+      throw new MugError(errMsgOf_circular_referenced_mug_found);
     }
 
     if (isMug(mugLike)) {
@@ -116,7 +126,7 @@ class MugLikeWriteTask {
 
   public _run(mugLike: any, input: any): void {
     if (this._writingMugLikes[_has](mugLike)) {
-      throw new MugError(errMsgCircularReferencedMugFound);
+      throw new MugError(errMsgOf_circular_referenced_mug_found);
     }
 
     if (isMug(input)) {
@@ -181,44 +191,90 @@ class MugLikeWriteTask {
   }
 }
 
-export function r<TReadFn extends AnyFunction>(
+export type ReadOpOnEmptyParamReadFn<TReadFn extends AnyFunction> = ((
+  mugLike?: unknown,
+) => ReturnType<TReadFn>) &
+  ReadOpMeta<TReadFn>;
+
+export type ReadOpOnSimpleGenericReadFn<TReadFn extends AnyFunction> = (<
+  TMugLike extends PossibleMugLike<Param0<TReadFn>>,
+>(
+  mugLike: TMugLike,
+  ...restArgs: Post0Params<TReadFn>
+) => State<TMugLike>) &
+  ReadOpMeta<TReadFn>;
+
+export type ReadOpOnTypicalReadFn<TReadFn extends AnyFunction> = ((
+  mugLike: PossibleMugLike<Param0<TReadFn>>,
+  ...restArgs: Post0Params<TReadFn>
+) => ReturnType<TReadFn>) &
+  ReadOpMeta<TReadFn>;
+
+export type ReadOp<TReadFn extends AnyFunction> = TReadFn extends () => any
+  ? ReadOpOnEmptyParamReadFn<TReadFn>
+  : TReadFn extends <TState extends never>(state: TState, ...restArgs: any) => TState
+    ? ReadOpOnSimpleGenericReadFn<TReadFn>
+    : ReadOpOnTypicalReadFn<TReadFn>;
+
+export function r<TReadOp extends AnyReadOp>(readOp: TReadOp): TReadOp;
+export function r<TReadFn extends AnyFunction & NotOp & NotAction>(
   readFn: TReadFn,
-): TReadFn extends () => any
-  ? () => ReturnType<TReadFn>
-  : TReadFn extends <TState>(state: TState, ...restArgs: any) => TState
-    ? <TMugLike>(mugLike: TMugLike, ...restArgs: Post0Params<TReadFn>) => State<TMugLike>
-    : (
-        mugLike: PossibleMugLike<Param0<TReadFn>>,
-        ...restArgs: Post0Params<TReadFn>
-      ) => ReturnType<TReadFn>;
-export function r(readFn: (state: any, ...restArgs: any) => any) {
-  return (mugLike: any, ...restArgs: any): any => {
+): ReadOp<TReadFn>;
+export function r(read: AnyFunction): AnyFunction {
+  if (isReadOp(read)) {
+    return read;
+  }
+
+  const readOp = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the readFn as it is.
     if (isState(mugLike)) {
-      return readFn(mugLike, ...restArgs);
+      return read(mugLike, ...restArgs);
     }
 
     const rTask = new MugLikeReadTask();
     const state = rTask._run(mugLike);
     rTask._clear();
 
-    return readFn(state, ...restArgs);
+    return read(state, ...restArgs);
   };
+
+  readOp[_readFn] = read;
+
+  return readOp;
 }
 
-export function w<TWriteFn extends (...args: any) => Param0<TWriteFn>>(
-  writeFn: TWriteFn,
-): TWriteFn extends () => any
-  ? <TMugLike extends PossibleMugLike<ReturnType<TWriteFn>>>(mugLike?: TMugLike) => TMugLike
-  : <TMugLike extends PossibleMugLike<Param0<TWriteFn>>>(
-      mugLike: TMugLike,
-      ...restArgs: Post0Params<TWriteFn>
-    ) => TMugLike;
-export function w(writeFn: (state: any, ...restArgs: any) => any) {
-  return (mugLike: any, ...restArgs: any): any => {
+export type WriteOpOnEmptyParamWriteFn<TWriteFn extends AnyFunction> = (<
+  TMugLike extends PossibleMugLike<ReturnType<TWriteFn>>,
+>(
+  mugLike?: TMugLike,
+) => TMugLike) &
+  WriteOpMeta<TWriteFn>;
+
+export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
+  TMugLike extends PossibleMugLike<Param0<TWriteFn>>,
+>(
+  mugLike: TMugLike,
+  ...restArgs: Post0Params<TWriteFn>
+) => TMugLike) &
+  WriteOpMeta<TWriteFn>;
+
+export type WriteOp<TWriteFn extends AnyFunction> = TWriteFn extends () => any
+  ? WriteOpOnEmptyParamWriteFn<TWriteFn>
+  : WriteOpOnTypicalWriteFn<TWriteFn>;
+
+export function w<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): TWriteOp;
+export function w<
+  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotOp & NotAction,
+>(writeFn: TWriteFn): WriteOp<TWriteFn>;
+export function w(write: AnyFunction): AnyFunction {
+  if (isWriteOp(write)) {
+    return write;
+  }
+
+  const writeOp = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.
     if (isState(mugLike)) {
-      const newState = writeFn(mugLike, ...restArgs);
+      const newState = write(mugLike, ...restArgs);
 
       // When the new state is a state, use it as it is.
       if (isState(newState)) {
@@ -232,7 +288,7 @@ export function w(writeFn: (state: any, ...restArgs: any) => any) {
     const oldState = rTask._run(mugLike);
     rTask._clear();
 
-    const newState = writeFn(oldState, ...restArgs);
+    const newState = write(oldState, ...restArgs);
 
     const wTask = new MugLikeWriteTask();
     wTask._run(mugLike, newState);
@@ -240,4 +296,8 @@ export function w(writeFn: (state: any, ...restArgs: any) => any) {
 
     return assignConservatively(mugLike, newState);
   };
+
+  writeOp[_writeFn] = write;
+
+  return writeOp;
 }

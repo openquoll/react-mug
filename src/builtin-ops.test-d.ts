@@ -1,8 +1,8 @@
 import { expectType } from 'tsd';
 
 import { fake, from } from '../tests/type-utils';
-import { none, PossiblePatch, swirl } from './builtin-ops';
-import { construction, Mug, MugLike, PossibleMug, PossibleMugLike } from './mug';
+import { none, PossiblePatch, setIt } from './builtin-ops';
+import { construction, Mug, MugLike, PossibleMug, PossibleMugLike, pure } from './mug';
 import { EmptyItem } from './type-utils';
 
 interface ObjectState {
@@ -41,7 +41,7 @@ test('PossiblePatch', () => {
   }>(from<R314>());
 });
 
-test('swirl', () => {
+test('setIt, pure', () => {
   interface AState extends ObjectState {
     potentialMuggyObject: ObjectState;
   }
@@ -72,42 +72,44 @@ test('swirl', () => {
 
   const patch = { potentialMuggyObject: { o: { s: fake<string>() } } };
 
-  const r73a = swirl(fake<AState>(), patch);
+  const r73a = setIt(fake<AState>(), patch);
   expectType<AState>(r73a);
 
-  const r586 = swirl(fake<AMug>(), patch);
+  const r586 = setIt(fake<AMug>(), patch);
   expectType<AMug>(r586);
 
-  const r014 = swirl(fake<NestedAMug>(), patch);
+  const r014 = setIt(fake<NestedAMug>(), patch);
   expectType<NestedAMug>(r014);
 
-  const r8e9 = swirl(fake<AMugLike>(), patch);
+  const r8e9 = setIt(fake<AMugLike>(), patch);
   expectType<AMugLike>(r8e9);
 
-  const r7f7 = swirl(fake<PossibleAMug>(), patch);
+  const r7f7 = setIt(fake<PossibleAMug>(), patch);
   expectType<PossibleAMug>(r7f7);
 
-  const rb02 = swirl(fake<PossibleAMugLike>(), patch);
+  const rb02 = setIt(fake<PossibleAMugLike>(), patch);
   expectType<PossibleAMugLike>(rb02);
 
-  const r9b0 = swirl(fake<DirtyAMug>(), patch);
+  const r9b0 = setIt(fake<DirtyAMug>(), patch);
   expectType<DirtyAMug>(r9b0);
 
-  const r9fa = swirl(fake<ObjectState>(), { o: { s: fake<string>() } });
+  const r9fa = setIt(fake<ObjectState>(), { o: { s: fake<string>() } });
   expectType<ObjectState>(r9fa);
 
   // @ts-expect-error
-  swirl(fake<AState>(), { n: fake<number>() });
+  setIt(fake<AState>(), { n: fake<number>() });
 
   // @ts-expect-error
-  swirl(fake<AState>(), { s: fake<string>(), n: fake<number>() });
+  setIt(fake<AState>(), { s: fake<string>(), n: fake<number>() });
 
   // @ts-expect-error
-  swirl(fake<AState>());
+  setIt(fake<AState>());
 
   // @ts-expect-error
-  swirl();
+  setIt();
 
   // @ts-expect-error
-  swirl(fake<AState>(), patch, fake<any>());
+  setIt(fake<AState>(), patch, fake<any>());
+
+  expectType<<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState>(pure(setIt));
 });

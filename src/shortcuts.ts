@@ -3,12 +3,14 @@ export const _null = null;
 export const _true = true;
 export const _false = false;
 
+export const _function = 'function';
+
 export const _constructor = 'constructor';
 
 export const _Object = Object;
 export const {
-  assign: _assignObject,
-  create: _createObject,
+  assign: _assign,
+  create: _create,
   is: _is,
   getOwnPropertyNames: _getOwnPropertyNames,
   getOwnPropertySymbols: _getOwnPropertySymbols,
@@ -29,7 +31,7 @@ export const _indexOf = 'indexOf';
 export const _splice = 'splice';
 
 export const _Error = Error;
-export const { captureStackTrace: _captureErrorStackTrace } = _Error;
+export const { captureStackTrace: _captureStackTrace } = _Error;
 
 export const _WeakMap = WeakMap;
 export const _Set = Set;

@@ -1,4 +1,6 @@
 import {
+  _builtinId,
+  BuiltinMeta,
   construction,
   isClassDefinedObject,
   isMug,
@@ -7,9 +9,11 @@ import {
   ownKeysOfObjectLike,
   shallowCloneOfPlainObject,
   State,
+  WriteOpMeta,
 } from './mug';
-import { r, w } from './rw';
+import { r, ReadOpOnSimpleGenericReadFn, w } from './op-mech';
 import {
+  _assign,
   _constructor,
   _hasOwnProperty,
   _is,
@@ -26,7 +30,11 @@ import {
   EmptyItem,
 } from './type-utils';
 
-export const check = r(<TState>(state: TState): TState => state);
+const getItFn = <TState>(state: TState): TState => state;
+
+export type GetIt = ReadOpOnSimpleGenericReadFn<typeof getItFn> & BuiltinMeta;
+
+export const getIt = _assign(r(getItFn), { [_builtinId]: 'e0c' }) as GetIt;
 
 export const none = Symbol();
 
@@ -117,24 +125,51 @@ function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-type PossiblePatchOfNonNullable<TMugLike> = TMugLike extends AnyFunction
+export type PossiblePatchOnUndefined<TMugLike> =
+  | State<NonNullable<TMugLike>>
+  | undefined
+  | typeof none;
+
+export type PossiblePatchOnNull<TMugLike> = State<NonNullable<TMugLike>> | null;
+
+export type PossiblePatchOnNonNullableOnReadonTuple<TMugLike extends AnyReadonlyTuple> = {
+  [TK in keyof TMugLike]: PossiblePatch<TMugLike[TK]> | EmptyItem;
+};
+
+export type PossiblePatchOnNonNullableOnReadonlyArray<TMugLike extends AnyReadonlyArray> = {
+  [TK in keyof TMugLike]?: State<TMugLike[TK]>;
+};
+
+export type PossiblePatchOnNonNullableOnObjectLike<TMugLike extends AnyObjectLike> = {
+  [TK in keyof TMugLike]?: PossiblePatch<TMugLike[TK]>;
+};
+
+export type PossiblePatchOnNonNullable<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
   : TMugLike extends { [construction]: infer TConstruction }
     ? PossiblePatch<TConstruction>
     : TMugLike extends AnyReadonlyTuple
-      ? { [TK in keyof TMugLike]: PossiblePatch<TMugLike[TK]> | EmptyItem }
+      ? PossiblePatchOnNonNullableOnReadonTuple<TMugLike>
       : TMugLike extends AnyReadonlyArray
-        ? { [TK in keyof TMugLike]?: State<TMugLike[TK]> }
+        ? PossiblePatchOnNonNullableOnReadonlyArray<TMugLike>
         : TMugLike extends AnyObjectLike
-          ? { [TK in keyof TMugLike]?: PossiblePatch<TMugLike[TK]> }
+          ? PossiblePatchOnNonNullableOnObjectLike<TMugLike>
           : TMugLike;
 
 export type PossiblePatch<TMugLike> = undefined extends TMugLike
-  ? State<NonNullable<TMugLike>> | undefined | typeof none
+  ? PossiblePatchOnUndefined<TMugLike>
   : null extends TMugLike
-    ? State<NonNullable<TMugLike>> | null
-    : PossiblePatchOfNonNullable<TMugLike>;
+    ? PossiblePatchOnNull<TMugLike>
+    : PossiblePatchOnNonNullable<TMugLike>;
 
-type Swirl = <TMugLike>(mugLike: TMugLike, patch: PossiblePatch<NoInfer<TMugLike>>) => TMugLike;
+const setItFn = <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState =>
+  mergePatch(state, patch);
 
-export const swirl = w((state: any, patch: any) => mergePatch(state, patch)) as Swirl;
+export type SetIt = (<TMugLike>(
+  mugLike: TMugLike,
+  patch: PossiblePatch<NoInfer<TMugLike>>,
+) => TMugLike) &
+  WriteOpMeta<typeof setItFn> &
+  BuiltinMeta;
+
+export const setIt = _assign(w(setItFn), { [_builtinId]: '3fa' }) as SetIt;

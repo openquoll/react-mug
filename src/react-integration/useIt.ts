@@ -1,17 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
+  _mugLike,
+  _readFn,
+  _readOp,
+  AnyReadAction,
+  AnyReadOp,
   areEqualMugLikes,
   construction,
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
+  PossibleMugLike,
+  ReadActionMeta,
+  ReadOpMeta,
   State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
 import { _current, _false, _forEach, _isArray, _slice, _true } from '../shortcuts';
-import { internalMugLike, internalOp } from '../sugar';
-import { AnyFunction, Post0Params } from '../type-utils';
+import { AnyFunction, Param0, Post0Params } from '../type-utils';
 
 function subscribeTo(mugLike: any, changeListener: () => void): void {
   if (isMug(mugLike)) {
@@ -57,28 +64,40 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 }
 
-export function useIt<TRead extends () => any>(read: TRead): ReturnType<TRead>;
 export function useIt<
-  TRead extends <TMugLike>(mugLike: TMugLike, ...restArgs: any) => State<TMugLike>,
+  TReadAction extends AnyFunction &
+    ReadActionMeta<
+      TMugLike,
+      AnyFunction & ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
+    >,
   TMugLike,
->(read: TRead, mugLike: TMugLike, ...restArgs: Post0Params<TRead>): State<TMugLike>;
-export function useIt<TRead extends AnyFunction>(
-  read: TRead,
-  ...readArgs: Parameters<TRead>
-): ReturnType<TRead>;
+>(readAction: TReadAction): State<TMugLike>;
+export function useIt<TReadAction extends AnyReadAction>(
+  readAction: TReadAction,
+  ...readArgs: Parameters<TReadAction>
+): ReturnType<TReadAction>;
+export function useIt<
+  TReadOp extends AnyFunction &
+    ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
+  TMugLike extends PossibleMugLike<Param0<TReadOp>>,
+>(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
+export function useIt<TReadOp extends AnyReadOp>(
+  readOp: TReadOp,
+  ...readArgs: Parameters<TReadOp>
+): ReturnType<TReadOp>;
 export function useIt(
   read: {
     (...args: any): any;
-    [internalOp]?: any;
-    [internalMugLike]?: any;
+    [_readOp]?: any;
+    [_mugLike]?: any;
   },
   ...readArgs: any
 ): any {
-  const [mugLike, restArgs] = read[internalMugLike]
-    ? [read[internalMugLike], readArgs]
+  const [mugLike, restArgs] = read[_mugLike]
+    ? [read[_mugLike], readArgs]
     : [readArgs[0], readArgs[_slice](1)];
 
-  const readOpRef = useRef(read[internalOp] ?? read);
+  const readOpRef = useRef(read[_readOp] ?? read);
   const mugLikeRef = useRef(mugLike);
   const restArgsRef = useRef(restArgs);
 

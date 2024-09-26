@@ -3,7 +3,6 @@ import { expectAssignable, expectType } from 'tsd';
 import { from } from '../tests/type-utils';
 import {
   AnyMug,
-  Cleanse,
   construction,
   Mug,
   MugLike,
@@ -356,31 +355,4 @@ test('State', () => {
 
   type Rff5 = State<DirtyAMug>;
   expectType<AState>(from<Rff5>());
-});
-
-test('Cleanse', () => {
-  interface DirtyAMug {
-    [construction]: {
-      s: string;
-      o: {
-        s: string;
-      };
-      muggyObject: {
-        [construction]: ObjectState;
-        b: boolean;
-      };
-    };
-    b: boolean;
-  }
-
-  type Rb78 = Cleanse<DirtyAMug>;
-  expectType<{
-    [construction]: {
-      s: string;
-      o: {
-        s: string;
-      };
-      muggyObject: { [construction]: ObjectState };
-    };
-  }>(from<Rb78>());
 });

@@ -1,11 +1,12 @@
 import {
-  _assignObject,
-  _captureErrorStackTrace,
+  _assign,
+  _captureStackTrace,
   _constructor,
-  _createObject,
+  _create,
   _Error,
   _false,
   _forEach,
+  _function,
   _getOwnPropertyNames,
   _getOwnPropertySymbols,
   _hasOwnProperty,
@@ -58,8 +59,15 @@ import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './typ
  * A state is always concise as it doesn't have a `[construction]` at all,
  */
 export const construction = Symbol();
+// export const construction = 'Symbol("construction")';
 
 export type AnyMug = { [construction]: any };
+
+export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
+  | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
+  | { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
+
+export type PossibleMugLikeOnPrimitive<TMugLike> = { [construction]: TMugLike } | TMugLike;
 
 /**
  * The union type of every possible concise mug-like type for a given mug-like type.
@@ -69,10 +77,14 @@ export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends { [construction]: infer TConstruction }
     ? PossibleMugLike<TConstruction>
     : TMugLike extends AnyObjectLike
-      ?
-          | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
-          | { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }
-      : { [construction]: TMugLike } | TMugLike;
+      ? PossibleMugLikeOnObjectLike<TMugLike>
+      : PossibleMugLikeOnPrimitive<TMugLike>;
+
+export type PossibleMugOnObjectLike<TMugLike extends AnyObjectLike> = {
+  [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
+};
+
+export type PossibleMugOnPrimitive<TMugLike> = { [construction]: TMugLike };
 
 /**
  * The union type of every possible concise mug type for a given mug-like type.
@@ -82,20 +94,31 @@ export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends { [construction]: infer TConstruction }
     ? PossibleMugLike<TConstruction>
     : TMugLike extends AnyObjectLike
-      ? { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
-      : { [construction]: TMugLike };
+      ? PossibleMugOnObjectLike<TMugLike>
+      : PossibleMugOnPrimitive<TMugLike>;
 
-type NonEmptyPossibleMuggyOverride<TMugLike> = TMugLike extends AnyFunction
+export type NonEmptyPossibleMuggyOverrideOnObjectLike<TMugLike extends AnyObjectLike> =
+  | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
+  | { [TK in keyof TMugLike]?: NonEmptyPossibleMuggyOverride<TMugLike[TK]> };
+
+export type NonEmptyPossibleMuggyOverrideOnPrimitive<TMugLike> = { [construction]: TMugLike };
+
+export type NonEmptyPossibleMuggyOverride<TMugLike> = TMugLike extends AnyFunction
   ? never
   : TMugLike extends AnyMug
     ? never
     : TMugLike extends AnyObjectLike
-      ?
-          | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
-          | { [TK in keyof TMugLike]?: NonEmptyPossibleMuggyOverride<TMugLike[TK]> }
-      : { [construction]: TMugLike };
+      ? NonEmptyPossibleMuggyOverrideOnObjectLike<TMugLike>
+      : NonEmptyPossibleMuggyOverrideOnPrimitive<TMugLike>;
 
 export type PossibleMuggyOverride<TMugLike> = EmptyItem | NonEmptyPossibleMuggyOverride<TMugLike>;
+
+export type MugLikeOnObjectLikeByObjectLike<
+  TMugLike extends AnyObjectLike,
+  TMuggyOverride extends AnyObjectLike,
+> = {
+  [TK in keyof TMugLike]: MugLike<TMugLike[TK], TMuggyOverride[TK]>;
+};
 
 /**
  * The mug-like type-extending helper.
@@ -113,7 +136,7 @@ export type MugLike<
         ? TMuggyOverride
         : TMugLike extends AnyObjectLike
           ? TMuggyOverride extends AnyObjectLike
-            ? { [TK in keyof TMugLike]: MugLike<TMugLike[TK], TMuggyOverride[TK]> }
+            ? MugLikeOnObjectLikeByObjectLike<TMugLike, TMuggyOverride>
             : TMugLike
           : TMugLike;
 
@@ -127,6 +150,11 @@ export type Mug<
   [construction]: MugLike<TConstruction, TMuggyOverride>;
 };
 
+export type StateOnObjectLike<TMugLike extends AnyObjectLike> = Conserve<
+  TMugLike,
+  { [TK in keyof TMugLike]: Conserve<TMugLike[TK], State<TMugLike[TK]>> }
+>;
+
 /**
  * The state type-evaluating helper.
  */
@@ -135,25 +163,7 @@ export type State<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends { [construction]: infer TConstruction }
     ? Conserve<TConstruction, State<TConstruction>>
     : TMugLike extends AnyObjectLike
-      ? Conserve<
-          TMugLike,
-          {
-            [TK in keyof TMugLike]: Conserve<TMugLike[TK], State<TMugLike[TK]>>;
-          }
-        >
-      : TMugLike;
-
-export type Cleanse<TMugLike> = TMugLike extends AnyFunction
-  ? TMugLike
-  : TMugLike extends { [construction]: infer TConstruction }
-    ? { [construction]: Conserve<TConstruction, Cleanse<TConstruction>> }
-    : TMugLike extends AnyObjectLike
-      ? Conserve<
-          TMugLike,
-          {
-            [TK in keyof TMugLike]: Conserve<TMugLike[TK], Cleanse<TMugLike[TK]>>;
-          }
-        >
+      ? StateOnObjectLike<TMugLike>
       : TMugLike;
 
 export class MugError extends _Error {
@@ -161,8 +171,8 @@ export class MugError extends _Error {
 
   constructor(message: string) {
     super(message);
-    if (_captureErrorStackTrace) {
-      _captureErrorStackTrace(this, MugError);
+    if (_captureStackTrace) {
+      _captureStackTrace(this, MugError);
     }
     _setPrototypeOf(this, MugError.prototype);
   }
@@ -204,7 +214,7 @@ export function areEqualMugLikes(a: any, b: any): boolean {
   }
 
   if (isPlainObject(a) && isPlainObject(b)) {
-    return ownKeysOfObjectLike(_assignObject({}, a, b))[_reduce]((result, key) => {
+    return ownKeysOfObjectLike(_assign({}, a, b))[_reduce]((result, key) => {
       const keyInA = a[_hasOwnProperty](key);
       const keyInB = b[_hasOwnProperty](key);
 
@@ -256,7 +266,7 @@ export function assignConservatively(mugLike: any, input: any): any {
     const result = emptyCloneOfPlainObject(mugLike);
     let allFieldsFromMugLike = _true;
     let allFieldsFromInput = _true;
-    ownKeysOfObjectLike(_assignObject({}, mugLike, input))[_forEach]((key) => {
+    ownKeysOfObjectLike(_assign({}, mugLike, input))[_forEach]((key) => {
       const keyInMugLike = mugLike[_hasOwnProperty](key);
       const keyInInput = input[_hasOwnProperty](key);
 
@@ -351,7 +361,7 @@ export function assignConservatively(mugLike: any, input: any): any {
 }
 
 export const emptyCloneOfPlainObject = (o: any): any =>
-  _createObject(o[_constructor]?.prototype ?? _null);
+  _create(o[_constructor]?.prototype ?? _null);
 
 export const shallowCloneOfPlainObject = (o: any): any =>
   ownKeysOfObjectLike(o)[_reduce]((r, key) => {
@@ -363,3 +373,165 @@ export const ownKeysOfObjectLike = <T extends AnyObjectLike>(o: T): NumAsStr<key
   isObjectLike(o)
     ? ([..._getOwnPropertyNames(o), ..._getOwnPropertySymbols(o)] as NumAsStr<keyof T>[])
     : [];
+
+/**
+ * A function with `[_readOp]`/`[_writeOp]` and `[_mugLike]` as fields is an
+ * action. The value of `[_mugLike]` is the action's mug-like bound inside.
+ */
+export const _mugLike = Symbol();
+
+/**
+ * A function with `[_readOp]` and `[_mugLike]` as fields is a read action. The
+ * value of `[_readOp]` is the action's operator bound inside.
+ */
+export const _readOp = Symbol();
+
+/**
+ * A function with `[_writeOp]` and `[_mugLike]` as fields is a write action.
+ * The value of `[_writeOp]` is the action's operator bound inside.
+ */
+export const _writeOp = Symbol();
+
+/**
+ * A function with `[_readFn]` as a field is a read operator. The value of
+ * `[_readFn]` is the operator's pure function bound inside.
+ */
+export const _readFn = Symbol();
+
+/**
+ * A function with `[_writeFn]` as a field is a write operator. The value of
+ * `[_writeFn]` is the operator's pure function bound inside.
+ */
+export const _writeFn = Symbol();
+
+export type ReadOpMeta<TReadFn extends AnyFunction> = {
+  [_readFn]: TReadFn;
+};
+
+export type AnyReadOp = AnyFunction & ReadOpMeta<AnyFunction>;
+
+export type NotReadOp = { [_readFn]?: never };
+
+export type WriteOpMeta<TWriteFn extends AnyFunction> = {
+  [_writeFn]: TWriteFn;
+};
+
+export type AnyWriteOp = AnyFunction & WriteOpMeta<AnyFunction>;
+
+export type NotWriteOp = { [_writeFn]?: never };
+
+export type AnyOp = AnyReadOp | AnyWriteOp;
+
+export type NotOp = NotReadOp & NotWriteOp;
+
+export const isReadOp = (f: any): f is AnyReadOp =>
+  typeof f === _function && f[_hasOwnProperty](_readFn) && typeof f[_readFn] === _function;
+
+export const isWriteOp = (f: any): f is AnyWriteOp =>
+  typeof f === _function && f[_hasOwnProperty](_writeFn) && typeof f[_writeFn] === _function;
+
+export const isOp = (f: any): f is AnyOp => isReadOp(f) || isWriteOp(f);
+
+export type ReadActionMeta<TMugLike, TReadOp extends AnyReadOp> = {
+  [_mugLike]: TMugLike;
+  [_readOp]: TReadOp;
+};
+
+export type AnyReadAction = AnyFunction & ReadActionMeta<any, AnyReadOp>;
+
+export type NotReadAction = {
+  [_mugLike]?: never;
+  [_readOp]?: never;
+};
+
+export type WriteActionMeta<TMugLike, TWriteOp extends AnyWriteOp> = {
+  [_mugLike]: TMugLike;
+  [_writeOp]: TWriteOp;
+};
+
+export type AnyWriteAction = AnyFunction & WriteActionMeta<any, AnyWriteOp>;
+
+export type NotWriteAction = {
+  [_mugLike]?: never;
+  [_writeOp]?: never;
+};
+
+export type AnyAction = AnyReadAction | AnyWriteAction;
+
+export type NotAction = {
+  [_mugLike]?: never;
+  [_readOp]?: never;
+  [_writeOp]?: never;
+};
+
+export const isReadAction = (f: any): f is AnyReadAction =>
+  typeof f === _function &&
+  f[_hasOwnProperty](_mugLike) &&
+  f[_hasOwnProperty](_readOp) &&
+  isReadOp(f[_readOp]);
+
+export const isWriteAction = (f: any): f is AnyWriteAction =>
+  typeof f === _function &&
+  f[_hasOwnProperty](_mugLike) &&
+  f[_hasOwnProperty](_writeOp) &&
+  isWriteOp(f[_writeOp]);
+
+export const isAction = (f: any): f is AnyAction => isReadAction(f) || isWriteAction(f);
+
+export function flat<TReadAction extends AnyReadAction>(
+  readAction: TReadAction,
+): TReadAction[typeof _readOp];
+export function flat<TWriteAction extends AnyWriteAction>(
+  writeAction: TWriteAction,
+): TWriteAction[typeof _writeOp];
+export function flat<TFn extends AnyFunction>(fn: TFn): TFn;
+export function flat(f: any): any {
+  if (isReadAction(f)) {
+    return f[_readOp];
+  }
+
+  if (isWriteAction(f)) {
+    return f[_writeOp];
+  }
+
+  return f;
+}
+
+export function pure<TReadAction extends AnyReadAction>(
+  readAction: TReadAction,
+): TReadAction[typeof _readOp][typeof _readFn];
+export function pure<TWriteAction extends AnyWriteAction>(
+  writeAction: TWriteAction,
+): TWriteAction[typeof _writeOp][typeof _writeFn];
+export function pure<TReadOp extends AnyReadOp>(readOp: TReadOp): TReadOp[typeof _readFn];
+export function pure<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): TWriteOp[typeof _writeFn];
+export function pure<TFn extends AnyFunction>(fn: TFn): TFn;
+export function pure(fn: any): any {
+  if (isReadAction(fn)) {
+    if (isReadOp(fn[_readOp])) {
+      return fn[_readOp][_readFn];
+    }
+  }
+
+  if (isWriteAction(fn)) {
+    if (isWriteOp(fn[_writeOp])) {
+      return fn[_writeOp][_writeFn];
+    }
+  }
+
+  if (isReadOp(fn)) {
+    return fn[_readFn];
+  }
+
+  if (isWriteOp(fn)) {
+    return fn[_writeFn];
+  }
+
+  return fn;
+}
+
+export const _builtinId = Symbol();
+
+export type BuiltinMeta = { [_builtinId]: string };
+
+export const isBuiltin = (o: any): o is BuiltinMeta => !!o?.[_hasOwnProperty]?.(_builtinId);

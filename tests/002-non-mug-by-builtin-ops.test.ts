@@ -1,4 +1,4 @@
-import { check, construction, EmptyItem, Mug, MugLike, swirl, tuple } from '../src';
+import { construction, EmptyItem, getIt, Mug, MugLike, setIt, tuple } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 interface ObjectState {
@@ -19,8 +19,8 @@ describe('31f3463, operates "a constant plain object state" by builtin ops', () 
   };
 
   describe('62e2cc9, reads the state', () => {
-    test('[action, verify] the read return and its fields equals the state and its fields in ref and value', () => {
-      const readReturn = check(aState);
+    test('[action, verify] the read return and its fields equal the state and its fields in ref and value', () => {
+      const readReturn = getIt(aState);
 
       expect(readReturn).toBe(aState);
       ownKeysOfObjectLike(aState).forEach((key) => {
@@ -41,9 +41,9 @@ describe('31f3463, operates "a constant plain object state" by builtin ops', () 
     };
 
     test('[action]', () => {
-      swirl(aState, { s: '358' });
+      setIt(aState, { s: '358' });
 
-      readReturn = check(aState);
+      readReturn = getIt(aState);
     });
 
     test('[verify] the state_s fields stay unchanged in ref and value', () => {
@@ -115,7 +115,7 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let aState: AState;
 
     test('[action]', () => {
-      aState = check(aMugLike);
+      aState = getIt(aMugLike);
     });
 
     test('[verify] the state differs from the mug-like in ref', () => {
@@ -169,8 +169,8 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('49ec8d1, continuously reads the mug-like before write', () => {
     test('[action, verify] the state and its fields stay unchanged in ref and value', () => {
-      const aState1 = check(aMugLike);
-      const aState2 = check(aMugLike);
+      const aState1 = getIt(aMugLike);
+      const aState2 = getIt(aMugLike);
 
       expect(aState2).toBe(aState1);
       ownKeysOfObjectLike(aState1).forEach((key) => {
@@ -185,11 +185,11 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     const aMugLikeShallowCloneBefore: AMugLike = { ...aMugLike };
 
     test('[action]', () => {
-      aStateBefore = check(aMugLike);
+      aStateBefore = getIt(aMugLike);
 
-      swirl(aMugLike, { s: '705' });
+      setIt(aMugLike, { s: '705' });
 
-      aStateAfter = check(aMugLike);
+      aStateAfter = getIt(aMugLike);
     });
 
     test('[verify] the mug-like_s fields stay unchanged in ref and value', () => {
@@ -213,13 +213,13 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      aStateBefore = check(aMugLike);
-      objectStateBefore = check(objectMug);
+      aStateBefore = getIt(aMugLike);
+      objectStateBefore = getIt(objectMug);
 
-      swirl(aMugLike, { muggyObject: { s: 'a67' } });
+      setIt(aMugLike, { muggyObject: { s: 'a67' } });
 
-      aStateAfter = check(aMugLike);
-      objectStateAfter = check(objectMug);
+      aStateAfter = getIt(aMugLike);
+      objectStateAfter = getIt(objectMug);
     });
 
     test('[verify] the state changes in ref and value', () => {
@@ -275,21 +275,21 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObject: { s: '575' },
       });
-      aStateBefore = check(aMugLike);
+      aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyObject: { s: '575' },
       });
-      objectStateBefore = check(objectMug);
+      objectStateBefore = getIt(objectMug);
       expect(objectStateBefore).toMatchObject({ s: '575' });
 
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObject: { s: '575' },
       });
-      aStateAfter = check(aMugLike);
-      objectStateAfter = check(objectMug);
+      aStateAfter = getIt(aMugLike);
+      objectStateAfter = getIt(objectMug);
     });
 
     test('[verify] the state and its fields stay unchanged in ref and value', () => {
@@ -314,17 +314,17 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      swirl(aMugLike, { muggyObject: { s: '5ac' } });
-      aStateBefore = check(aMugLike);
+      setIt(aMugLike, { muggyObject: { s: '5ac' } });
+      aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyObject: { s: '5ac' },
       });
-      objectStateBefore = check(objectMug);
+      objectStateBefore = getIt(objectMug);
       expect(objectStateBefore).toMatchObject({ s: '5ac' });
 
-      swirl(objectMug, { s: 'bf2' });
-      objectStateAfter = check(objectMug);
-      aStateAfter = check(aMugLike);
+      setIt(objectMug, { s: 'bf2' });
+      objectStateAfter = getIt(objectMug);
+      aStateAfter = getIt(aMugLike);
     });
 
     test('[verify] the muggy object field changes in ref', () => {
@@ -350,18 +350,18 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('4ab59e0, writes "the object mug_s string field" with a same value, [cite] .:91ca40a', () => {
     test('[action, verify], the parent mug-like_s state and its fields stay unchanged in ref and value', () => {
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObject: { s: 'fed' },
       });
-      const aStateBefore = check(aMugLike);
+      const aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyObject: { s: 'fed' },
       });
-      const objectStateBefore = check(objectMug);
+      const objectStateBefore = getIt(objectMug);
       expect(objectStateBefore).toMatchObject({ s: 'fed' });
 
-      swirl(objectMug, { s: 'fed' });
-      const aStateAfter = check(aMugLike);
+      setIt(objectMug, { s: 'fed' });
+      const aStateAfter = getIt(aMugLike);
 
       expect(aStateAfter).toBe(aStateBefore);
       ownKeysOfObjectLike(aStateBefore).forEach((key) => {
@@ -373,10 +373,10 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('d0668a2, first writes "the muggy number field" with a different value', () => {
     test('[action, verify] the field and the number mug_s state change in value', () => {
-      swirl(aMugLike, { muggyNumber: 787 });
+      setIt(aMugLike, { muggyNumber: 787 });
 
-      const aState = check(aMugLike);
-      const numberState = check(numberMug);
+      const aState = getIt(aMugLike);
+      const numberState = getIt(numberMug);
 
       expect(aState.muggyNumber).toBe(787);
       expect(numberState).toBe(787);
@@ -385,18 +385,18 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('bff5b97, writes "the muggy number field" with a same value, [cite] .:d0668a2', () => {
     test('[action, verify] the state and the number mug_s state stay unchanged in ref and value', () => {
-      swirl(aMugLike, { muggyNumber: 975 });
-      const aStateBefore = check(aMugLike);
+      setIt(aMugLike, { muggyNumber: 975 });
+      const aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyNumber: 975,
       });
-      const numberStateBefore = check(numberMug);
+      const numberStateBefore = getIt(numberMug);
       expect(numberStateBefore).toBe(975);
 
-      swirl(aMugLike, { muggyNumber: 975 });
+      setIt(aMugLike, { muggyNumber: 975 });
 
-      const aStateAfter = check(aMugLike);
-      const numberStateAfter = check(numberMug);
+      const aStateAfter = getIt(aMugLike);
+      const numberStateAfter = getIt(numberMug);
 
       expect(aStateAfter).toBe(aStateBefore);
       expect(aStateAfter).toStrictEqual(aStateBefore);
@@ -406,16 +406,16 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('fa1fd97, writes "the number mug" with a different value, [cite] .:d0668a2', () => {
     test('[action, verify], the parent mug-like_s state changes in ref, the muggy number field changes in value', () => {
-      swirl(aMugLike, { muggyNumber: 945 });
-      const aStateBefore = check(aMugLike);
+      setIt(aMugLike, { muggyNumber: 945 });
+      const aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyNumber: 945,
       });
-      const numberStateBefore = check(numberMug);
+      const numberStateBefore = getIt(numberMug);
       expect(numberStateBefore).toBe(945);
 
-      swirl(numberMug, 830);
-      const aStateAfter = check(aMugLike);
+      setIt(numberMug, 830);
+      const aStateAfter = getIt(aMugLike);
 
       expect(aStateAfter).not.toBe(aStateBefore);
       expect(aStateAfter.muggyNumber).toBe(830);
@@ -424,17 +424,17 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('bff5b97, writes "the number mug" with a same value, [cite] .:d0668a2', () => {
     test('[action, verify] the parent mug-like_s state stays unchanged in ref and value', () => {
-      swirl(aMugLike, { muggyNumber: 366 });
-      const aStateBefore = check(aMugLike);
+      setIt(aMugLike, { muggyNumber: 366 });
+      const aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyNumber: 366,
       });
-      const numberStateBefore = check(numberMug);
+      const numberStateBefore = getIt(numberMug);
       expect(numberStateBefore).toBe(366);
 
-      swirl(aMugLike, { muggyNumber: 366 });
+      setIt(aMugLike, { muggyNumber: 366 });
 
-      const aStateAfter = check(aMugLike);
+      const aStateAfter = getIt(aMugLike);
 
       expect(aStateAfter).toBe(aStateBefore);
       expect(aStateAfter).toStrictEqual(aStateBefore);
@@ -445,11 +445,11 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
-      aStateBefore = check(aMugLike);
+      aStateBefore = getIt(aMugLike);
 
-      swirl(aMugLike, { muggyObjectArray: [{ s: '705', o: { s: 'asd' } }, , ,] });
+      setIt(aMugLike, { muggyObjectArray: [{ s: '705', o: { s: 'asd' } }, , ,] });
 
-      aStateAfter = check(aMugLike);
+      aStateAfter = getIt(aMugLike);
     });
 
     test('[verify] the state stays unchanged in ref, length, and value', () => {
@@ -468,15 +468,15 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
-      aStateBefore = check(aMugLike);
-      muggyObjectArrayItemStateBefore = check(muggyObjectArrayItemMug);
+      aStateBefore = getIt(aMugLike);
+      muggyObjectArrayItemStateBefore = getIt(muggyObjectArrayItemMug);
 
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObjectArray: [, { s: '58e', o: { s: 'asd' } }],
       });
 
-      aStateAfter = check(aMugLike);
-      muggyObjectArrayItemStateAfter = check(muggyObjectArrayItemMug);
+      aStateAfter = getIt(aMugLike);
+      muggyObjectArrayItemStateAfter = getIt(muggyObjectArrayItemMug);
     });
 
     test('[verify] the field changes in ref but not in length', () => {
@@ -518,25 +518,25 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObjectArray: [, { s: '4ec', o: { s: 'asd' } }],
       });
-      aStateBefore = check(aMugLike);
+      aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyObjectArray: [
           { s: 'asd', o: { s: 'asd' } },
           { s: '4ec', o: { s: 'asd' } },
         ],
       });
-      muggyObjectArrayItemStateBefore = check(muggyObjectArrayItemMug);
+      muggyObjectArrayItemStateBefore = getIt(muggyObjectArrayItemMug);
       expect(muggyObjectArrayItemStateBefore).toMatchObject({ s: '4ec', o: { s: 'asd' } });
 
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObjectArray: [, { s: '4ec', o: { s: 'asd' } }],
       });
 
-      aStateAfter = check(aMugLike);
-      muggyObjectArrayItemStateAfter = check(muggyObjectArrayItemMug);
+      aStateAfter = getIt(aMugLike);
+      muggyObjectArrayItemStateAfter = getIt(muggyObjectArrayItemMug);
     });
 
     test('[verify] the state and its fields stays unchanged in ref and value', () => {
@@ -565,23 +565,23 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObjectArray: [, { s: 'a3a', o: { s: 'asd' } }],
       });
-      aStateBefore = check(aMugLike);
+      aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyObjectArray: [
           { s: 'asd', o: { s: 'asd' } },
           { s: 'a3a', o: { s: 'asd' } },
         ],
       });
-      muggyObjectArrayItemStateBefore = check(muggyObjectArrayItemMug);
+      muggyObjectArrayItemStateBefore = getIt(muggyObjectArrayItemMug);
       expect(muggyObjectArrayItemStateBefore).toMatchObject({ s: 'a3a', o: { s: 'asd' } });
 
-      swirl(muggyObjectArrayItemMug, { s: 'c6b' });
+      setIt(muggyObjectArrayItemMug, { s: 'c6b' });
 
-      muggyObjectArrayItemStateAfter = check(muggyObjectArrayItemMug);
-      aStateAfter = check(aMugLike);
+      muggyObjectArrayItemStateAfter = getIt(muggyObjectArrayItemMug);
+      aStateAfter = getIt(aMugLike);
     });
 
     test('[verify] the muggy object array field changes in ref but not in length', () => {
@@ -618,21 +618,21 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('f2ddb4d, writes "the muggy object array item mug_s string field" with a same value, [cite] .:35a67f9', () => {
     test('[action, verify] the parent mug-like_s state, its fields, and the muggy object array items stay unchanged in ref and value', () => {
-      swirl(aMugLike, {
+      setIt(aMugLike, {
         muggyObjectArray: [, { s: 'cbd', o: { s: 'asd' } }],
       });
-      const aStateBefore = check(aMugLike);
+      const aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
         muggyObjectArray: [
           { s: 'asd', o: { s: 'asd' } },
           { s: 'cbd', o: { s: 'asd' } },
         ],
       });
-      const muggyObjectArrayItemState = check(muggyObjectArrayItemMug);
+      const muggyObjectArrayItemState = getIt(muggyObjectArrayItemMug);
       expect(muggyObjectArrayItemState).toMatchObject({ s: 'cbd', o: { s: 'asd' } });
 
-      swirl(muggyObjectArrayItemMug, { s: 'cbd' });
-      const aStateAfter = check(aMugLike);
+      setIt(muggyObjectArrayItemMug, { s: 'cbd' });
+      const aStateAfter = getIt(aMugLike);
 
       expect(aStateAfter).toBe(aStateBefore);
       ownKeysOfObjectLike(aStateBefore).forEach((key) => {
@@ -647,8 +647,8 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
   describe('4b22b5e, continuously reads the mug-like after write, [cite] .:49ec8d1', () => {
     test('[action, verify] the state and its fields stay unchanged in ref and value', () => {
-      const aState1 = check(aMugLike);
-      const aState2 = check(aMugLike);
+      const aState1 = getIt(aMugLike);
+      const aState2 = getIt(aMugLike);
 
       expect(aState2).toBe(aState1);
       ownKeysOfObjectLike(aState1).forEach((key) => {
@@ -685,7 +685,7 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
     let aState: AState;
 
     test('[action]', () => {
-      aState = check(aMugLike);
+      aState = getIt(aMugLike);
     });
 
     test('[verify] the state differs from the mug-like in ref', () => {
@@ -715,13 +715,13 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      aStateBefore = check(aMugLike);
-      objectStateBefore = check(objectMug);
+      aStateBefore = getIt(aMugLike);
+      objectStateBefore = getIt(objectMug);
 
-      swirl(aMugLike, [, { s: 'bac', o: { s: 'asd' } }, ,]);
+      setIt(aMugLike, [, { s: 'bac', o: { s: 'asd' } }, ,]);
 
-      aStateAfter = check(aMugLike);
-      objectStateAfter = check(objectMug);
+      aStateAfter = getIt(aMugLike);
+      objectStateAfter = getIt(objectMug);
     });
 
     test('[verify] the state changes in ref but not in length', () => {
@@ -775,13 +775,13 @@ describe('00f8db6, operates "a constant mug-nested tuple mug-like" by builtin op
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      aStateBefore = check(aMugLike);
-      objectStateBefore = check(objectMug);
+      aStateBefore = getIt(aMugLike);
+      objectStateBefore = getIt(objectMug);
 
-      swirl(aMugLike, [, { s: 'bac' }]);
+      setIt(aMugLike, [, { s: 'bac' }]);
 
-      aStateAfter = check(aMugLike);
-      objectStateAfter = check(objectMug);
+      aStateAfter = getIt(aMugLike);
+      objectStateAfter = getIt(objectMug);
     });
 
     test('[verify] the state changes in ref', () => {
@@ -828,7 +828,7 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
 
   describe('07d7675, reads a temporary object mug-like before write', () => {
     test('[action, verify] the muggy object fields equal the object mugs_ constructions in ref and value', () => {
-      const aState = check({
+      const aState = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
@@ -842,7 +842,7 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
 
   describe('5518c70, reads a temporary tuple mug-like before write', () => {
     test('[action, verify] the muggy items equal the object mugs_ constructions in ref and value', () => {
-      const aState = check([objectMug1, objectMug2]);
+      const aState = getIt([objectMug1, objectMug2]);
 
       expect(aState[0]).toBe(objectMug1[construction]);
       expect(aState[0]).toStrictEqual(objectMug1[construction]);
@@ -862,11 +862,11 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
       };
 
     test('[action]', () => {
-      aState1 = check({
+      aState1 = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
-      aState2 = check({
+      aState2 = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
@@ -889,8 +889,8 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
     let aState1: [ObjectState, ObjectState], aState2: [ObjectState, ObjectState];
 
     test('[action]', () => {
-      aState1 = check(tuple(objectMug1, objectMug2));
-      aState2 = check(tuple(objectMug1, objectMug2));
+      aState1 = getIt(tuple(objectMug1, objectMug2));
+      aState2 = getIt(tuple(objectMug1, objectMug2));
     });
 
     test('[verify] the state changes in ref but not in value', () => {
@@ -908,11 +908,11 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
 
   describe('3e3c46b, continuously reads a temporary object mug-likes and a temporary tuple mug-like before write', () => {
     test('[action, verify] the muggy items equal the muggy fields in ref and value before and after', () => {
-      const aState1 = check({
+      const aState1 = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
-      const aState2 = check(tuple(objectMug1, objectMug2));
+      const aState2 = getIt(tuple(objectMug1, objectMug2));
 
       expect(aState2[0]).toBe(aState1.o1);
       expect(aState2[1]).toBe(aState1.o2);
@@ -931,14 +931,14 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      swirl(objectMug1, { s: 'd6d' });
-      aStateBefore = check({
+      setIt(objectMug1, { s: 'd6d' });
+      aStateBefore = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
-      objectStateBefore = check(objectMug1);
+      objectStateBefore = getIt(objectMug1);
 
-      swirl(
+      setIt(
         {
           o1: objectMug1,
           o2: objectMug2,
@@ -948,11 +948,11 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
         },
       );
 
-      aStateAfter = check({
+      aStateAfter = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
-      objectStateAfter = check(objectMug1);
+      objectStateAfter = getIt(objectMug1);
     });
 
     test('[verify] that muggy object field changes in ref and value', () => {
@@ -991,14 +991,14 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
     test('[action]', () => {
-      swirl(objectMug1, { s: 'e64' });
-      aStateBefore = check([objectMug1, objectMug2]);
-      objectStateBefore = check(objectMug1);
+      setIt(objectMug1, { s: 'e64' });
+      aStateBefore = getIt([objectMug1, objectMug2]);
+      objectStateBefore = getIt(objectMug1);
 
-      swirl(tuple(objectMug1, objectMug2), [{ s: '857' }, ,]);
+      setIt(tuple(objectMug1, objectMug2), [{ s: '857' }, ,]);
 
-      aStateAfter = check(tuple(objectMug1, objectMug2));
-      objectStateAfter = check(objectMug1);
+      aStateAfter = getIt(tuple(objectMug1, objectMug2));
+      objectStateAfter = getIt(objectMug1);
     });
 
     test('[verify] that item changes in ref and value', () => {
@@ -1044,11 +1044,11 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
       };
 
     test('[action]', () => {
-      aState1 = check({
+      aState1 = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
-      aState2 = check({
+      aState2 = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
@@ -1071,8 +1071,8 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
     let aState1: [ObjectState, ObjectState], aState2: [ObjectState, ObjectState];
 
     test('[action]', () => {
-      aState1 = check(tuple(objectMug1, objectMug2));
-      aState2 = check(tuple(objectMug1, objectMug2));
+      aState1 = getIt(tuple(objectMug1, objectMug2));
+      aState2 = getIt(tuple(objectMug1, objectMug2));
     });
 
     test('[verify] the state changes in ref but not in value', () => {
@@ -1090,11 +1090,11 @@ describe('ec28331, operates "temporary mug-nested mug-likes" by builtin ops, [ci
 
   describe('31b2508, continuously reads a temporary object mug-likes and a temporary tuple mug-like after write, [cite] .:3e3c46b', () => {
     test('[action, verify] the muggy items equal the muggy fields in ref and value before and after', () => {
-      const aState1 = check({
+      const aState1 = getIt({
         o1: objectMug1,
         o2: objectMug2,
       });
-      const aState2 = check([objectMug1, objectMug2]);
+      const aState2 = getIt([objectMug1, objectMug2]);
 
       expect(aState2[0]).toBe(aState1.o1);
       expect(aState2[1]).toBe(aState1.o2);

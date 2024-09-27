@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   _mugLike,
-  _readFn,
   _readOp,
   AnyReadAction,
   AnyReadOp,
@@ -11,7 +10,6 @@ import {
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
-  PossibleMugLike,
   ReadActionMeta,
   ReadOpMeta,
   State,
@@ -67,11 +65,13 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
 export function useIt<
   TReadAction extends AnyFunction &
     ReadActionMeta<
-      TMugLike,
+      any,
       AnyFunction & ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
     >,
-  TMugLike,
->(readAction: TReadAction): State<TMugLike>;
+>(
+  readAction: TReadAction,
+  ...readActions: Parameters<TReadAction>
+): State<TReadAction[typeof _mugLike]>;
 export function useIt<TReadAction extends AnyReadAction>(
   readAction: TReadAction,
   ...readArgs: Parameters<TReadAction>
@@ -79,7 +79,7 @@ export function useIt<TReadAction extends AnyReadAction>(
 export function useIt<
   TReadOp extends AnyFunction &
     ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
-  TMugLike extends PossibleMugLike<Param0<TReadOp>>,
+  TMugLike extends Param0<TReadOp>,
 >(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
 export function useIt<TReadOp extends AnyReadOp>(
   readOp: TReadOp,

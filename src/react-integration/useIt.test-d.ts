@@ -88,6 +88,17 @@ test('useIt', () => {
 
   // =-=-=
 
+  const read69c = r(<TState extends AState>(state: TState): TState => state);
+
+  expectType<AState>(useIt(read69c, fake<AState>()));
+
+  expectType<SuperState>(useIt(read69c, fake<SuperState>()));
+
+  // @ts-expect-error
+  useIt(read69c, fake<ObjectState>());
+
+  // =-=-=
+
   const read198 = r((state: AState) => fake<ObjectState>());
 
   expectType<ObjectState>(useIt(read198, fake<AState>()));
@@ -122,17 +133,6 @@ test('useIt', () => {
 
   // =-=-=
 
-  const read69c = r(<TState extends AState>(state: TState): TState => state);
-
-  expectType<AState>(useIt(read69c, fake<AState>()));
-
-  expectType<SuperState>(useIt(read69c, fake<SuperState>()));
-
-  // @ts-expect-error
-  useIt(read69c, fake<ObjectState>());
-
-  // =-=-=
-
   const read81f = r(() => fake<AState>());
 
   expectType<AState>(useIt(read81f));
@@ -147,6 +147,44 @@ test('useIt', () => {
   const readde2 = _r();
 
   expectType<AState>(useIt(readde2));
+
+  // =-=-=
+
+  const read5ce = _r(<TState>(state: TState) => state);
+
+  expectType<AState>(useIt(read5ce));
+
+  // =-=-=
+
+  const read229 = _r(<TState>(state: TState, s: string) => state);
+
+  useIt(read229, fake<string>());
+
+  // @ts-expect-error
+  useIt(read229);
+
+  // @ts-expect-error
+  useIt(read229, fake<number>());
+
+  // @ts-expect-error
+  useIt(read229, fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const read012 = _r(<TState extends AState>(state: TState): TState => state);
+
+  expectType<AState>(useIt(read012));
+
+  // =-=-=
+
+  const read7d1 = _r(<TState extends ObjectState>(state: TState): TState => state);
+
+  expectType<AState>(useIt(read7d1));
+
+  // =-=-=
+
+  // @ts-expect-error
+  _r(<TState extends SuperState>(state: TState): TState => state);
 
   // =-=-=
 
@@ -171,7 +209,20 @@ test('useIt', () => {
 
   // =-=-=
 
+  const read811 = _r((state: ObjectState) => state);
+
+  expectType<ObjectState>(useIt(read811));
+
+  // =-=-=
+
+  // @ts-expect-error
+  _r((state: SuperState) => fake<ObjectState>());
+
+  // =-=-=
+
   const write23e = w((state: AState) => state);
+
+  write23e(fake<AMug>());
 
   // @ts-expect-error
   useIt(write23e, fake<AState>());
@@ -184,6 +235,8 @@ test('useIt', () => {
 
   const write7eb = _w();
 
+  write7eb({});
+
   // @ts-expect-error
-  useIt(write7eb);
+  useIt(write7eb, {});
 });

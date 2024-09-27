@@ -54,7 +54,7 @@ interface DirtyAMug {
 
 test('r, flat, pure', () => {
   // @ts-expect-error
-  r(w((state: unknown) => state));
+  r(w((state: any) => state));
 
   // =-=-=
 
@@ -175,7 +175,7 @@ test('r, flat, pure', () => {
 
 test('w, flat, pure', () => {
   // @ts-expect-error
-  w(r((state: unknown) => state));
+  w(r((state: any) => state));
 
   // =-=-=
 

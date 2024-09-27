@@ -15,6 +15,7 @@ import {
   _isArray,
   _length,
   _null,
+  _object,
   _Object,
   _reduce,
   _setPrototypeOf,
@@ -178,7 +179,7 @@ export class MugError extends _Error {
   }
 }
 
-export const isObjectLike = (o: any): boolean => typeof o === 'object' && o !== null;
+export const isObjectLike = (o: any): boolean => typeof o === _object && o !== null;
 
 export const isPlainObject = (o: any): boolean =>
   isObjectLike(o) && [_Object, _undefined][_includes](o[_constructor]);
@@ -424,11 +425,13 @@ export type AnyOp = AnyReadOp | AnyWriteOp;
 
 export type NotOp = NotReadOp & NotWriteOp;
 
+export const isFunction = (f: any): boolean => typeof f === _function;
+
 export const isReadOp = (f: any): f is AnyReadOp =>
-  typeof f === _function && f[_hasOwnProperty](_readFn) && typeof f[_readFn] === _function;
+  isFunction(f) && f[_hasOwnProperty](_readFn) && isFunction(f[_readFn]);
 
 export const isWriteOp = (f: any): f is AnyWriteOp =>
-  typeof f === _function && f[_hasOwnProperty](_writeFn) && typeof f[_writeFn] === _function;
+  isFunction(f) && f[_hasOwnProperty](_writeFn) && isFunction(f[_writeFn]);
 
 export const isOp = (f: any): f is AnyOp => isReadOp(f) || isWriteOp(f);
 
@@ -465,13 +468,13 @@ export type NotAction = {
 };
 
 export const isReadAction = (f: any): f is AnyReadAction =>
-  typeof f === _function &&
+  isFunction(f) &&
   f[_hasOwnProperty](_mugLike) &&
   f[_hasOwnProperty](_readOp) &&
   isReadOp(f[_readOp]);
 
 export const isWriteAction = (f: any): f is AnyWriteAction =>
-  typeof f === _function &&
+  isFunction(f) &&
   f[_hasOwnProperty](_mugLike) &&
   f[_hasOwnProperty](_writeOp) &&
   isWriteOp(f[_writeOp]);

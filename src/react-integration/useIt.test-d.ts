@@ -174,5 +174,16 @@ test('useIt', () => {
   const write23e = w((state: AState) => state);
 
   // @ts-expect-error
-  useIt(write23e);
+  useIt(write23e, fake<AState>());
+
+  // =-=-=
+
+  const [, _w] = upon(fake<NestedAMug>());
+
+  // =-=-=
+
+  const write7eb = _w();
+
+  // @ts-expect-error
+  useIt(write7eb);
 });

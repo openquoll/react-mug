@@ -268,12 +268,12 @@ describe('900ce35, operates by an object state custom write op', () => {
   });
 
   describe('cddad6f, the op generates a state overriding the input state_s string field and potential muggy object field_s string field with the input string, [cite] .:0deb0f9', () => {
-    const customWriteFn = jest.fn((aState: AState, s: string): AState => {
+    const customWriteFn = jest.fn((state: AState, s: string): AState => {
       return {
-        ...aState,
+        ...state,
         s,
         potentialMuggyObject: {
-          ...aState.potentialMuggyObject,
+          ...state.potentialMuggyObject,
           s,
         },
       };

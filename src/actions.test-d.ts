@@ -370,10 +370,20 @@ test('upon, flat, pure', () => {
   // =-=-=
 
   const write519 = w(<TState extends AState>(state: TState) => state);
+  expectType<void>(write519());
+  const flatWrite519 = flatW(<TState extends AState>(state: TState) => state);
+  expectType<typeof flatWrite519>(flat(write519));
+  expectType<typeof write519>(w(flatWrite519));
+  expectType<<TState extends AState>(state: TState) => TState>(pure(write519));
 
   // =-=-=
 
   const write4fd = w(<TState extends ObjectState>(state: TState) => state);
+  expectType<void>(write519());
+  const flatWrite4fd = flatW(<TState extends ObjectState>(state: TState) => state);
+  expectType<typeof flatWrite4fd>(flat(write4fd));
+  expectType<typeof write4fd>(w(flatWrite4fd));
+  expectType<<TState extends ObjectState>(state: TState) => TState>(pure(write4fd));
 
   // =-=-=
 
@@ -420,7 +430,6 @@ test('upon, flat, pure', () => {
   const write8db = w();
   expectType<void>(write8db({ potentialMuggyObject: { o: { s: fake<string>() } } }));
   const flatWrite8db = setIt;
-  const op8db = flat(write8db);
   expectType<typeof flatWrite8db>(flat(write8db));
   expectType<typeof write8db>(w(flatWrite8db));
   expectType<<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState>(

@@ -3,6 +3,7 @@ export const _null = null;
 export const _true = true;
 export const _false = false;
 
+export const _object = 'object';
 export const _function = 'function';
 
 export const _constructor = 'constructor';

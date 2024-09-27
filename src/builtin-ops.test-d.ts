@@ -12,9 +12,9 @@ interface ObjectState {
   };
 }
 
-type Func = (...args: boolean[]) => boolean;
-
 test('PossiblePatch', () => {
+  type Func = (...args: boolean[]) => boolean;
+
   interface AMugLike extends ObjectState {
     f: Func;
     no?: ObjectState;
@@ -46,6 +46,10 @@ test('setIt, pure', () => {
     potentialMuggyObject: ObjectState;
   }
 
+  interface SuperState extends AState {
+    n: number;
+  }
+
   type AMug = Mug<AState>;
 
   type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
@@ -72,29 +76,15 @@ test('setIt, pure', () => {
 
   const patch = { potentialMuggyObject: { o: { s: fake<string>() } } };
 
-  const r73a = setIt(fake<AState>(), patch);
-  expectType<AState>(r73a);
-
-  const r586 = setIt(fake<AMug>(), patch);
-  expectType<AMug>(r586);
-
-  const r014 = setIt(fake<NestedAMug>(), patch);
-  expectType<NestedAMug>(r014);
-
-  const r8e9 = setIt(fake<AMugLike>(), patch);
-  expectType<AMugLike>(r8e9);
-
-  const r7f7 = setIt(fake<PossibleAMug>(), patch);
-  expectType<PossibleAMug>(r7f7);
-
-  const rb02 = setIt(fake<PossibleAMugLike>(), patch);
-  expectType<PossibleAMugLike>(rb02);
-
-  const r9b0 = setIt(fake<DirtyAMug>(), patch);
-  expectType<DirtyAMug>(r9b0);
-
-  const r9fa = setIt(fake<ObjectState>(), { o: { s: fake<string>() } });
-  expectType<ObjectState>(r9fa);
+  expectType<AState>(setIt(fake<AState>(), patch));
+  expectType<AMug>(setIt(fake<AMug>(), patch));
+  expectType<NestedAMug>(setIt(fake<NestedAMug>(), patch));
+  expectType<AMugLike>(setIt(fake<AMugLike>(), patch));
+  expectType<PossibleAMug>(setIt(fake<PossibleAMug>(), patch));
+  expectType<PossibleAMugLike>(setIt(fake<PossibleAMugLike>(), patch));
+  expectType<DirtyAMug>(setIt(fake<DirtyAMug>(), patch));
+  expectType<ObjectState>(setIt(fake<ObjectState>(), { o: { s: fake<string>() } }));
+  expectType<SuperState>(setIt(fake<SuperState>(), patch));
 
   // @ts-expect-error
   setIt(fake<AState>(), { n: fake<number>() });

@@ -125,12 +125,12 @@ function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-export type PossiblePatchOnUndefined<TMugLike> =
+export type PossiblePatchOnUndefinedible<TMugLike> =
   | State<NonNullable<TMugLike>>
   | undefined
   | typeof none;
 
-export type PossiblePatchOnNull<TMugLike> = State<NonNullable<TMugLike>> | null;
+export type PossiblePatchOnNullible<TMugLike> = State<NonNullable<TMugLike>> | null;
 
 export type PossiblePatchOnNonNullableOnReadonTuple<TMugLike extends AnyReadonlyTuple> = {
   [TK in keyof TMugLike]: PossiblePatch<TMugLike[TK]> | EmptyItem;
@@ -157,9 +157,9 @@ export type PossiblePatchOnNonNullable<TMugLike> = TMugLike extends AnyFunction
           : TMugLike;
 
 export type PossiblePatch<TMugLike> = undefined extends TMugLike
-  ? PossiblePatchOnUndefined<TMugLike>
+  ? PossiblePatchOnUndefinedible<TMugLike>
   : null extends TMugLike
-    ? PossiblePatchOnNull<TMugLike>
+    ? PossiblePatchOnNullible<TMugLike>
     : PossiblePatchOnNonNullable<TMugLike>;
 
 const setItFn = <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState =>

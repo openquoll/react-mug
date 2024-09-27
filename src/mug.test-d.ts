@@ -31,15 +31,7 @@ test('PossibleMuggyOverride', () => {
 
   expectType<
     | EmptyItem
-    | {
-        [construction]: {
-          s: PossibleMugLike<AMugLike['s']>;
-          o: PossibleMugLike<AMugLike['o']>;
-          f: Func;
-          muggyObject: PossibleMugLike<AMugLike['muggyObject']>;
-          dirtyMuggyObject: PossibleMugLike<AMugLike['dirtyMuggyObject']>;
-        };
-      }
+    | PossibleMug<AMugLike>
     | {
         s?: { [construction]: string };
         o?:
@@ -53,17 +45,15 @@ test('PossibleMuggyOverride', () => {
 
   // =-=-=
 
-  expectType<EmptyItem | { [construction]: number }>(from<PossibleMuggyOverride<number>>());
+  expectType<EmptyItem | PossibleMug<number>>(from<PossibleMuggyOverride<number>>());
+
+  expectType<EmptyItem | PossibleMug<number[]> | ({ [construction]: number } | EmptyItem)[]>(
+    from<PossibleMuggyOverride<number[]>>(),
+  );
 
   expectType<
     | EmptyItem
-    | { [construction]: PossibleMugLike<number>[] }
-    | ({ [construction]: number } | EmptyItem)[]
-  >(from<PossibleMuggyOverride<number[]>>());
-
-  expectType<
-    | EmptyItem
-    | { [construction]: [PossibleMugLike<number>, PossibleMugLike<number>] }
+    | PossibleMug<[number, number]>
     | [{ [construction]: number }?, { [construction]: number }?]
   >(from<PossibleMuggyOverride<[number, number]>>());
 
@@ -336,14 +326,11 @@ test('State', () => {
     b: boolean;
   }
 
-  type Rf06 = State<AMug>;
-  expectType<AState>(from<Rf06>());
+  expectType<AState>(from<State<AMug>>());
 
-  type R1ee = State<NestedAMug>;
-  expectType<AState>(from<R1ee>());
+  expectType<AState>(from<State<NestedAMug>>());
 
-  type R7a1 = State<AMugLike>;
-  expectType<AState>(from<R7a1>());
+  expectType<AState>(from<State<AMugLike>>());
 
   type R6f9 = State<PossibleAMug>;
   expectAssignable<R6f9>(from<AState>());
@@ -353,6 +340,5 @@ test('State', () => {
   expectAssignable<Rd2d>(from<AState>());
   expectAssignable<AState>(from<Rd2d>());
 
-  type Rff5 = State<DirtyAMug>;
-  expectType<AState>(from<Rff5>());
+  expectType<AState>(from<State<DirtyAMug>>());
 });

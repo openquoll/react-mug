@@ -1,7 +1,7 @@
 import { construction, flat, getIt, Mug, MugLike, pure, r, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
-describe('dd10061, operates by an object state custom read op', () => {
+describe('dd10061, reads by an object state custom read op', () => {
   interface ObjectState {
     s: string;
     o: {

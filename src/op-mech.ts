@@ -76,6 +76,23 @@ class ValueStabilizer {
 class MugLikeReadTask {
   private _readingMugLikes = new _Set();
 
+  public _skipsRawStateStore: boolean = false;
+  public _skipsValueStablizer: boolean = false;
+
+  private _calcRawState(mug: any) {
+    if (this._skipsRawStateStore) {
+      return mug[construction];
+    }
+    return rawStateStore._getRawState(mug);
+  }
+
+  private _finalizeState(mugLike: any, state: any) {
+    if (this._skipsValueStablizer) {
+      return state;
+    }
+    return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
+  }
+
   public _run(mugLike: any): any {
     if (this._readingMugLikes[_has](mugLike)) {
       throw new MugError(errMsgOf_circular_referenced_mug_found);
@@ -83,10 +100,9 @@ class MugLikeReadTask {
 
     if (isMug(mugLike)) {
       this._readingMugLikes[_add](mugLike);
-      const state = this._run(rawStateStore._getRawState(mugLike));
+      const state = this._run(this._calcRawState(mugLike));
       this._readingMugLikes[_delete](mugLike);
-
-      return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
+      return this._finalizeState(mugLike, state);
     }
 
     if (isState(mugLike)) {
@@ -100,16 +116,14 @@ class MugLikeReadTask {
         return result;
       }, emptyCloneOfPlainObject(mugLike));
       this._readingMugLikes[_delete](mugLike);
-
-      return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
+      return this._finalizeState(mugLike, state);
     }
 
     if (_isArray(mugLike)) {
       this._readingMugLikes[_add](mugLike);
       const state = mugLike[_map]((mugLikeItem) => this._run(mugLikeItem));
       this._readingMugLikes[_delete](mugLike);
-
-      return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
+      return this._finalizeState(mugLike, state);
     }
 
     return mugLike;
@@ -226,7 +240,7 @@ export function r(read: AnyFunction): AnyFunction {
   }
 
   const readOp = (mugLike: any, ...restArgs: any): any => {
-    // When the mugLike is a state, use the readFn as it is.
+    // When the mugLike is a state, use the read as it is.
     if (isState(mugLike)) {
       return read(mugLike, ...restArgs);
     }
@@ -300,4 +314,19 @@ export function w(write: AnyFunction): AnyFunction {
   writeOp[_writeFn] = write;
 
   return writeOp;
+}
+
+function initial(mugLike: any): any {
+  // When the mugLike is a state, return it as it is.
+  if (isState(mugLike)) {
+    return mugLike;
+  }
+
+  const rTask = new MugLikeReadTask();
+  rTask._skipsRawStateStore = true;
+  rTask._skipsValueStablizer = true;
+  const state = rTask._run(mugLike);
+  rTask._clear();
+
+  return state;
 }

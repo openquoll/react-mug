@@ -70,27 +70,27 @@ class ValueStabilizer {
     return value;
   }
 
-  public static readonly _ForMugLikeRead = new ValueStabilizer();
+  public static readonly _ForMugLikeCurrentStateRead = new ValueStabilizer();
+  public static readonly _ForMugLikeInitialStateRead = new ValueStabilizer();
 }
 
 class MugLikeReadTask {
   private _readingMugLikes = new _Set();
 
-  public _skipsRawStateStore: boolean = false;
-  public _skipsValueStablizer: boolean = false;
+  public _forInitialState: boolean = false;
 
   private _calcRawState(mug: any) {
-    if (this._skipsRawStateStore) {
+    if (this._forInitialState) {
       return mug[construction];
     }
     return rawStateStore._getRawState(mug);
   }
 
   private _finalizeState(mugLike: any, state: any) {
-    if (this._skipsValueStablizer) {
-      return state;
+    if (this._forInitialState) {
+      return ValueStabilizer._ForMugLikeInitialStateRead._apply(mugLike, state);
     }
-    return ValueStabilizer._ForMugLikeRead._apply(mugLike, state);
+    return ValueStabilizer._ForMugLikeCurrentStateRead._apply(mugLike, state);
   }
 
   public _run(mugLike: any): any {
@@ -316,15 +316,15 @@ export function w(write: AnyFunction): AnyFunction {
   return writeOp;
 }
 
-function initial(mugLike: any): any {
+export function initial<TMugLike>(mugLike: TMugLike): State<TMugLike>;
+export function initial(mugLike: any): any {
   // When the mugLike is a state, return it as it is.
   if (isState(mugLike)) {
     return mugLike;
   }
 
   const rTask = new MugLikeReadTask();
-  rTask._skipsRawStateStore = true;
-  rTask._skipsValueStablizer = true;
+  rTask._forInitialState = true;
   const state = rTask._run(mugLike);
   rTask._clear();
 

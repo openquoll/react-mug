@@ -11,7 +11,7 @@ import {
   PossibleMugLike,
   pure,
 } from './mug';
-import { r, w } from './op-mech';
+import { initial, r, w } from './op-mech';
 
 interface ObjectState {
   s: string;
@@ -322,4 +322,23 @@ test('w, flat, pure', () => {
 
   expectType<typeof write181>(flat(write181));
   expectType<() => AState>(pure(write181));
+});
+
+test('initial', () => {
+  expectType<AState>(initial(fake<AState>()));
+  expectType<AState>(initial(fake<AMug>()));
+  expectType<AState>(initial(fake<NestedAMug>()));
+  expectType<AState>(initial(fake<AMugLike>()));
+
+  const r99b = initial(fake<PossibleAMug>());
+  expectAssignable<AState>(r99b);
+  expectAssignable<typeof r99b>(from<AState>());
+
+  const rc79 = initial(fake<PossibleAMugLike>());
+  expectAssignable<AState>(rc79);
+  expectAssignable<typeof rc79>(from<AState>());
+
+  expectType<AState>(initial(fake<DirtyAMug>()));
+  expectType<SuperState>(initial(fake<SuperState>()));
+  expectType<ObjectState>(initial(fake<ObjectState>()));
 });

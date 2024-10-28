@@ -11,6 +11,6 @@ export {
   flat,
   pure,
 } from './mug';
-export { r, w } from './op-mech';
+export { initial, r, w } from './op-mech';
 export { useIt } from './react-integration';
 export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';

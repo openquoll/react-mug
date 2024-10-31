@@ -31,9 +31,12 @@ import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './typ
  * A mug is any object conforming to the shape `{ [construction]: ... }`. The
  * `[construction]` field denotes how the held states are initially constructed.
  *
+ * The fields adjacent to `[construction]`, if any, are the mug's attachments
+ * for the extension purpose.
+ *
  * ---
  *
- * A Mug can be a holder of other Mugs. Imagine mug cups stacked together.
+ * A Mug can also be a holder of other Mugs. Imagine mug cups stacked together.
  *
  * ---
  *
@@ -48,7 +51,7 @@ import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './typ
  *
  * The most mug-like is mugs and the least mug-like is states.
  *
- * Thus, mugs, mug-likes and states constitue a mug-state continuum.
+ * Additionally, mugs, mug-likes and states constitue a mug-state continuum.
  *
  * ---
  *
@@ -57,12 +60,20 @@ import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './typ
  *
  * Likewise, a mug-like can be concise or not.
  *
- * A state is always concise as it doesn't have a `[construction]` at all,
+ * A state is always concise as it doesn't have a `[construction]` at all.
  */
 export const construction = Symbol();
-// export const construction = 'Symbol("construction")';
 
 export type AnyMug = { [construction]: any };
+
+export type WithAttachments<TMug extends AnyMug, TAttachments extends AnyObjectLike> = TMug &
+  TAttachments;
+
+export type AnyMugWithAttachments = WithAttachments<AnyMug, AnyObjectLike>;
+
+export type PossibleMugLikeOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction> =
+  | TMugLike
+  | PossibleMugLike<TConstruction>;
 
 export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
   | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
@@ -71,15 +82,22 @@ export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
 export type PossibleMugLikeOnPrimitive<TMugLike> = { [construction]: TMugLike } | TMugLike;
 
 /**
- * The union type of every possible concise mug-like type for a given mug-like type.
+ * The union type of every possible concise mug-like type for a given mug-like
+ * type.
  */
 export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
   : TMugLike extends { [construction]: infer TConstruction }
-    ? PossibleMugLike<TConstruction>
+    ? AnyMug extends TMugLike
+      ? PossibleMugLike<TConstruction>
+      : PossibleMugLikeOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction>
     : TMugLike extends AnyObjectLike
       ? PossibleMugLikeOnObjectLike<TMugLike>
       : PossibleMugLikeOnPrimitive<TMugLike>;
+
+export type PossibleMugOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction> =
+  | TMugLike
+  | PossibleMug<TConstruction>;
 
 export type PossibleMugOnObjectLike<TMugLike extends AnyObjectLike> = {
   [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
@@ -93,7 +111,9 @@ export type PossibleMugOnPrimitive<TMugLike> = { [construction]: TMugLike };
 export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
   : TMugLike extends { [construction]: infer TConstruction }
-    ? PossibleMugLike<TConstruction>
+    ? AnyMug extends TMugLike
+      ? PossibleMugLike<TConstruction>
+      : PossibleMugOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction>
     : TMugLike extends AnyObjectLike
       ? PossibleMugOnObjectLike<TMugLike>
       : PossibleMugOnPrimitive<TMugLike>;
@@ -144,11 +164,8 @@ export type MugLike<
 /**
  * The mug type-defining helper.
  */
-export type Mug<
-  TConstruction,
-  TMuggyOverride extends PossibleMuggyOverride<TConstruction> = EmptyItem,
-> = {
-  [construction]: MugLike<TConstruction, TMuggyOverride>;
+export type Mug<TMugLike, TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem> = {
+  [construction]: MugLike<TMugLike, TMuggyOverride>;
 };
 
 export type StateOnObjectLike<TMugLike extends AnyObjectLike> = Conserve<
@@ -187,7 +204,8 @@ export const isPlainObject = (o: any): boolean =>
 export const isClassDefinedObject = (o: any): boolean =>
   isObjectLike(o) && !_isArray(o) && ![_Object, _undefined][_includes](o[_constructor]);
 
-export const isMug = (o: any): o is AnyMug => isObjectLike(o) && o[_hasOwnProperty](construction);
+export const isMug = (o: any): o is AnyMugWithAttachments =>
+  isObjectLike(o) && o[_hasOwnProperty](construction);
 
 export function isState(o: any): boolean {
   if (isMug(o)) {

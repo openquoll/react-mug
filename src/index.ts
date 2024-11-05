@@ -4,6 +4,7 @@ export {
   Mug,
   MugError,
   MugLike,
+  Muggify,
   PossibleMug,
   PossibleMugLike,
   State,

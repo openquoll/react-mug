@@ -71,10 +71,6 @@ export type WithAttachments<TMug extends AnyMug, TAttachments extends AnyObjectL
 
 export type AnyMugWithAttachments = WithAttachments<AnyMug, AnyObjectLike>;
 
-export type PossibleMugLikeOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction> =
-  | TMugLike
-  | PossibleMugLike<TConstruction>;
-
 export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
   | { [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> } }
   | { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
@@ -90,14 +86,10 @@ export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends { [construction]: infer TConstruction }
     ? AnyMug extends TMugLike
       ? PossibleMugLike<TConstruction>
-      : PossibleMugLikeOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction>
+      : TMugLike | PossibleMugLike<TConstruction>
     : TMugLike extends AnyObjectLike
       ? PossibleMugLikeOnObjectLike<TMugLike>
       : PossibleMugLikeOnPrimitive<TMugLike>;
-
-export type PossibleMugOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction> =
-  | TMugLike
-  | PossibleMug<TConstruction>;
 
 export type PossibleMugOnObjectLike<TMugLike extends AnyObjectLike> = {
   [construction]: { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
@@ -113,7 +105,7 @@ export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends { [construction]: infer TConstruction }
     ? AnyMug extends TMugLike
       ? PossibleMugLike<TConstruction>
-      : PossibleMugOnMugWithAttachmentsAndConstruction<TMugLike, TConstruction>
+      : TMugLike | PossibleMug<TConstruction>
     : TMugLike extends AnyObjectLike
       ? PossibleMugOnObjectLike<TMugLike>
       : PossibleMugOnPrimitive<TMugLike>;
@@ -134,19 +126,16 @@ export type NonEmptyPossibleMuggyOverride<TMugLike> = TMugLike extends AnyFuncti
 
 export type PossibleMuggyOverride<TMugLike> = EmptyItem | NonEmptyPossibleMuggyOverride<TMugLike>;
 
-export type MugLikeOnObjectLikeByObjectLike<
+export type MuggifyOnObjectLikeByObjectLike<
   TMugLike extends AnyObjectLike,
   TMuggyOverride extends AnyObjectLike,
 > = {
   [TK in keyof TMugLike]: MugLike<TMugLike[TK], TMuggyOverride[TK]>;
 };
 
-/**
- * The mug-like type-extending helper.
- */
-export type MugLike<
+export type Muggify<
   TMugLike,
-  TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem,
+  TMuggyOverride extends PossibleMuggyOverride<TMugLike>,
 > = TMugLike extends AnyFunction
   ? TMugLike
   : TMuggyOverride extends AnyFunction
@@ -157,15 +146,23 @@ export type MugLike<
         ? TMuggyOverride
         : TMugLike extends AnyObjectLike
           ? TMuggyOverride extends AnyObjectLike
-            ? MugLikeOnObjectLikeByObjectLike<TMugLike, TMuggyOverride>
+            ? MuggifyOnObjectLikeByObjectLike<TMugLike, TMuggyOverride>
             : TMugLike
           : TMugLike;
+
+/**
+ * The mug-like type-extending helper.
+ */
+export type MugLike<
+  TMugLike,
+  TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem,
+> = Muggify<TMugLike, TMuggyOverride>;
 
 /**
  * The mug type-defining helper.
  */
 export type Mug<TMugLike, TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem> = {
-  [construction]: MugLike<TMugLike, TMuggyOverride>;
+  [construction]: Muggify<TMugLike, TMuggyOverride>;
 };
 
 export type StateOnObjectLike<TMugLike extends AnyObjectLike> = Conserve<

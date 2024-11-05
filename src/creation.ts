@@ -1,5 +1,6 @@
-import { R, W } from './actions';
-import { Mug, WithAttachments } from './mug';
+import { R, upon, W } from './actions';
+import { construction, Mug, WithAttachments } from './mug';
+import { _assign } from './shortcuts';
 import { AnyFunction, AnyObjectLike } from './type-utils';
 
 export type CreationToolbeltFormat<TR, TW, TMug> = [r: TR, w: TW, mug: TMug] & {
@@ -38,7 +39,23 @@ export function create<TAttributesValue>(
   attributes: TAttributesValue,
 ): CreatedMug<TAttributesValue>;
 export function create(attributes: any): any {
-  // TBD...
+  const mug = { [construction]: attributes };
+
+  _assign(mug, attributes);
+
+  const creationToolbelt: any = upon(mug);
+  creationToolbelt[3] = mug;
+  creationToolbelt.mug = mug;
+
+  function attach(methods: any) {
+    _assign(mug, methods(creationToolbelt));
+
+    return mug;
+  }
+
+  _assign(mug, { attach });
+
+  return mug;
 }
 
 export type FurtherMugCreator<
@@ -63,5 +80,14 @@ export function creator<TAttributesFunction extends AnyFunction>(
   attributes: TAttributesFunction,
 ): MugCreator<TAttributesFunction>;
 export function creator(attributes: any): any {
-  // TBD...
+  const createMugPhase1 = (...args: any) => create(attributes(...args));
+
+  function attach(methods: any) {
+    const createMugPhase2 = (...args: any) => createMugPhase1(...args).attach(methods);
+    return createMugPhase2;
+  }
+
+  _assign(createMugPhase1, { attach });
+
+  return createMugPhase1;
 }

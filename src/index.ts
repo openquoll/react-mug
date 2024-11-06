@@ -1,5 +1,6 @@
 export { upon } from './actions';
 export { PossiblePatch, getIt, none, setIt } from './builtin-ops';
+export { create, creator } from './creation';
 export {
   Mug,
   MugError,
@@ -8,6 +9,7 @@ export {
   PossibleMug,
   PossibleMugLike,
   State,
+  WithAttachments,
   construction,
   flat,
   pure,

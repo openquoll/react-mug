@@ -78,11 +78,11 @@ describe('0ab2ffa, actions straightforwardly, [cite] 003, 004', () => {
   const customWriteAction = w(customWriteFn);
 
   describe('1696308, checks the action toolbelt_s fields', () => {
-    test('[action, verify] the "r" field equals the index-0 item in ref', () => {
+    test('[verify] the "r" field equals the index-0 item in ref', () => {
       expect(r).toBe(uponA.r);
     });
 
-    test('[action, verify] the "w" field equals the index-1 item in ref', () => {
+    test('[verify] the "w" field equals the index-1 item in ref', () => {
       expect(w).toBe(uponA.w);
     });
   });

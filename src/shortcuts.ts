@@ -44,3 +44,5 @@ export const _delete = 'delete';
 export const _clear = 'clear';
 
 export const _current = 'current';
+export const _mug = 'mug';
+export const _attach = 'attach';

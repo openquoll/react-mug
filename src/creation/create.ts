@@ -1,6 +1,6 @@
 import { R, upon, W } from '../actions';
 import { construction, Mug, WithAttachments } from '../mug';
-import { _assign } from '../shortcuts';
+import { _assign, _mug } from '../shortcuts';
 import { AnyObjectLike } from '../type-utils';
 
 export type CreationToolbeltFormat<TR, TW, TMug> = [r: TR, w: TW, mug: TMug] & {
@@ -45,7 +45,7 @@ export function create(attributesValue: any): any {
 
   const creationToolbelt: any = upon(mug);
   creationToolbelt[2] = mug;
-  creationToolbelt.mug = mug;
+  creationToolbelt[_mug] = mug;
 
   function attach(methodsFunction: any) {
     _assign(mug, methodsFunction(creationToolbelt));

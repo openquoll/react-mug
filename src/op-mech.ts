@@ -71,27 +71,10 @@ class ValueStabilizer {
   }
 
   public static readonly _ForMugLikeCurrentStateRead = new ValueStabilizer();
-  public static readonly _ForMugLikeInitialStateRead = new ValueStabilizer();
 }
 
-class MugLikeReadTask {
+class MugLikeCurrentStateReadTask {
   private _readingMugLikes = new _Set();
-
-  public _forInitialState: boolean = false;
-
-  private _calcRawState(mug: any) {
-    if (this._forInitialState) {
-      return mug[construction];
-    }
-    return rawStateStore._getRawState(mug);
-  }
-
-  private _finalizeState(mugLike: any, state: any) {
-    if (this._forInitialState) {
-      return ValueStabilizer._ForMugLikeInitialStateRead._apply(mugLike, state);
-    }
-    return ValueStabilizer._ForMugLikeCurrentStateRead._apply(mugLike, state);
-  }
 
   public _run(mugLike: any): any {
     if (this._readingMugLikes[_has](mugLike)) {
@@ -100,9 +83,9 @@ class MugLikeReadTask {
 
     if (isMug(mugLike)) {
       this._readingMugLikes[_add](mugLike);
-      const state = this._run(this._calcRawState(mugLike));
+      const state = this._run(rawStateStore._getRawState(mugLike));
       this._readingMugLikes[_delete](mugLike);
-      return this._finalizeState(mugLike, state);
+      return ValueStabilizer._ForMugLikeCurrentStateRead._apply(mugLike, state);
     }
 
     if (isState(mugLike)) {
@@ -116,17 +99,83 @@ class MugLikeReadTask {
         return result;
       }, emptyCloneOfPlainObject(mugLike));
       this._readingMugLikes[_delete](mugLike);
-      return this._finalizeState(mugLike, state);
+      return ValueStabilizer._ForMugLikeCurrentStateRead._apply(mugLike, state);
     }
 
     if (_isArray(mugLike)) {
       this._readingMugLikes[_add](mugLike);
       const state = mugLike[_map]((mugLikeItem) => this._run(mugLikeItem));
       this._readingMugLikes[_delete](mugLike);
-      return this._finalizeState(mugLike, state);
+      return ValueStabilizer._ForMugLikeCurrentStateRead._apply(mugLike, state);
     }
 
     return mugLike;
+  }
+
+  public _clear() {
+    this._readingMugLikes[_clear]();
+  }
+}
+
+class ValueCache {
+  private _staleValueByMugLike = new _WeakMap();
+
+  public _apply(mugLike: any, evaluateValue: any): any {
+    if (!isObjectLike(mugLike)) {
+      return evaluateValue();
+    }
+
+    if (this._staleValueByMugLike[_has](mugLike)) {
+      return this._staleValueByMugLike[_get](mugLike);
+    }
+
+    const value = evaluateValue();
+    this._staleValueByMugLike[_set](mugLike, value);
+    return value;
+  }
+
+  public static readonly _ForMugLikeInitialStateRead = new ValueCache();
+}
+
+class MugLikeInitialStateReadTask {
+  private _readingMugLikes = new _Set();
+
+  public _run(mugLike: any): any {
+    if (this._readingMugLikes[_has](mugLike)) {
+      throw new MugError(errMsgOf_circular_referenced_mug_found);
+    }
+
+    return ValueCache._ForMugLikeInitialStateRead._apply(mugLike, () => {
+      if (isMug(mugLike)) {
+        this._readingMugLikes[_add](mugLike);
+        const state = this._run(mugLike[construction]);
+        this._readingMugLikes[_delete](mugLike);
+        return state;
+      }
+
+      if (isState(mugLike)) {
+        return mugLike;
+      }
+
+      if (isPlainObject(mugLike)) {
+        this._readingMugLikes[_add](mugLike);
+        const state = ownKeysOfObjectLike(mugLike)[_reduce]((result, key) => {
+          result[key] = this._run(mugLike[key]);
+          return result;
+        }, emptyCloneOfPlainObject(mugLike));
+        this._readingMugLikes[_delete](mugLike);
+        return state;
+      }
+
+      if (_isArray(mugLike)) {
+        this._readingMugLikes[_add](mugLike);
+        const state = mugLike[_map]((mugLikeItem) => this._run(mugLikeItem));
+        this._readingMugLikes[_delete](mugLike);
+        return state;
+      }
+
+      return mugLike;
+    });
   }
 
   public _clear() {
@@ -245,7 +294,7 @@ export function r(read: AnyFunction): AnyFunction {
       return read(mugLike, ...restArgs);
     }
 
-    const rTask = new MugLikeReadTask();
+    const rTask = new MugLikeCurrentStateReadTask();
     const state = rTask._run(mugLike);
     rTask._clear();
 
@@ -298,7 +347,7 @@ export function w(write: AnyFunction): AnyFunction {
       return assignConservatively(mugLike, newState);
     }
 
-    const rTask = new MugLikeReadTask();
+    const rTask = new MugLikeCurrentStateReadTask();
     const oldState = rTask._run(mugLike);
     rTask._clear();
 
@@ -323,8 +372,7 @@ export function initial(mugLike: any): any {
     return mugLike;
   }
 
-  const rTask = new MugLikeReadTask();
-  rTask._forInitialState = true;
+  const rTask = new MugLikeInitialStateReadTask();
   const state = rTask._run(mugLike);
   rTask._clear();
 

@@ -1,4 +1,4 @@
-import { _assign } from '../shortcuts';
+import { _assign, _attach } from '../shortcuts';
 import { AnyFunction, AnyObjectLike } from '../type-utils';
 import {
   create,
@@ -34,7 +34,7 @@ export function creator(attributesFunction: any): any {
 
   function attach(methodsFunction: any) {
     const createMugPhase2 = (...attributesArgs: any) =>
-      createMugPhase1(...attributesArgs).attach(methodsFunction);
+      createMugPhase1(...attributesArgs)[_attach](methodsFunction);
     return createMugPhase2;
   }
 

@@ -4,9 +4,9 @@ import {
   CreatedMug,
   CreationToolbelt,
   FurtherCreatedMug,
+  MugCreator,
   MugWithAttributesValue,
-} from '../src/creation/create';
-import { MugCreator } from '../src/creation/creator';
+} from '../src/creation';
 import { ownKeysOfObjectLike } from '../src/mug';
 import { Param0 } from '../src/type-utils';
 
@@ -41,18 +41,18 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
-type MethodsFunction = (creationToolbelt: CreationToolbelt<MugWithAttributesValue<AState>>) => {
+type AMethodsFunction = (creationToolbelt: CreationToolbelt<MugWithAttributesValue<AState>>) => {
   get: ReadActionOnGetIt<MugWithAttributesValue<AState>>;
   set: WriteActionOnSetIt<MugWithAttributesValue<AState>>;
 };
 
-const methodsFunction = jest.fn(({ r, w }: Param0<MethodsFunction>) => ({
+const aMethodsFunction = jest.fn(({ r, w }: Param0<AMethodsFunction>) => ({
   get: r(),
   set: w(),
 }));
 
 describe('cdfd9c9, mug creation by "create"', () => {
-  const attributesValue = {
+  const aAttributesValue = {
     s: 'asd',
     o: {
       s: 'asd',
@@ -69,18 +69,18 @@ describe('cdfd9c9, mug creation by "create"', () => {
     let aMug: CreatedMug<AState>;
 
     test('[action]', () => {
-      aMug = create<AState>(attributesValue);
+      aMug = create<AState>(aAttributesValue);
     });
 
     test('[verify] the mug_s construction equals the attributes value in ref and value', () => {
-      expect(aMug[construction]).toBe(attributesValue);
-      expect(aMug[construction]).toStrictEqual(attributesValue);
+      expect(aMug[construction]).toBe(aAttributesValue);
+      expect(aMug[construction]).toStrictEqual(aAttributesValue);
     });
 
     test('[verify] the attributes value_s fields equal the mug_s counterpart fields in ref and value', () => {
-      ownKeysOfObjectLike(attributesValue).forEach((key) => {
-        expect(aMug[key]).toBe(attributesValue[key]);
-        expect(aMug[key]).toStrictEqual(attributesValue[key]);
+      ownKeysOfObjectLike(aAttributesValue).forEach((key) => {
+        expect(aMug[key]).toBe(aAttributesValue[key]);
+        expect(aMug[key]).toStrictEqual(aAttributesValue[key]);
       });
     });
 
@@ -91,34 +91,34 @@ describe('cdfd9c9, mug creation by "create"', () => {
 
   describe('40a8503, creates a phase-2 mug', () => {
     let aMugPhase1: CreatedMug<AState>;
-    let aMug: FurtherCreatedMug<AState, typeof methodsValue>;
+    let aMug: FurtherCreatedMug<AState, typeof aMethodsValue>;
 
-    let creationToolbelt: Param0<MethodsFunction>;
-    let methodsValue: ReturnType<MethodsFunction>;
+    let aCreationToolbelt: Param0<AMethodsFunction>;
+    let aMethodsValue: ReturnType<AMethodsFunction>;
 
     let uponParamMug: MugWithAttributesValue<AState>;
     let uponReturn: ActionToolbelt<typeof uponParamMug>;
 
     test('[action]', () => {
-      aMugPhase1 = create<AState>(attributesValue);
-      aMug = aMugPhase1.attach(methodsFunction);
+      aMugPhase1 = create<AState>(aAttributesValue);
+      aMug = aMugPhase1.attach(aMethodsFunction);
 
-      creationToolbelt = methodsFunction.mock.calls[0][0];
-      methodsValue = methodsFunction.mock.results[0].value;
+      aCreationToolbelt = aMethodsFunction.mock.calls[0][0];
+      aMethodsValue = aMethodsFunction.mock.results[0].value;
 
       uponParamMug = jest.mocked(upon<typeof aMug>).mock.calls[0][0];
       uponReturn = jest.mocked(upon).mock.results[0].value;
     });
 
     test('[verify] the mug_s construction equals the attributes value in ref and value', () => {
-      expect(aMug[construction]).toBe(attributesValue);
-      expect(aMug[construction]).toStrictEqual(attributesValue);
+      expect(aMug[construction]).toBe(aAttributesValue);
+      expect(aMug[construction]).toStrictEqual(aAttributesValue);
     });
 
     test('[verify] the attributes value_s fields equal the mug_s counterpart fields in ref and value', () => {
-      ownKeysOfObjectLike(attributesValue).forEach((key) => {
-        expect(attributesValue[key]).toBe(aMug[key]);
-        expect(attributesValue[key]).toStrictEqual(aMug[key]);
+      ownKeysOfObjectLike(aAttributesValue).forEach((key) => {
+        expect(aAttributesValue[key]).toBe(aMug[key]);
+        expect(aAttributesValue[key]).toStrictEqual(aMug[key]);
       });
     });
 
@@ -127,7 +127,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
     });
 
     test('[verify] the methods function is called 1 time', () => {
-      expect(methodsFunction).toHaveBeenCalledTimes(1);
+      expect(aMethodsFunction).toHaveBeenCalledTimes(1);
     });
 
     test('[verify] "upon" is called 1 time', () => {
@@ -139,27 +139,27 @@ describe('cdfd9c9, mug creation by "create"', () => {
     });
 
     test('[verify] "upon" return equals the creation toolbelt in ref', () => {
-      expect(uponReturn).toBe(creationToolbelt);
+      expect(uponReturn).toBe(aCreationToolbelt);
     });
 
     test('[verify] the creation toolbelt_s "r" and "w" fields equal "upon" return_s counterpart fields in ref', () => {
-      expect(creationToolbelt.r).toBe(uponReturn.r);
-      expect(creationToolbelt.w).toBe(uponReturn.w);
+      expect(aCreationToolbelt.r).toBe(uponReturn.r);
+      expect(aCreationToolbelt.w).toBe(uponReturn.w);
     });
 
     test('[verify] the creation toolbelt_s "mug" field equals the mug in ref', () => {
-      expect(creationToolbelt.mug).toBe(aMug);
+      expect(aCreationToolbelt.mug).toBe(aMug);
     });
 
     test('[verify] the creation toolbelt_s "r" "w" and "mug" fields equal its index-0 index-1 and index-2 items in ref', () => {
-      expect(creationToolbelt.r).toBe(creationToolbelt[0]);
-      expect(creationToolbelt.w).toBe(creationToolbelt[1]);
-      expect(creationToolbelt.mug).toBe(creationToolbelt[2]);
+      expect(aCreationToolbelt.r).toBe(aCreationToolbelt[0]);
+      expect(aCreationToolbelt.w).toBe(aCreationToolbelt[1]);
+      expect(aCreationToolbelt.mug).toBe(aCreationToolbelt[2]);
     });
 
     test('[verify] the methods value_s fields equal the mug_s counterpart fields in ref', () => {
-      ownKeysOfObjectLike(methodsValue).forEach((key) => {
-        expect(methodsValue[key]).toBe(aMug[key]);
+      ownKeysOfObjectLike(aMethodsValue).forEach((key) => {
+        expect(aMethodsValue[key]).toBe(aMug[key]);
       });
     });
   });
@@ -168,7 +168,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
     let gotAStateBefore: AState, gotAStateAfter: AState;
 
     test('[action]', () => {
-      const aMug = create<AState>(attributesValue);
+      const aMug = create<AState>(aAttributesValue);
       const [r, w] = upon(aMug);
       const getA = r();
       const setA = w();
@@ -200,7 +200,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
     let gotAStateBefore: AState, gotAStateAfter: AState;
 
     test('[action]', () => {
-      const aMug = create<AState>(attributesValue).attach(({ r, w }) => ({ get: r(), set: w() }));
+      const aMug = create<AState>(aAttributesValue).attach(({ r, w }) => ({ get: r(), set: w() }));
 
       gotAStateBefore = aMug.get();
       aMug.set({ s: 'sdf' });
@@ -227,7 +227,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
 });
 
 describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
-  const attributesFunction = jest.fn((o: { s: string }) => {
+  const aAttributesFunction = jest.fn((o: { s: string }) => {
     return {
       s: 'asd',
       o,
@@ -240,13 +240,13 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     };
   });
 
-  const attributesArgs = tuple({ s: 'sdf' });
+  const aAttributesArgs = tuple({ s: 'sdf' });
 
   describe('6751348, creates a phase-1 mug creator', () => {
     let createAMug: MugCreator<(o: { s: string }) => AState>;
 
     test('[action]', () => {
-      createAMug = creator<(o: { s: string }) => AState>(attributesFunction);
+      createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
     });
 
     test('[verify] "create" is not called', () => {
@@ -254,37 +254,37 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     });
 
     test('[verify] the attributes function is not called', () => {
-      expect(attributesFunction).not.toHaveBeenCalled();
+      expect(aAttributesFunction).not.toHaveBeenCalled();
     });
 
-    test('[action, verify] the creator has an "attach" method', () => {
+    test('[verify] the creator has an "attach" method', () => {
       expect(typeof createAMug.attach).toBe('function');
     });
   });
 
   describe('b9f66bf, creates a phase-1 mug with a phase-1 mug creator', () => {
     let aMug: CreatedMug<AState>;
-    let attributesFunctionParams: Parameters<typeof attributesFunction>;
-    let attributesValue: AState;
+    let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
+    let aAttributesValue: AState;
     let createParam0: AState, createReturn: CreatedMug<AState>;
 
     test('[action]', () => {
-      const createAMug = creator<(o: { s: string }) => AState>(attributesFunction);
-      aMug = createAMug(...attributesArgs);
-      attributesFunctionParams = attributesFunction.mock.calls[0];
-      attributesValue = attributesFunction.mock.results[0].value;
+      const createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
+      aMug = createAMug(...aAttributesArgs);
+      aAttributesFunctionParams = aAttributesFunction.mock.calls[0];
+      aAttributesValue = aAttributesFunction.mock.results[0].value;
       createParam0 = jest.mocked(create<AState>).mock.calls[0][0];
       createReturn = jest.mocked(create<AState>).mock.results[0].value;
     });
 
     test('[verify] the attributes function is called 1 time', () => {
-      expect(attributesFunction).toHaveBeenCalledTimes(1);
+      expect(aAttributesFunction).toHaveBeenCalledTimes(1);
     });
 
     test('[verify] the attributes function params equal the attributes args in ref and value', () => {
-      attributesArgs.forEach((arg, i) => {
-        expect(attributesFunctionParams[i]).toBe(arg);
-        expect(attributesFunctionParams[i]).toStrictEqual(arg);
+      aAttributesArgs.forEach((arg, i) => {
+        expect(aAttributesFunctionParams[i]).toBe(arg);
+        expect(aAttributesFunctionParams[i]).toStrictEqual(arg);
       });
     });
 
@@ -293,8 +293,8 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     });
 
     test('[verify] "create" param-0 equals the attributes value in ref and value', () => {
-      expect(createParam0).toBe(attributesValue);
-      expect(createParam0).toStrictEqual(attributesValue);
+      expect(createParam0).toBe(aAttributesValue);
+      expect(createParam0).toStrictEqual(aAttributesValue);
     });
 
     test('[verify] the mug equals "create" return in ref and value', () => {
@@ -308,10 +308,10 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     let attributesValue: AState;
 
     test('[action]', () => {
-      const createAMug = creator<(o: { s: string }) => AState>(attributesFunction);
-      aMug1 = createAMug(...attributesArgs);
-      aMug2 = createAMug(...attributesArgs);
-      attributesValue = attributesFunction.mock.results[0].value;
+      const createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
+      aMug1 = createAMug(...aAttributesArgs);
+      aMug2 = createAMug(...aAttributesArgs);
+      attributesValue = aAttributesFunction.mock.results[0].value;
     });
 
     test('[verify] the mugs differ in ref', () => {
@@ -332,46 +332,47 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
 
   describe('f22d916, creates a phase-2 mug creator', () => {
     test('[action]', () => {
-      const createAMug = creator(attributesFunction).attach(methodsFunction);
+      const createAMug = creator(aAttributesFunction).attach(aMethodsFunction);
     });
 
     test('[verify] the attributes function is not called', () => {
-      expect(attributesFunction).not.toHaveBeenCalled();
+      expect(aAttributesFunction).not.toHaveBeenCalled();
     });
 
     test('[verify] the methods function is not called', () => {
-      expect(methodsFunction).not.toHaveBeenCalled();
+      expect(aMethodsFunction).not.toHaveBeenCalled();
     });
   });
 
   describe('9f39c52, creates a phase-2 mug with a phase-2 mug creator', () => {
-    let aMug: FurtherCreatedMug<AState, ReturnType<MethodsFunction>>;
-    let attributesFunctionParams: Parameters<typeof attributesFunction>;
-    let attributesValue: AState;
+    let aMug: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
+    let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
+    let aAttributesValue: AState;
     let createParam0: AState, createReturn: CreatedMug<AState>;
-    let createReturnAttachParam0: MethodsFunction;
-    let createReturnAttachReturn: FurtherCreatedMug<AState, ReturnType<MethodsFunction>>;
+    let createReturnAttachParam0: AMethodsFunction;
+    let createReturnAttachReturn: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
 
     test('[action]', () => {
-      const createAMug = creator(attributesFunction).attach(methodsFunction);
-      aMug = createAMug(...attributesArgs);
-      attributesFunctionParams = attributesFunction.mock.calls[0];
-      attributesValue = attributesFunction.mock.results[0].value;
+      const createAMug = creator(aAttributesFunction).attach(aMethodsFunction);
+      aMug = createAMug(...aAttributesArgs);
+      aAttributesFunctionParams = aAttributesFunction.mock.calls[0];
+      aAttributesValue = aAttributesFunction.mock.results[0].value;
       createParam0 = jest.mocked(create<AState>).mock.calls[0][0];
       createReturn = jest.mocked(create<AState>).mock.results[0].value;
-      createReturnAttachParam0 = jest.mocked(createReturn.attach<MethodsFunction>).mock.calls[0][0];
-      createReturnAttachReturn = jest.mocked(createReturn.attach<MethodsFunction>).mock.results[0]
+      createReturnAttachParam0 = jest.mocked(createReturn.attach<AMethodsFunction>).mock
+        .calls[0][0];
+      createReturnAttachReturn = jest.mocked(createReturn.attach<AMethodsFunction>).mock.results[0]
         .value;
     });
 
     test('[verify] the attributes function is called 1 time', () => {
-      expect(attributesFunction).toHaveBeenCalledTimes(1);
+      expect(aAttributesFunction).toHaveBeenCalledTimes(1);
     });
 
     test('[verify] the attributes function params equal the attributes args in ref and value', () => {
-      attributesArgs.forEach((arg, i) => {
-        expect(attributesFunctionParams[i]).toBe(arg);
-        expect(attributesFunctionParams[i]).toStrictEqual(arg);
+      aAttributesArgs.forEach((arg, i) => {
+        expect(aAttributesFunctionParams[i]).toBe(arg);
+        expect(aAttributesFunctionParams[i]).toStrictEqual(arg);
       });
     });
 
@@ -380,8 +381,8 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     });
 
     test('[verify] "create" param-0 equals the attributes value in ref and value', () => {
-      expect(createParam0).toBe(attributesValue);
-      expect(createParam0).toStrictEqual(attributesValue);
+      expect(createParam0).toBe(aAttributesValue);
+      expect(createParam0).toStrictEqual(aAttributesValue);
     });
 
     test('[verify] "create" return_s "attach" method is called 1 time', () => {
@@ -389,7 +390,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     });
 
     test('[verify] "create" return_s "attach" param-0 equals the methods function in ref', () => {
-      expect(createReturnAttachParam0).toBe(methodsFunction);
+      expect(createReturnAttachParam0).toBe(aMethodsFunction);
     });
 
     test('[verify] the mug equals "create" return_s "attach" return in ref and value', () => {
@@ -399,16 +400,16 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('dad182c, creates two phase-2 mugs with the same phase-2 mug creator and attributes args', () => {
-    let aMug1: FurtherCreatedMug<AState, ReturnType<MethodsFunction>>;
-    let aMug2: FurtherCreatedMug<AState, ReturnType<MethodsFunction>>;
-    let attributesValue: AState;
+    let aMug1: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
+    let aMug2: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
+    let aAttributesValue: AState;
 
     test('[action]', () => {
       const createAMug =
-        creator<(o: { s: string }) => AState>(attributesFunction).attach(methodsFunction);
-      aMug1 = createAMug(...attributesArgs);
-      aMug2 = createAMug(...attributesArgs);
-      attributesValue = attributesFunction.mock.results[0].value;
+        creator<(o: { s: string }) => AState>(aAttributesFunction).attach(aMethodsFunction);
+      aMug1 = createAMug(...aAttributesArgs);
+      aMug2 = createAMug(...aAttributesArgs);
+      aAttributesValue = aAttributesFunction.mock.results[0].value;
     });
 
     test('[verify] the mugs differ in ref', () => {
@@ -416,7 +417,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     });
 
     test('[verify] the mugs_ attributes value fields equal in value', () => {
-      ownKeysOfObjectLike(attributesValue).forEach((key) => {
+      ownKeysOfObjectLike(aAttributesValue).forEach((key) => {
         expect(aMug1[key]).toStrictEqual(aMug2[key]);
       });
     });

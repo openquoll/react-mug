@@ -15,23 +15,23 @@ export type MugWithAttributesValue<TAttributesValue> = TAttributesValue extends 
   ? WithAttachments<Mug<TAttributesValue>, TAttributesValue>
   : Mug<TAttributesValue>;
 
-export type MethodsFunctionConstraint<TMug> = (
+export type ActionsFunctionConstraint<TMug> = (
   creationToolbelt: CreationToolbelt<TMug>,
 ) => AnyObjectLike;
 
 export type FurtherCreatedMug<
   TAttributesValue,
-  TMethodsValue extends AnyObjectLike,
-> = WithAttachments<MugWithAttributesValue<TAttributesValue>, TMethodsValue>;
+  TActionsValue extends AnyObjectLike,
+> = WithAttachments<MugWithAttributesValue<TAttributesValue>, TActionsValue>;
 
 export type CreatedMug<TAttributesValue> = WithAttachments<
   MugWithAttributesValue<TAttributesValue>,
   {
     attach: <
-      TMethodsFunction extends MethodsFunctionConstraint<MugWithAttributesValue<TAttributesValue>>,
+      TActionsFunction extends ActionsFunctionConstraint<MugWithAttributesValue<TAttributesValue>>,
     >(
-      methods: TMethodsFunction,
-    ) => FurtherCreatedMug<TAttributesValue, ReturnType<TMethodsFunction>>;
+      actionsFunction: TActionsFunction,
+    ) => FurtherCreatedMug<TAttributesValue, ReturnType<TActionsFunction>>;
   }
 >;
 
@@ -47,8 +47,8 @@ export function create(attributesValue: any): any {
   creationToolbelt[2] = mug;
   creationToolbelt[_mug] = mug;
 
-  function attach(methodsFunction: any) {
-    _assign(mug, methodsFunction(creationToolbelt));
+  function attach(actionsFunction: any) {
+    _assign(mug, actionsFunction(creationToolbelt));
 
     return mug;
   }

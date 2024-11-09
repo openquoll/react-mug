@@ -41,12 +41,12 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
-type AMethodsFunction = (creationToolbelt: CreationToolbelt<MugWithAttributesValue<AState>>) => {
+type AActionsFunction = (creationToolbelt: CreationToolbelt<MugWithAttributesValue<AState>>) => {
   get: ReadActionOnGetIt<MugWithAttributesValue<AState>>;
   set: WriteActionOnSetIt<MugWithAttributesValue<AState>>;
 };
 
-const aMethodsFunction = jest.fn(({ r, w }: Param0<AMethodsFunction>) => ({
+const aActionsFunction = jest.fn(({ r, w }: Param0<AActionsFunction>) => ({
   get: r(),
   set: w(),
 }));
@@ -91,20 +91,20 @@ describe('cdfd9c9, mug creation by "create"', () => {
 
   describe('40a8503, creates a phase-2 mug', () => {
     let aMugPhase1: CreatedMug<AState>;
-    let aMug: FurtherCreatedMug<AState, typeof aMethodsValue>;
+    let aMug: FurtherCreatedMug<AState, typeof aActionsValue>;
 
-    let aCreationToolbelt: Param0<AMethodsFunction>;
-    let aMethodsValue: ReturnType<AMethodsFunction>;
+    let aCreationToolbelt: Param0<AActionsFunction>;
+    let aActionsValue: ReturnType<AActionsFunction>;
 
     let uponParamMug: MugWithAttributesValue<AState>;
     let uponReturn: ActionToolbelt<typeof uponParamMug>;
 
     test('[action]', () => {
       aMugPhase1 = create<AState>(aAttributesValue);
-      aMug = aMugPhase1.attach(aMethodsFunction);
+      aMug = aMugPhase1.attach(aActionsFunction);
 
-      aCreationToolbelt = aMethodsFunction.mock.calls[0][0];
-      aMethodsValue = aMethodsFunction.mock.results[0].value;
+      aCreationToolbelt = aActionsFunction.mock.calls[0][0];
+      aActionsValue = aActionsFunction.mock.results[0].value;
 
       uponParamMug = jest.mocked(upon<typeof aMug>).mock.calls[0][0];
       uponReturn = jest.mocked(upon).mock.results[0].value;
@@ -126,8 +126,8 @@ describe('cdfd9c9, mug creation by "create"', () => {
       expect(aMug).toBe(aMugPhase1);
     });
 
-    test('[verify] the methods function is called 1 time', () => {
-      expect(aMethodsFunction).toHaveBeenCalledTimes(1);
+    test('[verify] the actions function is called 1 time', () => {
+      expect(aActionsFunction).toHaveBeenCalledTimes(1);
     });
 
     test('[verify] "upon" is called 1 time', () => {
@@ -157,9 +157,9 @@ describe('cdfd9c9, mug creation by "create"', () => {
       expect(aCreationToolbelt.mug).toBe(aCreationToolbelt[2]);
     });
 
-    test('[verify] the methods value_s fields equal the mug_s counterpart fields in ref', () => {
-      ownKeysOfObjectLike(aMethodsValue).forEach((key) => {
-        expect(aMethodsValue[key]).toBe(aMug[key]);
+    test('[verify] the actions value_s fields equal the mug_s counterpart fields in ref', () => {
+      ownKeysOfObjectLike(aActionsValue).forEach((key) => {
+        expect(aActionsValue[key]).toBe(aMug[key]);
       });
     });
   });
@@ -332,36 +332,36 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
 
   describe('f22d916, creates a phase-2 mug creator', () => {
     test('[action]', () => {
-      const createAMug = creator(aAttributesFunction).attach(aMethodsFunction);
+      const createAMug = creator(aAttributesFunction).attach(aActionsFunction);
     });
 
     test('[verify] the attributes function is not called', () => {
       expect(aAttributesFunction).not.toHaveBeenCalled();
     });
 
-    test('[verify] the methods function is not called', () => {
-      expect(aMethodsFunction).not.toHaveBeenCalled();
+    test('[verify] the actions function is not called', () => {
+      expect(aActionsFunction).not.toHaveBeenCalled();
     });
   });
 
   describe('9f39c52, creates a phase-2 mug with a phase-2 mug creator', () => {
-    let aMug: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
+    let aMug: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
     let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
     let aAttributesValue: AState;
     let createParam0: AState, createReturn: CreatedMug<AState>;
-    let createReturnAttachParam0: AMethodsFunction;
-    let createReturnAttachReturn: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
+    let createReturnAttachParam0: AActionsFunction;
+    let createReturnAttachReturn: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
 
     test('[action]', () => {
-      const createAMug = creator(aAttributesFunction).attach(aMethodsFunction);
+      const createAMug = creator(aAttributesFunction).attach(aActionsFunction);
       aMug = createAMug(...aAttributesArgs);
       aAttributesFunctionParams = aAttributesFunction.mock.calls[0];
       aAttributesValue = aAttributesFunction.mock.results[0].value;
       createParam0 = jest.mocked(create<AState>).mock.calls[0][0];
       createReturn = jest.mocked(create<AState>).mock.results[0].value;
-      createReturnAttachParam0 = jest.mocked(createReturn.attach<AMethodsFunction>).mock
+      createReturnAttachParam0 = jest.mocked(createReturn.attach<AActionsFunction>).mock
         .calls[0][0];
-      createReturnAttachReturn = jest.mocked(createReturn.attach<AMethodsFunction>).mock.results[0]
+      createReturnAttachReturn = jest.mocked(createReturn.attach<AActionsFunction>).mock.results[0]
         .value;
     });
 
@@ -389,8 +389,8 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
       expect(createReturn.attach).toHaveBeenCalledTimes(1);
     });
 
-    test('[verify] "create" return_s "attach" param-0 equals the methods function in ref', () => {
-      expect(createReturnAttachParam0).toBe(aMethodsFunction);
+    test('[verify] "create" return_s "attach" param-0 equals the actions function in ref', () => {
+      expect(createReturnAttachParam0).toBe(aActionsFunction);
     });
 
     test('[verify] the mug equals "create" return_s "attach" return in ref and value', () => {
@@ -400,13 +400,13 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('dad182c, creates two phase-2 mugs with the same phase-2 mug creator and attributes args', () => {
-    let aMug1: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
-    let aMug2: FurtherCreatedMug<AState, ReturnType<AMethodsFunction>>;
+    let aMug1: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
+    let aMug2: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
     let aAttributesValue: AState;
 
     test('[action]', () => {
       const createAMug =
-        creator<(o: { s: string }) => AState>(aAttributesFunction).attach(aMethodsFunction);
+        creator<(o: { s: string }) => AState>(aAttributesFunction).attach(aActionsFunction);
       aMug1 = createAMug(...aAttributesArgs);
       aMug2 = createAMug(...aAttributesArgs);
       aAttributesValue = aAttributesFunction.mock.results[0].value;

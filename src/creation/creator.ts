@@ -1,29 +1,29 @@
 import { _assign, _attach } from '../shortcuts';
 import { AnyFunction, AnyObjectLike } from '../type-utils';
 import {
+  ActionsFunctionConstraint,
   create,
   CreatedMug,
   FurtherCreatedMug,
-  MethodsFunctionConstraint,
   MugWithAttributesValue,
 } from './create';
 
 export type FurtherMugCreator<
   TAttributesFunction extends AnyFunction,
-  TMethodsValue extends AnyObjectLike,
+  TActionsValue extends AnyObjectLike,
 > = (
   ...attributesArgs: Parameters<TAttributesFunction>
-) => FurtherCreatedMug<ReturnType<TAttributesFunction>, TMethodsValue>;
+) => FurtherCreatedMug<ReturnType<TAttributesFunction>, TActionsValue>;
 
 export type MugCreator<TAttributesFunction extends AnyFunction> = {
   (...attributesArgs: Parameters<TAttributesFunction>): CreatedMug<ReturnType<TAttributesFunction>>;
   attach: <
-    TMethodsFunction extends MethodsFunctionConstraint<
+    TActionsFunction extends ActionsFunctionConstraint<
       MugWithAttributesValue<ReturnType<TAttributesFunction>>
     >,
   >(
-    methodsFunction: TMethodsFunction,
-  ) => FurtherMugCreator<TAttributesFunction, ReturnType<TMethodsFunction>>;
+    actionsFunction: TActionsFunction,
+  ) => FurtherMugCreator<TAttributesFunction, ReturnType<TActionsFunction>>;
 };
 
 export function creator<TAttributesFunction extends AnyFunction>(
@@ -32,9 +32,9 @@ export function creator<TAttributesFunction extends AnyFunction>(
 export function creator(attributesFunction: any): any {
   const createMugPhase1 = (...attributesArgs: any) => create(attributesFunction(...attributesArgs));
 
-  function attach(methodsFunction: any) {
+  function attach(actionsFunction: any) {
     const createMugPhase2 = (...attributesArgs: any) =>
-      createMugPhase1(...attributesArgs)[_attach](methodsFunction);
+      createMugPhase1(...attributesArgs)[_attach](actionsFunction);
     return createMugPhase2;
   }
 

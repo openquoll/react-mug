@@ -398,25 +398,25 @@ export const _mugLike = Symbol();
 
 /**
  * A function with `[_readOp]` and `[_mugLike]` as fields is a read action. The
- * value of `[_readOp]` is the action's operator bound inside.
+ * value of `[_readOp]` is the action's operation bound inside.
  */
 export const _readOp = Symbol();
 
 /**
  * A function with `[_writeOp]` and `[_mugLike]` as fields is a write action.
- * The value of `[_writeOp]` is the action's operator bound inside.
+ * The value of `[_writeOp]` is the action's operation bound inside.
  */
 export const _writeOp = Symbol();
 
 /**
- * A function with `[_readFn]` as a field is a read operator. The value of
- * `[_readFn]` is the operator's pure function bound inside.
+ * A function with `[_readFn]` as a field is a read operation. The value of
+ * `[_readFn]` is the operation's pure function bound inside.
  */
 export const _readFn = Symbol();
 
 /**
- * A function with `[_writeFn]` as a field is a write operator. The value of
- * `[_writeFn]` is the operator's pure function bound inside.
+ * A function with `[_writeFn]` as a field is a write operation. The value of
+ * `[_writeFn]` is the operation's pure function bound inside.
  */
 export const _writeFn = Symbol();
 

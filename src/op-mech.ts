@@ -34,6 +34,7 @@ import {
   _is,
   _isArray,
   _map,
+  _pure,
   _reduce,
   _set,
   _Set,
@@ -302,6 +303,7 @@ export function r(read: AnyFunction): AnyFunction {
   };
 
   readOp[_readFn] = read;
+  readOp[_pure] = read;
 
   return readOp;
 }
@@ -361,6 +363,7 @@ export function w(write: AnyFunction): AnyFunction {
   };
 
   writeOp[_writeFn] = write;
+  writeOp[_pure] = write;
 
   return writeOp;
 }

@@ -101,5 +101,6 @@ test('setIt, pure', () => {
   // @ts-expect-error
   setIt(fake<AState>(), patch, fake<any>());
 
-  expectType<<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState>(pure(setIt));
+  expectType<<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState>(setIt.pure);
+  expectType<typeof setIt.pure>(pure(setIt));
 });

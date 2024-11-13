@@ -5,6 +5,7 @@ import {
   _create,
   _Error,
   _false,
+  _flat,
   _forEach,
   _function,
   _getOwnPropertyNames,
@@ -17,6 +18,7 @@ import {
   _null,
   _object,
   _Object,
+  _pure,
   _reduce,
   _setPrototypeOf,
   _true,
@@ -422,23 +424,35 @@ export const _writeFn = Symbol();
 
 export type ReadOpMeta<TReadFn extends AnyFunction> = {
   [_readFn]: TReadFn;
+  [_pure]: TReadFn;
 };
 
 export type AnyReadOp = AnyFunction & ReadOpMeta<AnyFunction>;
 
-export type NotReadOp = { [_readFn]?: never };
+export type NotReadOp = {
+  [_readFn]?: never;
+  [_pure]?: never;
+};
 
 export type WriteOpMeta<TWriteFn extends AnyFunction> = {
   [_writeFn]: TWriteFn;
+  [_pure]: TWriteFn;
 };
 
 export type AnyWriteOp = AnyFunction & WriteOpMeta<AnyFunction>;
 
-export type NotWriteOp = { [_writeFn]?: never };
+export type NotWriteOp = {
+  [_writeFn]?: never;
+  [_pure]?: never;
+};
 
 export type AnyOp = AnyReadOp | AnyWriteOp;
 
-export type NotOp = NotReadOp & NotWriteOp;
+export type NotOp = {
+  [_readFn]?: never;
+  [_writeFn]?: never;
+  [_pure]?: never;
+};
 
 export const isFunction = (f: any): boolean => typeof f === _function;
 
@@ -453,6 +467,8 @@ export const isOp = (f: any): f is AnyOp => isReadOp(f) || isWriteOp(f);
 export type ReadActionMeta<TMugLike, TReadOp extends AnyReadOp> = {
   [_mugLike]: TMugLike;
   [_readOp]: TReadOp;
+  [_flat]: TReadOp;
+  [_pure]: TReadOp[typeof _readFn];
 };
 
 export type AnyReadAction = AnyFunction & ReadActionMeta<any, AnyReadOp>;
@@ -460,11 +476,15 @@ export type AnyReadAction = AnyFunction & ReadActionMeta<any, AnyReadOp>;
 export type NotReadAction = {
   [_mugLike]?: never;
   [_readOp]?: never;
+  [_flat]?: never;
+  [_pure]?: never;
 };
 
 export type WriteActionMeta<TMugLike, TWriteOp extends AnyWriteOp> = {
   [_mugLike]: TMugLike;
   [_writeOp]: TWriteOp;
+  [_flat]: TWriteOp;
+  [_pure]: TWriteOp[typeof _writeFn];
 };
 
 export type AnyWriteAction = AnyFunction & WriteActionMeta<any, AnyWriteOp>;
@@ -472,6 +492,8 @@ export type AnyWriteAction = AnyFunction & WriteActionMeta<any, AnyWriteOp>;
 export type NotWriteAction = {
   [_mugLike]?: never;
   [_writeOp]?: never;
+  [_flat]?: never;
+  [_pure]?: never;
 };
 
 export type AnyAction = AnyReadAction | AnyWriteAction;
@@ -480,6 +502,8 @@ export type NotAction = {
   [_mugLike]?: never;
   [_readOp]?: never;
   [_writeOp]?: never;
+  [_flat]?: never;
+  [_pure]?: never;
 };
 
 export const isReadAction = (f: any): f is AnyReadAction =>

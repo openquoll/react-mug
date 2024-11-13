@@ -2,7 +2,7 @@ import { expectType } from 'tsd';
 
 import { fake, from } from '../../tests/type-utils';
 import { upon } from '../actions';
-import { construction, flat, Muggify, MugLike, pure } from '../mug';
+import { construction, Muggify, MugLike } from '../mug';
 import { create } from './create';
 
 interface ObjectState {
@@ -52,8 +52,8 @@ describe('create', () => {
 
     const read42c = r();
     const read60b = r((state) => fake<ObjectState>());
-    const read45f = r((state) => flat(read60b)(state));
-    const read5d2 = r((state) => pure(read60b)(state));
+    const read45f = r((state) => read60b.flat(state));
+    const read5d2 = r((state) => read60b.pure(state));
     const read506 = r((state, s: string) => fake<ObjectState>());
     function read4ec(s: string) {
       return read506(s);
@@ -61,8 +61,8 @@ describe('create', () => {
 
     const write6c1 = w();
     const write541 = w((state) => fake<AState>());
-    const writeb0a = w((state) => flat(write541)(state));
-    const write3be = w((state) => pure(write541)(state));
+    const writeb0a = w((state) => write541.flat(state));
+    const write3be = w((state) => write541.pure(state));
     const write495 = w((state, s: string) => fake<AState>());
     function writeb4d(s: string) {
       return write495(s);
@@ -154,10 +154,10 @@ describe('create', () => {
     },
     potentialMuggyObject: objectMug499,
   }).attach(({ r, w, mug }) => ({
-    read754: r((state) => pure(mug.potentialMuggyObject.read2a7)(state.potentialMuggyObject)),
+    read754: r((state) => mug.potentialMuggyObject.read2a7.pure(state.potentialMuggyObject)),
     writeed8: w((state) => ({
       ...state,
-      potentialMuggyObject: pure(mug.potentialMuggyObject.writec5b)(state.potentialMuggyObject),
+      potentialMuggyObject: mug.potentialMuggyObject.writec5b.pure(state.potentialMuggyObject),
     })),
   }));
 

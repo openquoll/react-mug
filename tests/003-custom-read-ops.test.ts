@@ -389,6 +389,12 @@ describe('dd10061, reads by an object state custom read op', () => {
       });
     });
 
+    describe('8addc1d, accesses the op_s "pure" field', () => {
+      test('[action, verify] the field equals the fn in ref', () => {
+        expect(customReadOp.pure).toBe(customReadFn);
+      });
+    });
+
     describe('9e9d139, calls "pure" with the op', () => {
       test('[action, verify] the return equals the fn in ref', () => {
         expect(pure(customReadOp)).toBe(customReadFn);

@@ -1,16 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake, from } from '../tests/type-utils';
-import {
-  _readFn,
-  construction,
-  flat,
-  Mug,
-  MugLike,
-  PossibleMug,
-  PossibleMugLike,
-  pure,
-} from './mug';
+import { construction, flat, Mug, MugLike, PossibleMug, PossibleMugLike, pure } from './mug';
 import { initial, r, w } from './op-mech';
 
 interface ObjectState {
@@ -83,7 +74,8 @@ test('r, flat, pure', () => {
   readbf7();
 
   expectType<typeof readbf7>(flat(readbf7));
-  expectType<<TState>(state: TState) => TState>(pure(readbf7));
+  expectType<<TState>(state: TState) => TState>(readbf7.pure);
+  expectType<typeof readbf7.pure>(pure(readbf7));
 
   // =-=-=
 
@@ -103,7 +95,8 @@ test('r, flat, pure', () => {
   readebe(fake<AState>(), fake<string>(), fake<any>());
 
   expectType<typeof readebe>(flat(readebe));
-  expectType<<TState>(state: TState, s: string) => TState>(pure(readebe));
+  expectType<<TState>(state: TState, s: string) => TState>(readebe.pure);
+  expectType<typeof readebe.pure>(pure(readebe));
 
   // =-=-=
 
@@ -117,7 +110,8 @@ test('r, flat, pure', () => {
   read194(fake<ObjectState>());
 
   expectType<typeof read194>(flat(read194));
-  expectType<<TState extends AState>(state: TState) => TState>(pure(read194));
+  expectType<<TState extends AState>(state: TState) => TState>(read194.pure);
+  expectType<typeof read194.pure>(pure(read194));
 
   // =-=-=
 
@@ -138,7 +132,8 @@ test('r, flat, pure', () => {
   readc82(fake<ObjectState>());
 
   expectType<typeof readc82>(flat(readc82));
-  expectType<(state: AState) => ObjectState>(pure(readc82));
+  expectType<(state: AState) => ObjectState>(readc82.pure);
+  expectType<typeof readc82.pure>(pure(readc82));
 
   // =-=-=
 
@@ -158,7 +153,8 @@ test('r, flat, pure', () => {
   read23e(fake<AState>(), fake<string>(), fake<any>());
 
   expectType<typeof read23e>(flat(read23e));
-  expectType<(state: AState, s: string) => ObjectState>(pure(read23e));
+  expectType<(state: AState, s: string) => ObjectState>(read23e.pure);
+  expectType<typeof read23e.pure>(pure(read23e));
 
   // =-=-=
 
@@ -170,7 +166,8 @@ test('r, flat, pure', () => {
   expectType<ObjectState>(readc5d(fake<unknown>()));
 
   expectType<typeof readc5d>(flat(readc5d));
-  expectType<() => ObjectState>(pure(readc5d));
+  expectType<() => ObjectState>(readc5d.pure);
+  expectType<typeof readc5d.pure>(pure(readc5d));
 });
 
 test('w, flat, pure', () => {
@@ -197,7 +194,8 @@ test('w, flat, pure', () => {
   write73d();
 
   expectType<typeof write73d>(flat(write73d));
-  expectType<<TState>(state: TState) => TState>(pure(write73d));
+  expectType<<TState>(state: TState) => TState>(write73d.pure);
+  expectType<typeof write73d.pure>(pure(write73d));
 
   // =-=-=
 
@@ -217,7 +215,8 @@ test('w, flat, pure', () => {
   write8e6(fake<AState>(), fake<string>(), fake<any>());
 
   expectType<typeof write8e6>(flat(write8e6));
-  expectType<<TState>(state: TState, s: string) => TState>(pure(write8e6));
+  expectType<<TState>(state: TState, s: string) => TState>(write8e6.pure);
+  expectType<typeof write8e6.pure>(pure(write8e6));
 
   // =-=-=
 
@@ -232,7 +231,8 @@ test('w, flat, pure', () => {
   writed09(fake<ObjectState>());
 
   expectType<typeof writed09>(flat(writed09));
-  expectType<<TState extends AState>(state: TState) => TState>(pure(writed09));
+  expectType<<TState extends AState>(state: TState) => TState>(writed09.pure);
+  expectType<typeof writed09.pure>(pure(writed09));
 
   // =-=-=
 
@@ -253,7 +253,8 @@ test('w, flat, pure', () => {
   writecdd(fake<ObjectState>());
 
   expectType<typeof writecdd>(flat(writecdd));
-  expectType<(state: AState) => AState>(pure(writecdd));
+  expectType<(state: AState) => AState>(writecdd.pure);
+  expectType<typeof writecdd.pure>(pure(writecdd));
 
   // =-=-=
 
@@ -273,7 +274,8 @@ test('w, flat, pure', () => {
   write692(fake<AState>(), fake<string>(), fake<any>());
 
   expectType<typeof write692>(flat(write692));
-  expectType<(state: AState, s: string) => AState>(pure(write692));
+  expectType<(state: AState, s: string) => AState>(write692.pure);
+  expectType<typeof write692.pure>(pure(write692));
 
   // =-=-=
 
@@ -294,7 +296,8 @@ test('w, flat, pure', () => {
   write490(fake<ObjectState>());
 
   expectType<typeof write490>(flat(write490));
-  expectType<(state: AState) => SuperState>(pure(write490));
+  expectType<(state: AState) => SuperState>(write490.pure);
+  expectType<typeof write490.pure>(pure(write490));
 
   // =-=-=
 
@@ -321,7 +324,8 @@ test('w, flat, pure', () => {
   write181(fake<ObjectState>());
 
   expectType<typeof write181>(flat(write181));
-  expectType<() => AState>(pure(write181));
+  expectType<() => AState>(write181.pure);
+  expectType<typeof write181.pure>(pure(write181));
 });
 
 test('initial', () => {

@@ -260,6 +260,12 @@ describe('900ce35, writes by an object state custom write op', () => {
       });
     });
 
+    describe('7f2b61c, accesses the op_s "pure" field', () => {
+      test('[action, verify] the field equals the fn in ref', () => {
+        expect(customWriteOp.pure).toBe(customWriteFn);
+      });
+    });
+
     describe('9e9d139, calls "pure" with the op', () => {
       test('[action, verify] the return equals the fn in ref', () => {
         expect(pure(customWriteOp)).toBe(customWriteFn);

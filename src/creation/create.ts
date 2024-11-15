@@ -19,25 +19,25 @@ export type ActionsFunctionConstraint<TMug> = (
   creationToolbelt: CreationToolbelt<TMug>,
 ) => AnyObjectLike;
 
-export type FurtherCreatedMug<
-  TAttributesValue,
-  TActionsValue extends AnyObjectLike,
-> = WithAttachments<MugWithAttributesValue<TAttributesValue>, TActionsValue>;
+export type CreatedMug<TAttributesValue, TActionsValue extends AnyObjectLike> = WithAttachments<
+  MugWithAttributesValue<TAttributesValue>,
+  TActionsValue
+>;
 
-export type CreatedMug<TAttributesValue> = WithAttachments<
+export type HalfCreatedMug<TAttributesValue> = WithAttachments<
   MugWithAttributesValue<TAttributesValue>,
   {
-    attach: <
-      TActionsFunction extends ActionsFunctionConstraint<MugWithAttributesValue<TAttributesValue>>,
-    >(
-      actionsFunction: TActionsFunction,
-    ) => FurtherCreatedMug<TAttributesValue, ReturnType<TActionsFunction>>;
+    attach: <TActionsValue extends AnyObjectLike>(
+      actionsFunction: (
+        creationToolbelt: CreationToolbelt<MugWithAttributesValue<TAttributesValue>>,
+      ) => TActionsValue,
+    ) => CreatedMug<TAttributesValue, TActionsValue>;
   }
 >;
 
 export function create<TAttributesValue>(
   attributesValue: TAttributesValue,
-): CreatedMug<TAttributesValue>;
+): HalfCreatedMug<TAttributesValue>;
 export function create(attributesValue: any): any {
   const mug = { [construction]: attributesValue };
 

@@ -3,8 +3,8 @@ import { ActionToolbelt, ReadActionOnGetIt, WriteActionOnSetIt } from '../src/ac
 import {
   CreatedMug,
   CreationToolbelt,
-  FurtherCreatedMug,
-  MugCreator,
+  HalfCreatedMug,
+  HalfMugCreator,
   MugWithAttributesValue,
 } from '../src/creation';
 import { ownKeysOfObjectLike } from '../src/mug';
@@ -66,7 +66,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
   };
 
   describe('8ae85d2, creates a phase-1 mug', () => {
-    let aMug: CreatedMug<AState>;
+    let aMug: HalfCreatedMug<AState>;
 
     test('[action]', () => {
       aMug = create<AState>(aAttributesValue);
@@ -90,8 +90,8 @@ describe('cdfd9c9, mug creation by "create"', () => {
   });
 
   describe('40a8503, creates a phase-2 mug', () => {
-    let aMugPhase1: CreatedMug<AState>;
-    let aMug: FurtherCreatedMug<AState, typeof aActionsValue>;
+    let aMugPhase1: HalfCreatedMug<AState>;
+    let aMug: CreatedMug<AState, typeof aActionsValue>;
 
     let aCreationToolbelt: Param0<AActionsFunction>;
     let aActionsValue: ReturnType<AActionsFunction>;
@@ -243,7 +243,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   const aAttributesArgs = tuple({ s: 'sdf' });
 
   describe('6751348, creates a phase-1 mug creator', () => {
-    let createAMug: MugCreator<(o: { s: string }) => AState>;
+    let createAMug: HalfMugCreator<(o: { s: string }) => AState>;
 
     test('[action]', () => {
       createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
@@ -263,10 +263,10 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('b9f66bf, creates a phase-1 mug with a phase-1 mug creator', () => {
-    let aMug: CreatedMug<AState>;
+    let aMug: HalfCreatedMug<AState>;
     let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
     let aAttributesValue: AState;
-    let createParam0: AState, createReturn: CreatedMug<AState>;
+    let createParam0: AState, createReturn: HalfCreatedMug<AState>;
 
     test('[action]', () => {
       const createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
@@ -304,7 +304,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('e5c27c3, creates two phase-1 mugs with the same phase-1 mug creator and attributes args', () => {
-    let aMug1: CreatedMug<AState>, aMug2: CreatedMug<AState>;
+    let aMug1: HalfCreatedMug<AState>, aMug2: HalfCreatedMug<AState>;
     let attributesValue: AState;
 
     test('[action]', () => {
@@ -345,12 +345,12 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('9f39c52, creates a phase-2 mug with a phase-2 mug creator', () => {
-    let aMug: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
+    let aMug: CreatedMug<AState, ReturnType<AActionsFunction>>;
     let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
     let aAttributesValue: AState;
-    let createParam0: AState, createReturn: CreatedMug<AState>;
+    let createParam0: AState, createReturn: HalfCreatedMug<AState>;
     let createReturnAttachParam0: AActionsFunction;
-    let createReturnAttachReturn: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
+    let createReturnAttachReturn: CreatedMug<AState, ReturnType<AActionsFunction>>;
 
     test('[action]', () => {
       const createAMug = creator(aAttributesFunction).attach(aActionsFunction);
@@ -359,10 +359,10 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
       aAttributesValue = aAttributesFunction.mock.results[0].value;
       createParam0 = jest.mocked(create<AState>).mock.calls[0][0];
       createReturn = jest.mocked(create<AState>).mock.results[0].value;
-      createReturnAttachParam0 = jest.mocked(createReturn.attach<AActionsFunction>).mock
+      createReturnAttachParam0 = jest.mocked(createReturn.attach<ReturnType<AActionsFunction>>).mock
         .calls[0][0];
-      createReturnAttachReturn = jest.mocked(createReturn.attach<AActionsFunction>).mock.results[0]
-        .value;
+      createReturnAttachReturn = jest.mocked(createReturn.attach<ReturnType<AActionsFunction>>).mock
+        .results[0].value;
     });
 
     test('[verify] the attributes function is called 1 time', () => {
@@ -400,8 +400,8 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('dad182c, creates two phase-2 mugs with the same phase-2 mug creator and attributes args', () => {
-    let aMug1: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
-    let aMug2: FurtherCreatedMug<AState, ReturnType<AActionsFunction>>;
+    let aMug1: CreatedMug<AState, ReturnType<AActionsFunction>>;
+    let aMug2: CreatedMug<AState, ReturnType<AActionsFunction>>;
     let aAttributesValue: AState;
 
     test('[action]', () => {

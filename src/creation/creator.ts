@@ -1,34 +1,34 @@
 import { _assign, _attach } from '../shortcuts';
 import { AnyFunction, AnyObjectLike } from '../type-utils';
 import {
-  ActionsFunctionConstraint,
   create,
   CreatedMug,
-  FurtherCreatedMug,
+  CreationToolbelt,
+  HalfCreatedMug,
   MugWithAttributesValue,
 } from './create';
 
-export type FurtherMugCreator<
+export type MugCreator<
   TAttributesFunction extends AnyFunction,
   TActionsValue extends AnyObjectLike,
 > = (
   ...attributesArgs: Parameters<TAttributesFunction>
-) => FurtherCreatedMug<ReturnType<TAttributesFunction>, TActionsValue>;
+) => CreatedMug<ReturnType<TAttributesFunction>, TActionsValue>;
 
-export type MugCreator<TAttributesFunction extends AnyFunction> = {
-  (...attributesArgs: Parameters<TAttributesFunction>): CreatedMug<ReturnType<TAttributesFunction>>;
-  attach: <
-    TActionsFunction extends ActionsFunctionConstraint<
-      MugWithAttributesValue<ReturnType<TAttributesFunction>>
-    >,
-  >(
-    actionsFunction: TActionsFunction,
-  ) => FurtherMugCreator<TAttributesFunction, ReturnType<TActionsFunction>>;
+export type HalfMugCreator<TAttributesFunction extends AnyFunction> = {
+  (
+    ...attributesArgs: Parameters<TAttributesFunction>
+  ): HalfCreatedMug<ReturnType<TAttributesFunction>>;
+  attach: <TActionsValue extends AnyObjectLike>(
+    actionsFunction: (
+      creationToolbelt: CreationToolbelt<MugWithAttributesValue<ReturnType<TAttributesFunction>>>,
+    ) => TActionsValue,
+  ) => MugCreator<TAttributesFunction, TActionsValue>;
 };
 
 export function creator<TAttributesFunction extends AnyFunction>(
   attributes: TAttributesFunction,
-): MugCreator<TAttributesFunction>;
+): HalfMugCreator<TAttributesFunction>;
 export function creator(attributesFunction: any): any {
   const createMugPhase1 = (...attributesArgs: any) => create(attributesFunction(...attributesArgs));
 

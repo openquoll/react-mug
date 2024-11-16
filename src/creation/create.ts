@@ -24,7 +24,7 @@ export type CreatedMug<TAttributesValue, TActionsValue extends AnyObjectLike> = 
   TActionsValue
 >;
 
-export type HalfCreatedMug<TAttributesValue> = WithAttachments<
+export type HalfDoneCreatedMug<TAttributesValue> = WithAttachments<
   MugWithAttributesValue<TAttributesValue>,
   {
     attach: <TActionsValue extends AnyObjectLike>(
@@ -37,7 +37,7 @@ export type HalfCreatedMug<TAttributesValue> = WithAttachments<
 
 export function create<TAttributesValue>(
   attributesValue: TAttributesValue,
-): HalfCreatedMug<TAttributesValue>;
+): HalfDoneCreatedMug<TAttributesValue>;
 export function create(attributesValue: any): any {
   const mug = { [construction]: attributesValue };
 

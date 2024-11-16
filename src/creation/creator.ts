@@ -4,7 +4,7 @@ import {
   create,
   CreatedMug,
   CreationToolbelt,
-  HalfCreatedMug,
+  HalfDoneCreatedMug,
   MugWithAttributesValue,
 } from './create';
 
@@ -15,10 +15,10 @@ export type MugCreator<
   ...attributesArgs: Parameters<TAttributesFunction>
 ) => CreatedMug<ReturnType<TAttributesFunction>, TActionsValue>;
 
-export type HalfMugCreator<TAttributesFunction extends AnyFunction> = {
+export type HalfDoneMugCreator<TAttributesFunction extends AnyFunction> = {
   (
     ...attributesArgs: Parameters<TAttributesFunction>
-  ): HalfCreatedMug<ReturnType<TAttributesFunction>>;
+  ): HalfDoneCreatedMug<ReturnType<TAttributesFunction>>;
   attach: <TActionsValue extends AnyObjectLike>(
     actionsFunction: (
       creationToolbelt: CreationToolbelt<MugWithAttributesValue<ReturnType<TAttributesFunction>>>,
@@ -28,7 +28,7 @@ export type HalfMugCreator<TAttributesFunction extends AnyFunction> = {
 
 export function creator<TAttributesFunction extends AnyFunction>(
   attributes: TAttributesFunction,
-): HalfMugCreator<TAttributesFunction>;
+): HalfDoneMugCreator<TAttributesFunction>;
 export function creator(attributesFunction: any): any {
   const createMugPhase1 = (...attributesArgs: any) => create(attributesFunction(...attributesArgs));
 

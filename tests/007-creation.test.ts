@@ -3,8 +3,8 @@ import { ActionToolbelt, ReadActionOnGetIt, WriteActionOnSetIt } from '../src/ac
 import {
   CreatedMug,
   CreationToolbelt,
-  HalfCreatedMug,
-  HalfMugCreator,
+  HalfDoneCreatedMug,
+  HalfDoneMugCreator,
   MugWithAttributesValue,
 } from '../src/creation';
 import { ownKeysOfObjectLike } from '../src/mug';
@@ -66,7 +66,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
   };
 
   describe('8ae85d2, creates a phase-1 mug', () => {
-    let aMug: HalfCreatedMug<AState>;
+    let aMug: HalfDoneCreatedMug<AState>;
 
     test('[action]', () => {
       aMug = create<AState>(aAttributesValue);
@@ -90,7 +90,7 @@ describe('cdfd9c9, mug creation by "create"', () => {
   });
 
   describe('40a8503, creates a phase-2 mug', () => {
-    let aMugPhase1: HalfCreatedMug<AState>;
+    let aMugPhase1: HalfDoneCreatedMug<AState>;
     let aMug: CreatedMug<AState, typeof aActionsValue>;
 
     let aCreationToolbelt: Param0<AActionsFunction>;
@@ -243,7 +243,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   const aAttributesArgs = tuple({ s: 'sdf' });
 
   describe('6751348, creates a phase-1 mug creator', () => {
-    let createAMug: HalfMugCreator<(o: { s: string }) => AState>;
+    let createAMug: HalfDoneMugCreator<(o: { s: string }) => AState>;
 
     test('[action]', () => {
       createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
@@ -263,10 +263,10 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('b9f66bf, creates a phase-1 mug with a phase-1 mug creator', () => {
-    let aMug: HalfCreatedMug<AState>;
+    let aMug: HalfDoneCreatedMug<AState>;
     let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
     let aAttributesValue: AState;
-    let createParam0: AState, createReturn: HalfCreatedMug<AState>;
+    let createParam0: AState, createReturn: HalfDoneCreatedMug<AState>;
 
     test('[action]', () => {
       const createAMug = creator<(o: { s: string }) => AState>(aAttributesFunction);
@@ -304,7 +304,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
   });
 
   describe('e5c27c3, creates two phase-1 mugs with the same phase-1 mug creator and attributes args', () => {
-    let aMug1: HalfCreatedMug<AState>, aMug2: HalfCreatedMug<AState>;
+    let aMug1: HalfDoneCreatedMug<AState>, aMug2: HalfDoneCreatedMug<AState>;
     let attributesValue: AState;
 
     test('[action]', () => {
@@ -348,7 +348,7 @@ describe('1253d7d, mug creation by "creator", [cite] cdfd9c9', () => {
     let aMug: CreatedMug<AState, ReturnType<AActionsFunction>>;
     let aAttributesFunctionParams: Parameters<typeof aAttributesFunction>;
     let aAttributesValue: AState;
-    let createParam0: AState, createReturn: HalfCreatedMug<AState>;
+    let createParam0: AState, createReturn: HalfDoneCreatedMug<AState>;
     let createReturnAttachParam0: AActionsFunction;
     let createReturnAttachReturn: CreatedMug<AState, ReturnType<AActionsFunction>>;
 

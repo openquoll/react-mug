@@ -4,7 +4,7 @@
 
 ## 用法
 
-用喜欢的包管理器安装，比如 npm：
+用包管理器安装，比如 npm：
 
 ```sh
 npm i react-mug
@@ -13,29 +13,28 @@ npm i react-mug
 实现一个计数器：
 
 ```tsx
-import { construction, upon, useIt } from 'react-mug';
+import { create, initial } from 'react-mug';
 
-const countMug = { [construction]: 0 };
+const countMug = create(0).attach(({ r, w, mug }) => ({
+  get: r(),
+  increment: w((count) => count + 1),
+  reset: w(() => initial(mug)),
+}));
+```
 
-const [r, w] = upon(countMug);
+```tsx
+import { useIt } from 'react-mug';
 
-const getCount = r();
-const setCount = w();
-
-const increment = w((n) => n + 1);
-const decrement = w((n) => n - 1);
-
-function Counter() {
-  const count = useIt(getCount);
-  return <div>{count}</div>;
+function Display() {
+  const count = useIt(countMug.get);
+  return <div>Count: {count}</div>;
 }
 
-function Actions() {
+function Control() {
   return (
     <>
-      <button onClick={increment}>+1</button>
-      <button onClick={decrement}>-1</button>
-      <button onClick={() => setCount(0)}>To 0</button>
+      <button onClick={countMug.increment}>Increment</button>
+      <button onClick={countMug.reset}>Reset</button>
     </>
   );
 }

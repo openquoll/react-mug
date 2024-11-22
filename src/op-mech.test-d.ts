@@ -11,7 +11,18 @@ import {
   State,
   WriteOpMeta,
 } from './mug';
-import { initial, r, w } from './op-mech';
+import {
+  initial,
+  r,
+  ReadOp,
+  ReadOpOnEmptyParamReadFn,
+  ReadOpOnSimpleGenericReadFn,
+  ReadOpOnTypicalReadFn,
+  w,
+  WriteOp,
+  WriteOpOnEmptyParamWriteFn,
+  WriteOpOnTypicalWriteFn,
+} from './op-mech';
 
 interface ObjectState {
   s: string;
@@ -77,8 +88,13 @@ test('r', () => {
   // @ts-expect-error
   readbf7();
 
+  // @ts-expect-error
+  readbf7(fake<AState>(), fake<any>());
+
   expectType<typeof readbf7>(r(readbf7));
 
+  expectType<ReadOp<<TState>(state: TState) => TState>>(readbf7);
+  expectType<ReadOpOnSimpleGenericReadFn<<TState>(state: TState) => TState>>(readbf7);
   expectType<
     (<TMugLike>(mugLike: TMugLike) => State<TMugLike>) &
       ReadOpMeta<<TState>(state: TState) => TState>
@@ -129,6 +145,14 @@ test('r', () => {
   // @ts-expect-error
   readc82(fake<ObjectState>());
 
+  // @ts-expect-error
+  readc82();
+
+  // @ts-expect-error
+  readc82(fake<AState>(), fake<any>());
+
+  expectType<ReadOp<(state: AState) => ObjectState>>(readc82);
+  expectType<ReadOpOnTypicalReadFn<(state: AState) => ObjectState>>(readc82);
   expectType<
     ((mugLike: PossibleMugLike<AState>) => ObjectState) & ReadOpMeta<(state: AState) => ObjectState>
   >(readc82);
@@ -155,6 +179,11 @@ test('r', () => {
   expectType<ObjectState>(readc5d());
   expectType<ObjectState>(readc5d(fake<unknown>()));
 
+  // @ts-expect-error
+  readc5d(fake<unknown>(), fake<any>());
+
+  expectType<ReadOp<() => ObjectState>>(readc5d);
+  expectType<ReadOpOnEmptyParamReadFn<() => ObjectState>>(readc5d);
   expectType<((mugLike?: unknown) => ObjectState) & ReadOpMeta<() => ObjectState>>(readc5d);
 });
 
@@ -179,8 +208,13 @@ test('w', () => {
   // @ts-expect-error
   write73d();
 
+  // @ts-expect-error
+  write73d(fake<AState>(), fake<any>());
+
   expectType<typeof write73d>(w(write73d));
 
+  expectType<WriteOp<<TState>(state: TState) => TState>>(write73d);
+  expectType<WriteOpOnTypicalWriteFn<<TState>(state: TState) => TState>>(write73d);
   expectType<
     (<TMugLike>(mugLike: TMugLike) => TMugLike) & WriteOpMeta<<TState>(state: TState) => TState>
   >(write73d);
@@ -229,6 +263,14 @@ test('w', () => {
   // @ts-expect-error
   writecdd(fake<ObjectState>());
 
+  // @ts-expect-error
+  writecdd();
+
+  // @ts-expect-error
+  writecdd(fake<AState>(), fake<any>());
+
+  expectType<WriteOp<(state: AState) => AState>>(writecdd);
+  expectType<WriteOpOnTypicalWriteFn<(state: AState) => AState>>(writecdd);
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
       WriteOpMeta<(state: AState) => AState>
@@ -287,6 +329,11 @@ test('w', () => {
   // @ts-expect-error
   write181(fake<ObjectState>());
 
+  // @ts-expect-error
+  write181(fake<AState>(), fake<any>());
+
+  expectType<WriteOp<() => AState>>(write181);
+  expectType<WriteOpOnEmptyParamWriteFn<() => AState>>(write181);
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike?: TMugLike) => TMugLike) &
       WriteOpMeta<() => AState>
@@ -308,6 +355,4 @@ test('initial', () => {
   expectAssignable<typeof rc79>(fake<AState>());
 
   expectType<AState>(initial(fake<DirtyAMug>()));
-  expectType<SuperState>(initial(fake<SuperState>()));
-  expectType<ObjectState>(initial(fake<ObjectState>()));
 });

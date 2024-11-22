@@ -1,11 +1,11 @@
 import {
   _builtinId,
   BuiltinMeta,
-  construction,
   isClassDefinedObject,
   isMug,
   isObjectLike,
   isPlainObject,
+  Mug,
   ownKeysOfObjectLike,
   shallowCloneOfPlainObject,
   State,
@@ -146,7 +146,7 @@ export type PossiblePatchOnNonNullableOnObjectLike<TMugLike extends AnyObjectLik
 
 export type PossiblePatchOnNonNullable<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
-  : TMugLike extends { [construction]: infer TConstruction }
+  : TMugLike extends Mug<infer TConstruction>
     ? PossiblePatch<TConstruction>
     : TMugLike extends AnyReadonlyTuple
       ? PossiblePatchOnNonNullableOnReadonTuple<TMugLike>

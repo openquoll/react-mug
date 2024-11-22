@@ -1,8 +1,8 @@
 import { expectAssignable, expectType } from 'tsd';
 
-import { fake, from } from '../../tests/type-utils';
+import { fake } from '../../tests/type-utils';
 import { upon } from '../actions';
-import { _readFn, _readOp, construction, Mug, MugLike, PossibleMug, PossibleMugLike } from '../mug';
+import { Mug, Muggify, PossibleMug, PossibleMugLike } from '../mug';
 import { r, w } from '../op-mech';
 import { useIt } from './useIt';
 
@@ -23,27 +23,24 @@ interface SuperState extends AState {
 
 type AMug = Mug<AState>;
 
-type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type NestedAMug = Mug<Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>>;
 
-type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type AMugLike = Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
 type PossibleAMug = PossibleMug<AState>;
 
 type PossibleAMugLike = PossibleMugLike<AState>;
 
-interface DirtyAMug {
-  [construction]: {
+type DirtyAMug = Mug<
+  {
     s: string;
     o: {
       s: string;
     };
-    potentialMuggyObject: {
-      [construction]: ObjectState;
-      b: boolean;
-    };
-  };
-  b: boolean;
-}
+    potentialMuggyObject: Mug<ObjectState, { b: boolean }>;
+  },
+  { b: boolean }
+>;
 
 test('useIt', () => {
   const readf23 = r(<TState>(state: TState): TState => state);
@@ -55,11 +52,11 @@ test('useIt', () => {
 
   const r711 = useIt(readf23, fake<PossibleAMug>());
   expectAssignable<AState>(r711);
-  expectAssignable<typeof r711>(from<AState>());
+  expectAssignable<typeof r711>(fake<AState>());
 
   const r649 = useIt(readf23, fake<PossibleAMugLike>());
   expectAssignable<AState>(r649);
-  expectAssignable<typeof r649>(from<AState>());
+  expectAssignable<typeof r649>(fake<AState>());
 
   expectType<AState>(useIt(readf23, fake<DirtyAMug>()));
   expectType<ObjectState>(useIt(readf23, fake<ObjectState>()));

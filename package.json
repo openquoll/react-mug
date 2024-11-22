@@ -37,15 +37,15 @@
   "repository": "openquoll/react-mug",
   "author": "Open Quoll",
   "scripts": {
-    "build": "run-s bundle-build type-build",
-    "bundle-build": "rollup -c",
-    "type-build": "tsc -p ./builder/tsconfig.types.json",
-    "clean-built": "shx rm -fr ./dist/ ./builder/cache/",
-    "clean-installed": "shx rm -fr ./package-lock.json ./node_modules/",
-    "test": "run-s main-test type-test",
-    "main-test": "jest",
-    "type-test": "tsd -t ./tests/tsd.d.ts -f \"./@(src|tests)/**/*.test-d.ts?(x)\"",
-    "type-test-watch": "chokidar \"./src/**/*.ts?(x)\" \"./tests/**/*.test-d.ts?(x)\" --command \"npm run type-test\" --initial"
+    "build": "run-s build:bundle build:type",
+    "build:bundle": "rollup -c",
+    "build:type": "tsc -p ./builder/tsconfig.types.json",
+    "clean:built": "shx rm -fr ./dist/ ./builder/cache/",
+    "clean:installed": "shx rm -fr ./package-lock.json ./node_modules/",
+    "test": "run-s test:main test:type",
+    "test:main": "jest",
+    "test:type": "tsd -t ./tests/tsd.d.ts -f \"./@(src|tests)/**/*.test-d.ts?(x)\"",
+    "test:type-watch": "chokidar \"./src/**/*.ts?(x)\" \"./tests/**/*.test-d.ts?(x)\" --command \"npm run test:type\" --initial"
   },
   "peerDependencies": {
     "react": ">= 17"

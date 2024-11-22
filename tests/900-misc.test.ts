@@ -1,4 +1,4 @@
-import { construction, getIt, initial, Mug, MugLike, setIt } from '../src';
+import { construction, getIt, initial, Mug, Muggify, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('initial', () => {
@@ -38,7 +38,7 @@ describe('initial', () => {
       },
     };
 
-    const aMugLike: MugLike<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMugLike: Muggify<AState, { muggyObject: Mug<ObjectState> }> = {
       s: 'asd',
       o: {
         s: 'asd',

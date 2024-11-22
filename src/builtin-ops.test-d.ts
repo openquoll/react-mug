@@ -1,8 +1,8 @@
 import { expectType } from 'tsd';
 
-import { fake, from } from '../tests/type-utils';
+import { fake } from '../tests/type-utils';
 import { none, PossiblePatch, setIt } from './builtin-ops';
-import { construction, Mug, MugLike, PossibleMug, PossibleMugLike, pure } from './mug';
+import { Mug, Muggify, PossibleMug, PossibleMugLike } from './mug';
 import { EmptyItem } from './type-utils';
 
 interface ObjectState {
@@ -22,8 +22,8 @@ test('PossiblePatch', () => {
     roa: readonly ObjectState[];
     ot: [ObjectState];
     rot: readonly [ObjectState];
-    muggyObject: { [construction]: ObjectState };
-    dirtyMuggyObject: { [construction]: ObjectState; b: boolean };
+    muggyObject: Mug<ObjectState>;
+    dirtyMuggyObject: Mug<ObjectState, { b: boolean }>;
   }
 
   type R314 = PossiblePatch<AMugLike>;
@@ -38,10 +38,10 @@ test('PossiblePatch', () => {
     rot?: readonly [{ s?: string; o?: { s?: string } } | EmptyItem];
     muggyObject?: { s?: string; o?: { s?: string } };
     dirtyMuggyObject?: { s?: string; o?: { s?: string } };
-  }>(from<R314>());
+  }>(fake<R314>());
 });
 
-test('setIt, pure', () => {
+test('setIt', () => {
   interface AState extends ObjectState {
     potentialMuggyObject: ObjectState;
   }
@@ -52,27 +52,24 @@ test('setIt, pure', () => {
 
   type AMug = Mug<AState>;
 
-  type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+  type NestedAMug = Mug<Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>>;
 
-  type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+  type AMugLike = Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
   type PossibleAMug = PossibleMug<AState>;
 
   type PossibleAMugLike = PossibleMugLike<AState>;
 
-  interface DirtyAMug {
-    [construction]: {
+  type DirtyAMug = Mug<
+    {
       s: string;
       o: {
         s: string;
       };
-      potentialMuggyObject: {
-        [construction]: ObjectState;
-        b: boolean;
-      };
-    };
-    b: boolean;
-  }
+      potentialMuggyObject: Mug<ObjectState, { b: boolean }>;
+    },
+    { b: boolean }
+  >;
 
   const patch = { potentialMuggyObject: { o: { s: fake<string>() } } };
 
@@ -100,7 +97,4 @@ test('setIt, pure', () => {
 
   // @ts-expect-error
   setIt(fake<AState>(), patch, fake<any>());
-
-  expectType<<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState>(setIt.pure);
-  expectType<typeof setIt.pure>(pure(setIt));
 });

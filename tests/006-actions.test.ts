@@ -1,4 +1,4 @@
-import { construction, flat, getIt, Mug, PossiblePatch, pure, setIt, upon } from '../src';
+import { construction, getIt, Mug, PossiblePatch, pure, setIt, upon } from '../src';
 
 jest.mock('../src/op-mech', () => {
   const m = jest.requireActual('../src/op-mech');
@@ -112,18 +112,6 @@ describe('0ab2ffa, actions straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('3a3b7a8, accesses the default read action_s "flat" field', () => {
-    test('[action, verify] the field equals "getIt" in ref', () => {
-      expect(getA.flat).toBe(getIt);
-    });
-  });
-
-  describe('1d42439, calls "flat" with the default read action', () => {
-    test('[action, verify] the return equals "getIt" in ref', () => {
-      expect(flat(getA)).toBe(getIt);
-    });
-  });
-
   describe('640f3ad, reads by the custom read action', () => {
     const readActionParamExtra: Pick<ObjectState, 'o'> = { o: { s: '3cd' } };
     let readActionReturn: Pick<ObjectState, 'o'>;
@@ -159,12 +147,6 @@ describe('0ab2ffa, actions straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('ed923dd, accesses the custom read action_s "pure" field', () => {
-    test('[action, verify] the field equals the custom read fn in ref', () => {
-      expect(customReadAction.pure).toBe(customReadFn);
-    });
-  });
-
   describe('6813464, calls "pure" with the custom read action', () => {
     test('[action, verify] the return equals the custom read fn in ref', () => {
       expect(pure(customReadAction)).toBe(customReadFn);
@@ -193,18 +175,6 @@ describe('0ab2ffa, actions straightforwardly, [cite] 003, 004', () => {
     test('[verify] "setIt" param patch equals the write action param patch in ref and value', () => {
       expect(setItParamPatch).toBe(writeActionParamPatch);
       expect(setItParamPatch).toStrictEqual(writeActionParamPatch);
-    });
-  });
-
-  describe('5a30284, accesses the default write action_s "flat" field', () => {
-    test('[action, verify] the field equals "setIt" in ref', () => {
-      expect(setA.flat).toBe(setIt);
-    });
-  });
-
-  describe('781d2c6, calls "flat" with the default write action', () => {
-    test('[action, verify] the return equals "setIt" in ref', () => {
-      expect(flat(setA)).toBe(setIt);
     });
   });
 
@@ -240,12 +210,6 @@ describe('0ab2ffa, actions straightforwardly, [cite] 003, 004', () => {
     test('[verify] the contextual mug_s after-write got state equals the write fn return in ref and value', () => {
       expect(gotAStateAfter).toBe(writeFnReturn);
       expect(gotAStateAfter).toStrictEqual(writeFnReturn);
-    });
-  });
-
-  describe('822bdfd, accesses the custom write action_s "pure" field', () => {
-    test('[action, verify] the field equals the custom write fn in ref', () => {
-      expect(customWriteAction.pure).toBe(customWriteFn);
     });
   });
 
@@ -309,12 +273,6 @@ describe('0cedec5, actions in OOP, [cite] .:0ab2ffa', () => {
     });
   });
 
-  describe('b523102, accesses the default read action_s "flat" field', () => {
-    test('[action, verify] the field equals "getIt" in ref', () => {
-      expect(aMug.get.flat).toBe(getIt);
-    });
-  });
-
   describe('45344e5, reads by the custom read action', () => {
     const readActionParamExtra: Pick<ObjectState, 'o'> = { o: { s: '3cd' } };
     let readActionReturn: Pick<ObjectState, 'o'>;
@@ -350,9 +308,9 @@ describe('0cedec5, actions in OOP, [cite] .:0ab2ffa', () => {
     });
   });
 
-  describe('91c6286, accesses the custom read action_s "pure" field', () => {
+  describe('91c6286, calls "pure" with the custom read action', () => {
     test('[action, verify] the field equals the custom read fn in ref', () => {
-      expect(aMug.customReadAction.pure).toBe(customReadFn);
+      expect(pure(aMug.customReadAction)).toBe(customReadFn);
     });
   });
 
@@ -378,12 +336,6 @@ describe('0cedec5, actions in OOP, [cite] .:0ab2ffa', () => {
     test('[verify] "setIt" param patch equals the write action param patch in ref and value', () => {
       expect(setItParamPatch).toBe(writeActionParamPatch);
       expect(setItParamPatch).toStrictEqual(writeActionParamPatch);
-    });
-  });
-
-  describe('df3fa36, accesses the default write action_s "flat" field', () => {
-    test('[action, verify] the return equals "setIt" in ref', () => {
-      expect(aMug.set.flat).toBe(setIt);
     });
   });
 
@@ -422,9 +374,9 @@ describe('0cedec5, actions in OOP, [cite] .:0ab2ffa', () => {
     });
   });
 
-  describe('15f3fb1, accesses the custom write action_s "pure" field', () => {
+  describe('15f3fb1, calls "pure" with the custom write action', () => {
     test('[action, verify] the field equals the custom write fn in ref', () => {
-      expect(aMug.customWriteAction.pure).toBe(customWriteFn);
+      expect(pure(aMug.customWriteAction)).toBe(customWriteFn);
     });
   });
 });

@@ -24,7 +24,6 @@ import {
   WriteOpOnEmptyParamWriteFn,
   WriteOpOnTypicalWriteFn,
 } from './op-mech';
-import { _flat, _pure } from './shortcuts';
 import { AnyFunction, Post0Params } from './type-utils';
 
 export type ReadActionOnGetIt<TMugLike> = (() => State<TMugLike>) & ReadActionMeta<TMugLike, GetIt>;
@@ -130,8 +129,6 @@ export function upon(mugLike: any): any {
     const readAction = (...args: any) => readOp(mugLike, ...args);
     readAction[_mugLike] = mugLike;
     readAction[_readOp] = readOp;
-    readAction[_flat] = readOp;
-    readAction[_pure] = readOp[_readFn];
     return readAction;
   }
 
@@ -142,8 +139,6 @@ export function upon(mugLike: any): any {
     };
     writeAction[_mugLike] = mugLike;
     writeAction[_writeOp] = writeOp;
-    writeAction[_flat] = writeOp;
-    writeAction[_pure] = writeOp[_writeFn];
     return writeAction;
   }
 

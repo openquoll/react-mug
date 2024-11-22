@@ -1,6 +1,6 @@
 import { act, render } from '@testing-library/react';
 
-import { construction, getIt, Mug, r, setIt, tuple, upon, useIt } from '../src';
+import { construction, getIt, Mug, Muggify, r, setIt, tuple, upon, useIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => {
@@ -165,7 +165,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const aMug: Mug<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMug: Mug<Muggify<AState, { muggyObject: Mug<ObjectState> }>> = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1172,7 +1172,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const aMug: Mug<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMug: Mug<Muggify<AState, { muggyObject: Mug<ObjectState> }>> = {
       [construction]: {
         s: 'asd',
         o: {

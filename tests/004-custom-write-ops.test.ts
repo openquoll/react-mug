@@ -1,4 +1,4 @@
-import { construction, flat, getIt, Mug, MugLike, pure, w } from '../src';
+import { construction, getIt, Mug, Muggify, w } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('900ce35, writes by an object state custom write op', () => {
@@ -185,7 +185,7 @@ describe('900ce35, writes by an object state custom write op', () => {
         },
       };
 
-      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+      const aMugLike: Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -251,24 +251,6 @@ describe('900ce35, writes by an object state custom write op', () => {
     describe('87d8b65, calls "w" with the op', () => {
       test('[action, verify] the return equals the op in ref', () => {
         expect(w(customWriteOp)).toBe(customWriteOp);
-      });
-    });
-
-    describe('cf2f9b9, calls "flat" with the op', () => {
-      test('[action, verify] the return equals the op in ref', () => {
-        expect(flat(customWriteOp)).toBe(customWriteOp);
-      });
-    });
-
-    describe('7f2b61c, accesses the op_s "pure" field', () => {
-      test('[action, verify] the field equals the fn in ref', () => {
-        expect(customWriteOp.pure).toBe(customWriteFn);
-      });
-    });
-
-    describe('9e9d139, calls "pure" with the op', () => {
-      test('[action, verify] the return equals the fn in ref', () => {
-        expect(pure(customWriteOp)).toBe(customWriteFn);
       });
     });
   });
@@ -478,7 +460,7 @@ describe('900ce35, writes by an object state custom write op', () => {
         },
       };
 
-      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+      const aMugLike: Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -584,7 +566,7 @@ describe('900ce35, writes by an object state custom write op', () => {
         },
       };
 
-      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+      const aMugLike: Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',

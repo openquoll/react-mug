@@ -47,6 +47,3 @@ export const _current = 'current';
 
 export const _mug = 'mug';
 export const _attach = 'attach';
-
-export const _pure = 'pure';
-export const _flat = 'flat';

@@ -1,4 +1,4 @@
-import { construction, EmptyItem, getIt, Mug, MugLike, setIt, tuple } from '../src';
+import { construction, EmptyItem, getIt, Mug, Muggify, setIt, tuple } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 interface ObjectState {
@@ -70,7 +70,7 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     muggyObjectArray: ObjectState[];
   }
 
-  type AMugLike = MugLike<
+  type AMugLike = Muggify<
     AState,
     {
       muggyObject: Mug<ObjectState>;
@@ -671,7 +671,7 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
     },
   };
 
-  const aMugLike: MugLike<AState, (Mug<ObjectState> | EmptyItem)[]> = [
+  const aMugLike: Muggify<AState, (Mug<ObjectState> | EmptyItem)[]> = [
     {
       s: 'asd',
       o: {
@@ -760,7 +760,7 @@ describe('00f8db6, operates "a constant mug-nested tuple mug-like" by builtin op
     },
   };
 
-  const aMugLike: MugLike<AState, [EmptyItem, Mug<ObjectState>]> = tuple(
+  const aMugLike: Muggify<AState, [EmptyItem, Mug<ObjectState>]> = tuple(
     {
       s: 'asd',
       o: {

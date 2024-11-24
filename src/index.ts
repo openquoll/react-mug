@@ -1,5 +1,5 @@
 export { upon } from './actions';
-export { PossiblePatch, getIt, none, setIt } from './builtin-ops';
+export { PossiblePatch, mergePatch, none, passThrough } from './builtin/fns';
 export {
   Mug,
   MugError,
@@ -10,6 +10,6 @@ export {
   construction,
   pure,
 } from './mug';
-export { initial, r, w } from './op-mech';
+export { getIt, initial, r, setIt, w } from './op-mech';
 export { useIt } from './react-integration';
 export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';

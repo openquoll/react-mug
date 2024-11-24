@@ -2,7 +2,6 @@ import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
 import { upon } from './actions';
-import { getIt, setIt } from './builtin-ops';
 import {
   Mug,
   Muggify,
@@ -14,7 +13,7 @@ import {
   WriteActionMeta,
   WriteOpMeta,
 } from './mug';
-import { r as flatR, w as flatW } from './op-mech';
+import { r as flatR, w as flatW, getIt, setIt } from './op-mech';
 
 interface ObjectState {
   s: string;

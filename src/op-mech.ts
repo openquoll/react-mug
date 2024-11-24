@@ -1,3 +1,5 @@
+import { MergePatch, mergePatch, PassThrough, passThrough, PossiblePatch } from './builtin/fns';
+import { _builtinId } from './builtin/ids';
 import {
   _readFn,
   _writeFn,
@@ -273,17 +275,22 @@ export type ReadOpOnTypicalReadFn<TReadFn extends AnyFunction> = ((
 ) => ReturnType<TReadFn>) &
   ReadOpMeta<TReadFn>;
 
-export type ReadOp<TReadFn extends AnyFunction> = TReadFn extends () => any
-  ? ReadOpOnEmptyParamReadFn<TReadFn>
-  : TReadFn extends <TState extends never>(state: TState, ...restArgs: any) => TState
-    ? ReadOpOnSimpleGenericReadFn<TReadFn>
-    : ReadOpOnTypicalReadFn<TReadFn>;
+export type ReadOp<TRead extends AnyFunction = PassThrough> = TRead extends AnyReadOp
+  ? TRead
+  : TRead extends () => any
+    ? ReadOpOnEmptyParamReadFn<TRead>
+    : TRead extends <TState extends never>(state: TState, ...restArgs: any) => TState
+      ? ReadOpOnSimpleGenericReadFn<TRead>
+      : ReadOpOnTypicalReadFn<TRead>;
 
-export function r<TReadOp extends AnyReadOp>(readOp: TReadOp): TReadOp;
+export type GetIt = ReadOp<PassThrough>;
+
+export function r(): GetIt;
+export function r<TReadOp extends AnyReadOp>(readOp: TReadOp): ReadOp<TReadOp>;
 export function r<TReadFn extends AnyFunction & NotOp & NotAction>(
   readFn: TReadFn,
 ): ReadOp<TReadFn>;
-export function r(read: AnyFunction): AnyFunction {
+export function r(read: AnyFunction = passThrough): AnyFunction {
   if (isReadOp(read)) {
     return read;
   }
@@ -306,6 +313,8 @@ export function r(read: AnyFunction): AnyFunction {
   return readOp;
 }
 
+export const getIt = r();
+
 export type WriteOpOnEmptyParamWriteFn<TWriteFn extends AnyFunction> = (<
   TMugLike extends PossibleMugLike<ReturnType<TWriteFn>>,
 >(
@@ -321,15 +330,26 @@ export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteOpMeta<TWriteFn>;
 
-export type WriteOp<TWriteFn extends AnyFunction> = TWriteFn extends () => any
-  ? WriteOpOnEmptyParamWriteFn<TWriteFn>
-  : WriteOpOnTypicalWriteFn<TWriteFn>;
+export type SetIt = (<TMugLike>(
+  mugLike: TMugLike,
+  patch: PossiblePatch<NoInfer<TMugLike>>,
+) => TMugLike) &
+  WriteOpMeta<MergePatch>;
 
-export function w<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): TWriteOp;
+export type WriteOp<TWrite extends AnyFunction = MergePatch> = TWrite extends AnyWriteOp
+  ? TWrite
+  : TWrite extends () => any
+    ? WriteOpOnEmptyParamWriteFn<TWrite>
+    : TWrite extends MergePatch
+      ? SetIt
+      : WriteOpOnTypicalWriteFn<TWrite>;
+
+export function w(): SetIt;
+export function w<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): WriteOp<TWriteOp>;
 export function w<
   TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotOp & NotAction,
 >(writeFn: TWriteFn): WriteOp<TWriteFn>;
-export function w(write: AnyFunction): AnyFunction {
+export function w(write: AnyFunction = mergePatch): AnyFunction {
   if (isWriteOp(write)) {
     return write;
   }
@@ -364,6 +384,8 @@ export function w(write: AnyFunction): AnyFunction {
 
   return writeOp;
 }
+
+export const setIt = w();
 
 export function initial<TMugLike>(mugLike: TMugLike): State<TMugLike>;
 export function initial(mugLike: any): any {

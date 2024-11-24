@@ -1,9 +1,8 @@
-import { GetIt, getIt, PossiblePatch, SetIt, setIt } from './builtin-ops';
+import { PossiblePatch } from './builtin/fns';
 import {
   _mugLike,
   _readFn,
   _readOp,
-  _writeFn,
   _writeOp,
   AnyReadOp,
   AnyWriteOp,
@@ -16,10 +15,14 @@ import {
   WriteOpMeta,
 } from './mug';
 import {
+  GetIt,
+  getIt,
   r,
   ReadOpOnEmptyParamReadFn,
   ReadOpOnSimpleGenericReadFn,
   ReadOpOnTypicalReadFn,
+  SetIt,
+  setIt,
   w,
   WriteOpOnEmptyParamWriteFn,
   WriteOpOnTypicalWriteFn,

@@ -515,9 +515,3 @@ export function pure(fn: any): any {
 
   return fn;
 }
-
-export const _builtinId = Symbol();
-
-export type BuiltinMeta = { [_builtinId]: string };
-
-export const isBuiltin = (o: any): o is BuiltinMeta => !!o?.[_hasOwnProperty]?.(_builtinId);

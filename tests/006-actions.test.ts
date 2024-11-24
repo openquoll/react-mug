@@ -2,14 +2,9 @@ import { construction, getIt, Mug, PossiblePatch, pure, setIt, upon } from '../s
 
 jest.mock('../src/op-mech', () => {
   const m = jest.requireActual('../src/op-mech');
+  const { getIt, setIt } = m;
   jest.spyOn(m, 'r');
   jest.spyOn(m, 'w');
-  return m;
-});
-
-jest.mock('../src/builtin-ops', () => {
-  const m = jest.requireActual('../src/builtin-ops');
-  const { getIt, setIt } = m;
   Object.assign(jest.spyOn(m, 'getIt'), getIt);
   Object.assign(jest.spyOn(m, 'setIt'), setIt);
   return m;

@@ -1,8 +1,9 @@
-import { PossiblePatch } from './builtin/fns';
+import { MergePatch, PossiblePatch } from './builtin/fns';
 import {
   _mugLike,
   _readFn,
   _readOp,
+  _writeFn,
   _writeOp,
   AnyReadOp,
   AnyWriteOp,
@@ -14,22 +15,13 @@ import {
   WriteActionMeta,
   WriteOpMeta,
 } from './mug';
-import {
-  GetIt,
-  getIt,
-  r,
-  ReadOpOnEmptyParamReadFn,
-  ReadOpOnSimpleGenericReadFn,
-  ReadOpOnTypicalReadFn,
-  SetIt,
-  setIt,
-  w,
-  WriteOpOnEmptyParamWriteFn,
-  WriteOpOnTypicalWriteFn,
-} from './op-mech';
+import { GetIt, getIt, r, ReadOp, SetIt, setIt, w, WriteOp } from './op-mech';
 import { AnyFunction, Post0Params } from './type-utils';
 
-export type ReadActionOnGetIt<TMugLike> = (() => State<TMugLike>) & ReadActionMeta<TMugLike, GetIt>;
+export type ReadActionOnEmptyParamReadOp<
+  TMugLike,
+  TReadOp extends AnyReadOp,
+> = (() => ReturnType<TReadOp>) & ReadActionMeta<TMugLike, TReadOp>;
 
 export type ReadActionOnSimpleGenericReadOp<TMugLike, TReadOp extends AnyReadOp> = ((
   ...args: Post0Params<TReadOp>
@@ -41,76 +33,91 @@ export type ReadActionOnTypicalReadOp<TMugLike, TReadOp extends AnyReadOp> = ((
 ) => ReturnType<TReadOp>) &
   ReadActionMeta<TMugLike, TReadOp>;
 
-export type ReadActionOnReadOp<TMugLike, TReadOp extends AnyReadOp> =
-  TReadOp[typeof _readFn] extends <TState extends never>(state: TState, ...restArgs: any) => TState
-    ? ReadActionOnSimpleGenericReadOp<TMugLike, TReadOp>
-    : ReadActionOnTypicalReadOp<TMugLike, TReadOp>;
-
 export type ReadActionOnEmptyParamReadFn<
   TMugLike,
   TReadFn extends AnyFunction,
-> = (() => ReturnType<TReadFn>) & ReadActionMeta<TMugLike, ReadOpOnEmptyParamReadFn<TReadFn>>;
+> = (() => ReturnType<TReadFn>) & ReadActionMeta<TMugLike, ReadOp<TReadFn>>;
 
 export type ReadActionOnSimpleGenericReadFn<TMugLike, TReadFn extends AnyFunction> = ((
   ...args: Post0Params<TReadFn>
 ) => State<TMugLike>) &
-  ReadActionMeta<TMugLike, ReadOpOnSimpleGenericReadFn<TReadFn>>;
+  ReadActionMeta<TMugLike, ReadOp<TReadFn>>;
 
 export type ReadActionOnTypicalReadFn<TMugLike, TReadFn extends AnyFunction> = ((
   ...args: Post0Params<TReadFn>
 ) => ReturnType<TReadFn>) &
-  ReadActionMeta<TMugLike, ReadOpOnTypicalReadFn<TReadFn>>;
+  ReadActionMeta<TMugLike, ReadOp<TReadFn>>;
 
-export type ReadActionOnReadFn<TMugLike, TReadFn extends AnyFunction> = TReadFn extends () => any
-  ? ReadActionOnEmptyParamReadFn<TMugLike, TReadFn>
-  : TReadFn extends <TState extends never>(state: TState, ...restArgs: any) => TState
-    ? ReadActionOnSimpleGenericReadFn<TMugLike, TReadFn>
-    : ReadActionOnTypicalReadFn<TMugLike, TReadFn>;
+export type ReadAction<TMugLike, TRead extends AnyFunction = GetIt> = TRead extends AnyReadOp
+  ? TRead[typeof _readFn] extends () => any
+    ? ReadActionOnEmptyParamReadOp<TMugLike, TRead>
+    : TRead[typeof _readFn] extends <TState extends never>(
+          state: TState,
+          ...restArgs: any
+        ) => TState
+      ? ReadActionOnSimpleGenericReadOp<TMugLike, TRead>
+      : ReadActionOnTypicalReadOp<TMugLike, TRead>
+  : TRead extends () => any
+    ? ReadActionOnEmptyParamReadFn<TMugLike, TRead>
+    : TRead extends <TState extends never>(state: TState, ...restArgs: any) => TState
+      ? ReadActionOnSimpleGenericReadFn<TMugLike, TRead>
+      : ReadActionOnTypicalReadFn<TMugLike, TRead>;
 
 export type R<TMugLike> = {
-  (getIt?: GetIt): ReadActionOnGetIt<TMugLike>;
+  (): ReadAction<TMugLike>;
 
   <TReadOp extends AnyFunction & ReadOpMeta<(state: State<TMugLike>, ...restArgs: any) => any>>(
     readOp: TReadOp,
-  ): ReadActionOnReadOp<TMugLike, TReadOp>;
+  ): ReadAction<TMugLike, TReadOp>;
 
   <TReadFn extends ((state: State<TMugLike>, ...restArgs: any) => any) & NotOp & NotAction>(
     readFn: TReadFn,
-  ): ReadActionOnReadFn<TMugLike, TReadFn>;
+  ): ReadAction<TMugLike, TReadFn>;
 };
+
+export type WriteActionOnEmptyParamWriteOp<TMugLike, TWriteOp extends AnyWriteOp> = (() => void) &
+  WriteActionMeta<TMugLike, TWriteOp>;
 
 export type WriteActionOnSetIt<TMugLike> = ((patch: PossiblePatch<TMugLike>) => void) &
   WriteActionMeta<TMugLike, SetIt>;
 
-export type WriteActionOnWriteOp<TMugLike, TWriteOp extends AnyWriteOp> = ((
+export type WriteActionOnTypicalWriteOp<TMugLike, TWriteOp extends AnyWriteOp> = ((
   ...args: Post0Params<TWriteOp>
 ) => void) &
   WriteActionMeta<TMugLike, TWriteOp>;
 
-export type WriteActionOnEmptyParamWriteFn<TMugLike, TWriteFn extends () => any> = (() => void) &
-  WriteActionMeta<TMugLike, WriteOpOnEmptyParamWriteFn<TWriteFn>>;
+export type WriteActionOnEmptyParamWriteFn<TMugLike, TWriteFn extends AnyFunction> = (() => void) &
+  WriteActionMeta<TMugLike, WriteOp<TWriteFn>>;
+
+export type WriteActionOnMergePatch<TMugLike> = ((patch: PossiblePatch<TMugLike>) => void) &
+  WriteActionMeta<TMugLike, WriteOp<MergePatch>>;
 
 export type WriteActionOnTypicalWriteFn<TMugLike, TWriteFn extends AnyFunction> = ((
   ...args: Post0Params<TWriteFn>
 ) => void) &
-  WriteActionMeta<TMugLike, WriteOpOnTypicalWriteFn<TWriteFn>>;
+  WriteActionMeta<TMugLike, WriteOp<TWriteFn>>;
 
-export type WriteActionOnWriteFn<
-  TMugLike,
-  TWriteFn extends AnyFunction,
-> = TWriteFn extends () => any
-  ? WriteActionOnEmptyParamWriteFn<TMugLike, TWriteFn>
-  : WriteActionOnTypicalWriteFn<TMugLike, TWriteFn>;
+export type WriteAction<TMugLike, TWrite extends AnyFunction = SetIt> = TWrite extends AnyWriteOp
+  ? TWrite[typeof _writeFn] extends () => any
+    ? WriteActionOnEmptyParamWriteOp<TMugLike, TWrite>
+    : TWrite[typeof _writeFn] extends MergePatch
+      ? WriteActionOnSetIt<TMugLike>
+      : WriteActionOnTypicalWriteOp<TMugLike, TWrite>
+  : TWrite extends () => any
+    ? WriteActionOnEmptyParamWriteFn<TMugLike, TWrite>
+    : TWrite extends MergePatch
+      ? WriteActionOnMergePatch<TMugLike>
+      : WriteActionOnTypicalWriteFn<TMugLike, TWrite>;
 
 export type W<TMugLike> = {
-  (setIt?: SetIt): WriteActionOnSetIt<TMugLike>;
+  (): WriteAction<TMugLike>;
 
   <
     TWriteOp extends AnyFunction &
       WriteOpMeta<(state: State<TMugLike>, ...restArgs: any) => State<TMugLike>>,
   >(
     writeOp: TWriteOp,
-  ): WriteActionOnWriteOp<TMugLike, TWriteOp>;
+  ): WriteAction<TMugLike, TWriteOp>;
 
   <
     TWriteFn extends ((state: State<TMugLike>, ...restArgs: any) => State<TMugLike>) &
@@ -118,7 +125,7 @@ export type W<TMugLike> = {
       NotAction,
   >(
     writeFn: TWriteFn,
-  ): WriteActionOnWriteFn<TMugLike, TWriteFn>;
+  ): WriteAction<TMugLike, TWriteFn>;
 };
 
 export type ActionToolbeltFormat<TR, TW> = [r: TR, w: TW] & { r: TR; w: TW };

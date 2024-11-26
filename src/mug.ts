@@ -64,19 +64,15 @@ import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './typ
  */
 export const construction = Symbol();
 
-export type CleanMug<TConstruction> = { [construction]: TConstruction };
-
-export type DirtyMug<TConstruction, TAttachments extends AnyObjectLike> = CleanMug<TConstruction> &
-  TAttachments;
-
 /**
  * The mug type-defining helper.
  */
-export type Mug<TConstruction, TAttachments = EmptyItem> = TAttachments extends AnyObjectLike
-  ? DirtyMug<TConstruction, TAttachments>
-  : CleanMug<TConstruction>;
+export type Mug<TConstruction> = { [construction]: TConstruction };
 
 export type AnyMug = Mug<any>;
+
+export type DirtyMug<TConstruction, TAttachments extends AnyObjectLike> = Mug<TConstruction> &
+  TAttachments;
 
 export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
   | Mug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>

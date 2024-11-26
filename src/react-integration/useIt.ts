@@ -63,6 +63,9 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
 }
 
 export function useIt<
+  TReadAction extends AnyFunction & ReadActionMeta<any, AnyFunction & ReadOpMeta<() => any>>,
+>(readAction: TReadAction): ReturnType<TReadAction>;
+export function useIt<
   TReadAction extends AnyFunction &
     ReadActionMeta<
       any,
@@ -76,6 +79,10 @@ export function useIt<TReadAction extends AnyReadAction>(
   readAction: TReadAction,
   ...readArgs: Parameters<TReadAction>
 ): ReturnType<TReadAction>;
+export function useIt<TReadOp extends AnyFunction & ReadOpMeta<() => any>>(
+  readOp: TReadOp,
+  mugLike?: unknown,
+): ReturnType<TReadOp>;
 export function useIt<
   TReadOp extends AnyFunction &
     ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
@@ -93,11 +100,12 @@ export function useIt(
   },
   ...readArgs: any
 ): any {
+  const readOp = read[_readOp] ?? read;
   const [mugLike, restArgs] = read[_mugLike]
     ? [read[_mugLike], readArgs]
     : [readArgs[0], readArgs[_slice](1)];
 
-  const readOpRef = useRef(read[_readOp] ?? read);
+  const readOpRef = useRef(readOp);
   const mugLikeRef = useRef(mugLike);
   const restArgsRef = useRef(restArgs);
 

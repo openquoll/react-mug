@@ -11,6 +11,7 @@ import {
   PossiblePatch,
 } from './builtin';
 import {
+  DirtyMug,
   Mug,
   Muggify,
   PossibleMug,
@@ -47,13 +48,13 @@ type PossibleAMug = PossibleMug<AState>;
 
 type PossibleAMugLike = PossibleMugLike<AState>;
 
-type DirtyAMug = Mug<
+type DirtyAMug = DirtyMug<
   {
     s: string;
     o: {
       s: string;
     };
-    potentialMuggyObject: Mug<ObjectState, { b: boolean }>;
+    potentialMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
   },
   { b: boolean }
 >;
@@ -121,7 +122,7 @@ test('ReadOp, GetIt, PassThrough', () => {
   expectType<ReadOp>(fake<GetIt>());
 });
 
-test('r, getIt, passThrough', () => {
+test('r, pure, getIt, passThrough', () => {
   // @ts-expect-error
   r(w((state: any) => state));
 
@@ -251,6 +252,29 @@ test('r, getIt, passThrough', () => {
   expectType<typeof read0ea>(r(passThrough));
 
   expectType<typeof read0ea>(getIt);
+
+  expectType<AState>(read0ea(fake<AState>()));
+  expectType<AState>(read0ea(fake<AMug>()));
+  expectType<AState>(read0ea(fake<NestedAMug>()));
+  expectType<AState>(read0ea(fake<AMugLike>()));
+
+  const re70 = read0ea(fake<PossibleAMug>());
+  expectAssignable<AState>(re70);
+  expectAssignable<typeof re70>(fake<AState>());
+
+  const rcfc = read0ea(fake<PossibleAMugLike>());
+  expectAssignable<AState>(rcfc);
+  expectAssignable<typeof rcfc>(fake<AState>());
+
+  expectType<AState>(read0ea(fake<DirtyAMug>()));
+  expectType<SuperState>(read0ea(fake<SuperState>()));
+  expectType<ObjectState>(read0ea(fake<ObjectState>()));
+
+  // @ts-expect-error
+  read0ea();
+
+  // @ts-expect-error
+  read0ea(fake<AState>(), fake<any>());
 });
 
 test('WriteOp, SetIt, MergePatch', () => {
@@ -333,7 +357,7 @@ test('WriteOp, SetIt, MergePatch', () => {
   expectType<WriteOp>(fake<SetIt>());
 });
 
-test('w, setIt, mergePatch', () => {
+test('w, pure, setIt, mergePatch', () => {
   // @ts-expect-error
   w(r((state: any) => state));
 
@@ -498,6 +522,12 @@ test('w, setIt, mergePatch', () => {
 
   // @ts-expect-error
   write09e(fake<AState>(), { s: fake<string>(), n: fake<number>() });
+
+  // @ts-expect-error
+  write09e(fake<AState>());
+
+  // @ts-expect-error
+  write09e(fake<AState>(), patchcd2, fake<any>());
 });
 
 test('initial', () => {

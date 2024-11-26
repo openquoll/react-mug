@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import { Mug } from '../mug';
+import { DirtyMug, Mug } from '../mug';
 import { EmptyItem } from '../type-utils';
 import { none, PossiblePatch } from './fns';
 
@@ -23,7 +23,7 @@ test('PossiblePatch', () => {
     ot: [ObjectState];
     rot: readonly [ObjectState];
     muggyObject: Mug<ObjectState>;
-    dirtyMuggyObject: Mug<ObjectState, { b: boolean }>;
+    dirtyMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
   }
 
   type R314 = PossiblePatch<AMugLike>;

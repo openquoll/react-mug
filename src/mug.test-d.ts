@@ -3,6 +3,7 @@ import { expectAssignable, expectType } from 'tsd';
 import { fake } from '../tests/type-utils';
 import {
   AnyMug,
+  DirtyMug,
   Mug,
   Muggify,
   PossibleMug,
@@ -25,7 +26,7 @@ test('PossibleMuggyOverride', () => {
   interface AMugLike extends ObjectState {
     f: Func;
     muggyObject: Mug<ObjectState>;
-    dirtyMuggyObject: Mug<ObjectState, { b: boolean }>;
+    dirtyMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
   }
 
   expectType<
@@ -58,7 +59,7 @@ test('PossibleMuggyOverride', () => {
 test('Muggify', () => {
   type ObjectMug = Mug<ObjectState>;
 
-  type DirtyObjectMug = Mug<ObjectState, { b: boolean }>;
+  type DirtyObjectMug = DirtyMug<ObjectState, { b: boolean }>;
 
   interface AMugLike extends ObjectState {
     f: Func;
@@ -156,14 +157,14 @@ test('State', () => {
 
   type PossibleAMugLike = PossibleMugLike<AState>;
 
-  type DirtyAMug = Mug<
+  type DirtyAMug = DirtyMug<
     {
       s: string;
       o: {
         s: string;
       };
       f: Func;
-      potentialMuggyObject: Mug<ObjectState, { b: boolean }>;
+      potentialMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
     },
     { b: boolean }
   >;

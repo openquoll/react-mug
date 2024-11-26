@@ -283,7 +283,7 @@ export type ReadOp<TRead extends AnyFunction = PassThrough> = TRead extends AnyR
       ? ReadOpOnSimpleGenericReadFn<TRead>
       : ReadOpOnTypicalReadFn<TRead>;
 
-export type GetIt = ReadOp<PassThrough>;
+export type GetIt = ReadOp;
 
 export function r(): GetIt;
 export function r<TReadOp extends AnyReadOp>(readOp: TReadOp): ReadOp<TReadOp>;
@@ -322,6 +322,12 @@ export type WriteOpOnEmptyParamWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteOpMeta<TWriteFn>;
 
+export type WriteOpOnMergePatch = (<TMugLike>(
+  mugLike: TMugLike,
+  patch: PossiblePatch<NoInfer<TMugLike>>,
+) => TMugLike) &
+  WriteOpMeta<MergePatch>;
+
 export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
   TMugLike extends PossibleMugLike<Param0<TWriteFn>>,
 >(
@@ -330,19 +336,15 @@ export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteOpMeta<TWriteFn>;
 
-export type SetIt = (<TMugLike>(
-  mugLike: TMugLike,
-  patch: PossiblePatch<NoInfer<TMugLike>>,
-) => TMugLike) &
-  WriteOpMeta<MergePatch>;
-
 export type WriteOp<TWrite extends AnyFunction = MergePatch> = TWrite extends AnyWriteOp
   ? TWrite
   : TWrite extends () => any
     ? WriteOpOnEmptyParamWriteFn<TWrite>
     : TWrite extends MergePatch
-      ? SetIt
+      ? WriteOpOnMergePatch
       : WriteOpOnTypicalWriteFn<TWrite>;
+
+export type SetIt = WriteOp;
 
 export function w(): SetIt;
 export function w<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): WriteOp<TWriteOp>;

@@ -1,8 +1,18 @@
 import { render } from '@testing-library/react';
 
-import { construction, getIt, Mug, Muggify, PossibleMugLike, r, upon, useIt } from '../src';
+import {
+  construction,
+  getIt,
+  Mug,
+  Muggify,
+  PossibleMugLike,
+  r,
+  ReadAction,
+  ReadOp,
+  upon,
+  useIt,
+} from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
-import { ReadOp } from '../src/op-mech';
 
 describe('229a728, react renders on hook param changes', () => {
   interface ObjectState {
@@ -1363,7 +1373,7 @@ describe('229a728, react renders on hook param changes', () => {
 
     const readAction2 = r(readFn2);
 
-    type Props = { readAction: any };
+    type Props = { readAction: ReadAction<(state: AState) => ObjectState['o']> };
 
     const AComponent = jest.fn(({ readAction }: Props) => {
       const hookReturn = useIt(readAction);

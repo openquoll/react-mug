@@ -402,3 +402,19 @@ export function initial(mugLike: any): any {
 
   return state;
 }
+
+export function restore<TMugLike>(mugLike: TMugLike): TMugLike;
+export function restore(mugLike: any): any {
+  // When the mugLike is a state, return it as it is.
+  if (isState(mugLike)) {
+    return mugLike;
+  }
+
+  const newState = initial(mugLike);
+
+  const wTask = new MugLikeWriteTask();
+  wTask._run(mugLike, newState);
+  wTask._clear();
+
+  return assignConservatively(mugLike, newState);
+}

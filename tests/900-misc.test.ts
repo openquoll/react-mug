@@ -1,16 +1,18 @@
-import { construction, getIt, initial, Mug, Muggify, setIt } from '../src';
+import { construction, getIt, initial, Mug, Muggify, restore, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
-describe('initial', () => {
-  interface ObjectState {
+interface ObjectState {
+  s: string;
+  o: {
     s: string;
-    o: {
-      s: string;
-    };
-  }
+  };
+}
 
-  describe('calls on a plain object state', () => {
-    const aState = {
+describe('3866ec1, initial', () => {
+  describe('4e2239a, calls on a plain object state', () => {
+    interface AState extends ObjectState {}
+
+    const aState: AState = {
       s: 'asd',
       o: {
         s: 'asd',
@@ -24,7 +26,7 @@ describe('initial', () => {
     });
   });
 
-  describe('calls on a mug-nested object mug-like before-after write', () => {
+  describe('d110ff8, calls on a mug-nested object mug-like before-after write', () => {
     interface AState extends ObjectState {
       muggyObject: ObjectState;
     }
@@ -94,7 +96,7 @@ describe('initial', () => {
     });
   });
 
-  describe('calls on a plain object mug before-after write', () => {
+  describe('770de59, calls on a plain object mug before-after write', () => {
     interface AState extends ObjectState {}
 
     const aMug: Mug<AState> = {
@@ -137,6 +139,196 @@ describe('initial', () => {
     test('[verify] after write, the return differs from the got state in ref and value', () => {
       expect(returnAfter).not.toBe(gotStateAfter);
       expect(returnAfter).not.toStrictEqual(gotStateAfter);
+    });
+  });
+});
+
+describe('e7adc62, restore, [cite] .:3866ec1', () => {
+  describe('4b5086d, calls on a plain object state', () => {
+    interface AState extends ObjectState {}
+
+    const aState: AState = {
+      s: 'asd',
+      o: {
+        s: 'asd',
+      },
+    };
+
+    test('[action, verify] the return equals the state in ref and value', () => {
+      const ret = restore(aState);
+      expect(ret).toBe(aState);
+      expect(ret).toStrictEqual(aState);
+    });
+  });
+
+  describe('c81305e, calls on a mug-nested object mug-like before write', () => {
+    interface AState extends ObjectState {
+      muggyObject: ObjectState;
+    }
+
+    const objectMug: Mug<ObjectState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+      },
+    };
+
+    const aMugLike: Muggify<AState, { muggyObject: Mug<ObjectState> }> = {
+      s: 'asd',
+      o: {
+        s: 'asd',
+      },
+
+      muggyObject: objectMug,
+    };
+
+    let ret: Muggify<AState, { muggyObject: Mug<ObjectState> }>;
+    let gotStateBefore: AState, gotStateAfter: AState;
+
+    test('[action]', () => {
+      gotStateBefore = getIt(aMugLike);
+      ret = restore(aMugLike);
+      gotStateAfter = getIt(aMugLike);
+    });
+
+    test('[verify] the return equals the mug-like in ref and value', () => {
+      expect(ret).toBe(aMugLike);
+      expect(ret).toStrictEqual(aMugLike);
+    });
+
+    test('[verify] the got state stays unchanged in ref and value', () => {
+      expect(gotStateAfter).toBe(gotStateBefore);
+      expect(gotStateAfter).toStrictEqual(gotStateBefore);
+    });
+  });
+
+  describe('acc4f6b, calls on a mug-nested object mug-like after write', () => {
+    interface AState extends ObjectState {
+      muggyObject: ObjectState;
+    }
+
+    const objectMug: Mug<ObjectState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+      },
+    };
+
+    const aMugLike: Muggify<AState, { muggyObject: Mug<ObjectState> }> = {
+      s: 'asd',
+      o: {
+        s: 'asd',
+      },
+
+      muggyObject: objectMug,
+    };
+
+    let ret: Muggify<AState, { muggyObject: Mug<ObjectState> }>;
+    let gotStateBefore: AState, gotStateAfter: AState;
+    let initialState: AState;
+
+    test('[action]', () => {
+      setIt(aMugLike, { muggyObject: { s: 'sdf' } });
+
+      gotStateBefore = getIt(aMugLike);
+      ret = restore(aMugLike);
+      gotStateAfter = getIt(aMugLike);
+
+      initialState = initial(aMugLike);
+    });
+
+    test('[verify] the return equals the mug-like in ref and value', () => {
+      expect(ret).toBe(aMugLike);
+      expect(ret).toStrictEqual(aMugLike);
+    });
+
+    test('[verify] the got state changes in ref', () => {
+      expect(gotStateAfter).not.toBe(gotStateBefore);
+    });
+
+    test('[verify] the after-call got state differs from initial(the mug-like) in ref', () => {
+      expect(gotStateAfter).not.toBe(initialState);
+    });
+
+    test('[verify] the after-call got state equals initial(the mug-like) in value', () => {
+      expect(gotStateAfter).toStrictEqual(initialState);
+    });
+  });
+
+  describe('6f927ef, calls on a plain object mug before write', () => {
+    interface AState extends ObjectState {}
+
+    const aMug: Mug<AState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+      },
+    };
+
+    let ret: Mug<AState>;
+    let gotStateBefore: AState, gotStateAfter: AState;
+
+    test('[action]', () => {
+      gotStateBefore = getIt(aMug);
+      ret = restore(aMug);
+      gotStateAfter = getIt(aMug);
+    });
+
+    test('[verify] the return equals the mug in ref and value', () => {
+      expect(ret).toBe(aMug);
+      expect(ret).toStrictEqual(aMug);
+    });
+
+    test('[verify] the got state stays unchanged in ref and value', () => {
+      expect(gotStateAfter).toBe(gotStateBefore);
+      expect(gotStateAfter).toStrictEqual(gotStateBefore);
+    });
+  });
+
+  describe('7266a64, calls on a plain object mug after write', () => {
+    interface AState extends ObjectState {}
+
+    const aMug: Mug<AState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+      },
+    };
+
+    let ret: Mug<AState>;
+    let gotStateBefore: AState, gotStateAfter: AState;
+    let initialState: AState;
+
+    test('[action]', () => {
+      setIt(aMug, { s: 'sdf' });
+
+      gotStateBefore = getIt(aMug);
+      ret = restore(aMug);
+      gotStateAfter = getIt(aMug);
+
+      initialState = initial(aMug);
+    });
+
+    test('[verify] the return equals the mug in ref and value', () => {
+      expect(ret).toBe(aMug);
+      expect(ret).toStrictEqual(aMug);
+    });
+
+    test('[verify] the got state changes in ref', () => {
+      expect(gotStateAfter).not.toBe(gotStateBefore);
+    });
+
+    test('[verify] the after-call got state equals initial(the mug) in ref and value', () => {
+      expect(gotStateAfter).toBe(initialState);
+      expect(gotStateAfter).toStrictEqual(initialState);
     });
   });
 });

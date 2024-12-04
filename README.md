@@ -149,7 +149,7 @@ npm i react-mug
 
 ## <span id="cad503d">State containers creation by plain objects</span>
 
-A state container is simply a plain object with a conventional name suffix `Mug` denoting its purpose and a top-level field `construction` pointing at its initial value:
+A state container is simply a plain object with a conventional name suffix `Mug` denoting its purpose and a top-level field `construction` referencing its initial value:
 
 ```tsx
 import { construction } from 'react-mug';
@@ -161,7 +161,7 @@ const aMug = {
 };
 ```
 
-For brevity, a state container is also referred to as a mug.
+For brevity, a state container is also called a mug.
 
 In addition, a mug's state type can be either implicitly inferred as above or explicitly declared as below:
 
@@ -181,11 +181,9 @@ const aMug: Mug<AState> = {
 
 ## <span id="31e08c7">Functional state access without `dispatch`</span>
 
-To access states from mugs, actions can be created from pure functions and directly called rather than being dispatched.
+Actions can be created from pure functions as invokables to access states by being directly called rather than dispatched.
 
-Like the previous, regular actions can have a mug specified on creation but omitted on invocation.
-
-They can be created with the helpers from calling `upon`:
+They can have a mug specified on creation but omitted on invocation, and be created with the helpers from calling `upon`:
 
 ```tsx
 import { upon } from 'react-mug';
@@ -206,7 +204,7 @@ const { r } = upon(aMug);
 ```tsx
 const write = w((state, param1: string, param2: string) => ({
   ...state,
-  /* fields */
+  /* fields to write */
 }));
 
 // write('param1', 'param2');
@@ -236,16 +234,18 @@ const get = r();
 // const aState = get();
 ```
 
-On the other side, general actions can have a mug specified on invocation but omitted on creation.
+Moreover, there is the other kind of invokables, called operations, to access states.
 
-They can be created similarly with the helpers straight from `react-mug`:
+For short, they are also called ops.
+
+They can have a mug specified on invocation but omitted on creation, and be created similarly but with the helpers straight from `react-mug`:
 
 ```tsx
 import { r, w } from 'react-mug';
 
 const writeIt = w((state: AState, param1: string, param2: string) => ({
   ...state,
-  /* fields */
+  /* fields to write */
 }));
 
 // writeIt(aMug, 'param1', 'param2');
@@ -255,7 +255,7 @@ const readIt = r((state: AState, param1: string, param2: string) => 'readItResul
 // const readItResult = readIt(aMug, 'param1', 'param2');
 ```
 
-And by builtin, a merge-patch write action and a pass-through read action are provided:
+And by builtin, a merge-patch op and a pass-through op are provided:
 
 ```tsx
 import { getIt, setIt } from 'react-mug';
@@ -265,7 +265,7 @@ import { getIt, setIt } from 'react-mug';
 // const aState = getIt(aMug);
 ```
 
-While regular actions suit most cases, general actions are especially useful in the case of dynamically created mugs.
+While actions suit most cases of state access, ops especially work well with dynamically created mugs.
 
 ## <span id="6658073">Independence from React hooks</span>
 
@@ -306,9 +306,9 @@ No React providers are required.
 
 ## <span id="6f5a8fd">Easy tests</span>
 
-All actions can be easily tested in functional style.
+Actions and ops can be easily tested in functional style.
 
-For regular actions, the utility `pure` can help expose their internal pure functions:
+For actions, the utility `pure` can help expose their internal pure functions:
 
 ```tsx
 import { pure } from 'react-mug';
@@ -338,7 +338,7 @@ describe('read', () => {
 });
 ```
 
-For general actions, they can act as pure functions when states are passed in:
+For ops, they can act as pure functions when states are passed in straight:
 
 ```tsx
 describe('writeIt', () => {
@@ -398,25 +398,83 @@ describe('ReactComponent', () => {
 
 ## <span id="09d0796">State composition</span>
 
-States are composable. In other words, a state can be nested in another.
-
-On state types, it's plainly by type composition:
+A mug can be nested in another mug to form a composed state:
 
 ```tsx
-interface SuperState {
+import { construction, Mug } from 'react-mug';
+
+interface AnotherState {
   a: AState;
+  /* rest fields */
 }
-```
 
-On mugs, it's by object composition with a little type adaptation:
-
-```tsx
-import { Mug, Muggify } from 'react-mug';
-
-const superMug: Mug<SuperState, { a: Mug<AState> }> = {
-  a: aMug,
+const anotherMug: Mug<SuperState, { a: Mug<AState> }> = {
+  [construction]: {
+    a: aMug,
+    /* rest fields */
+  },
 };
 ```
+
+On that, actions and ops can be applied, optionally reusing child mugs' invokables. The current state taken by the pure functions is composed of the current child states. The next state produced by the pure functions is decomposed for the next child states:
+
+```tsx
+import { pure, upon } from 'react-mug';
+
+const [r, w] = upon(anotherMug);
+
+const anotherWrite = w((state, param1: string, param2: string) => ({
+  ...state,
+  a: pure(write)(state.a, param1, param2),
+  /* fields to write */
+}));
+
+// anotherWrite('param1', 'param2');
+
+const anotherRead = r(
+  (state, param1: string, param2: string) => `another ${pure(read)(state.a, param1, param2)}`,
+);
+
+// const anotherReadResult = anotherRead('param1', 'param2');
+```
+
+```tsx
+import { r, w } from 'react-mug';
+
+const anotherWriteIt = w((state: AnotherState, param1: string, param2: string) => ({
+  ...state,
+  a: writeIt(state.a, param1, param2),
+  /* fields to write */
+}));
+
+// anotherWriteIt(anotherMug, 'param1', 'param2');
+
+const anotherReadIt = r(
+  (state: AnotherState, param1: string, param2: string) =>
+    `another ${readIt(state.a, param1, param2)}`,
+);
+
+// const anotherReadItResult = anotherReadIt(anotherMug, 'param1', 'param2');
+```
+
+For simpler cases, a mug can be nested in a plain object to form a state collection instead of a new state.
+
+That plain object is called a mug-like:
+
+```tsx
+import { tuple } from 'react-mug';
+
+// For: { a: AState, another: AnotherState }
+const fooMugLike = {
+  a: aMug,
+  another: anotherMug,
+};
+
+// For: [AState, AnotherState]
+const barMugLike = tuple(aMug, anotherMug);
+```
+
+Like on a composed mug, actions and ops can be applied similarly.
 
 ## <span id="a6bd391">Compatibility with the typical reducer-based practice</span>
 

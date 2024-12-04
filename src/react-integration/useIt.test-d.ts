@@ -2,7 +2,7 @@ import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
 import { upon } from '../actions';
-import { DirtyMug, Mug, Muggify, PossibleMug, PossibleMugLike } from '../mug';
+import { Attach, Mug, MugLike, PossibleMug, PossibleMugLike } from '../mug';
 import { r as flatR, w as flatW } from '../op-mech';
 import { useIt } from './useIt';
 
@@ -23,22 +23,22 @@ interface SuperState extends AState {
 
 type AMug = Mug<AState>;
 
-type NestedAMug = Mug<Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>>;
+type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
-type AMugLike = Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
 type PossibleAMug = PossibleMug<AState>;
 
 type PossibleAMugLike = PossibleMugLike<AState>;
 
-type DirtyAMug = DirtyMug<
-  {
+type DirtyAMug = Attach<
+  Mug<{
     s: string;
     o: {
       s: string;
     };
-    potentialMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
-  },
+    potentialMuggyObject: Attach<Mug<ObjectState>, { b: boolean }>;
+  }>,
   { b: boolean }
 >;
 

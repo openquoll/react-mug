@@ -3,9 +3,10 @@ import { expectAssignable, expectType } from 'tsd';
 import { fake } from '../tests/type-utils';
 import {
   AnyMug,
-  DirtyMug,
+  Attach,
   Mug,
   Muggify,
+  MugLike,
   PossibleMug,
   PossibleMuggyOverride,
   PossibleMugLike,
@@ -26,7 +27,7 @@ test('PossibleMuggyOverride', () => {
   interface AMugLike extends ObjectState {
     f: Func;
     muggyObject: Mug<ObjectState>;
-    dirtyMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
+    dirtyMuggyObject: Attach<Mug<ObjectState>, { b: boolean }>;
   }
 
   expectType<
@@ -59,7 +60,7 @@ test('PossibleMuggyOverride', () => {
 test('Muggify', () => {
   type ObjectMug = Mug<ObjectState>;
 
-  type DirtyObjectMug = DirtyMug<ObjectState, { b: boolean }>;
+  type DirtyObjectMug = Attach<Mug<ObjectState>, { b: boolean }>;
 
   interface AMugLike extends ObjectState {
     f: Func;
@@ -100,13 +101,13 @@ test('Muggify', () => {
     f: Func;
     muggyObject: ObjectMug;
     dirtyMuggyObject: DirtyObjectMug;
-    potentialMuggyObject: Mug<Muggify<ObjectState, { o: { s: Mug<string> } }>>;
+    potentialMuggyObject: Mug<ObjectState, { o: { s: Mug<string> } }>;
   }>(
     fake<
       Muggify<
         AMugLike,
         {
-          potentialMuggyObject: Mug<Muggify<ObjectState, { o: { s: Mug<string> } }>>;
+          potentialMuggyObject: Mug<ObjectState, { o: { s: Mug<string> } }>;
         }
       >
     >(),
@@ -149,23 +150,23 @@ test('State', () => {
 
   type AMug = Mug<AState>;
 
-  type NestedAMug = Mug<Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>>;
+  type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
-  type AMugLike = Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+  type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
   type PossibleAMug = PossibleMug<AState>;
 
   type PossibleAMugLike = PossibleMugLike<AState>;
 
-  type DirtyAMug = DirtyMug<
-    {
+  type DirtyAMug = Attach<
+    Mug<{
       s: string;
       o: {
         s: string;
       };
       f: Func;
-      potentialMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
-    },
+      potentialMuggyObject: Attach<Mug<ObjectState>, { b: boolean }>;
+    }>,
     { b: boolean }
   >;
 

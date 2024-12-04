@@ -1,4 +1,4 @@
-import { construction, getIt, Mug, MugError, Muggify, none, setIt } from '../src';
+import { construction, getIt, Mug, MugError, none, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
@@ -912,18 +912,16 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   }
 
   const aMug: Mug<
-    Muggify<
-      AState,
-      {
-        muggyObject: Mug<ObjectState>;
-        latterMirrorMuggyObject: Mug<ObjectState>;
+    AState,
+    {
+      muggyObject: Mug<ObjectState>;
+      latterMirrorMuggyObject: Mug<ObjectState>;
 
-        muggyNumber: Mug<number>;
-        latterMirrorMuggyNumber: Mug<number>;
+      muggyNumber: Mug<number>;
+      latterMirrorMuggyNumber: Mug<number>;
 
-        muggyObjectArray: Mug<ObjectState>[];
-      }
-    >
+      muggyObjectArray: Mug<ObjectState>[];
+    }
   > = {
     [construction]: {
       s: 'asd',

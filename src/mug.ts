@@ -64,21 +64,17 @@ import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './typ
  */
 export const construction = Symbol();
 
-/**
- * The mug type-defining helper.
- */
-export type Mug<TConstruction> = { [construction]: TConstruction };
+export type CleanMug<TConstruction> = { [construction]: TConstruction };
 
-export type AnyMug = Mug<any>;
+export type AnyMug = CleanMug<any>;
 
-export type DirtyMug<TConstruction, TAttachments extends AnyObjectLike> = Mug<TConstruction> &
-  TAttachments;
+export type Attach<TMug extends AnyMug, TAttachments extends AnyObjectLike> = TMug & TAttachments;
 
 export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
-  | Mug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
+  | CleanMug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
   | { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
 
-export type PossibleMugLikeOnPrimitive<TMugLike> = Mug<TMugLike> | TMugLike;
+export type PossibleMugLikeOnPrimitive<TMugLike> = CleanMug<TMugLike> | TMugLike;
 
 /**
  * The union type of every possible concise mug-like type for a given mug-like
@@ -86,7 +82,7 @@ export type PossibleMugLikeOnPrimitive<TMugLike> = Mug<TMugLike> | TMugLike;
  */
 export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
-  : TMugLike extends Mug<infer TConstruction>
+  : TMugLike extends CleanMug<infer TConstruction>
     ? AnyMug extends TMugLike
       ? PossibleMugLike<TConstruction>
       : TMugLike | PossibleMugLike<TConstruction>
@@ -94,18 +90,18 @@ export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
       ? PossibleMugLikeOnObjectLike<TMugLike>
       : PossibleMugLikeOnPrimitive<TMugLike>;
 
-export type PossibleMugOnObjectLike<TMugLike extends AnyObjectLike> = Mug<{
+export type PossibleMugOnObjectLike<TMugLike extends AnyObjectLike> = CleanMug<{
   [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]>;
 }>;
 
-export type PossibleMugOnPrimitive<TMugLike> = Mug<TMugLike>;
+export type PossibleMugOnPrimitive<TMugLike> = CleanMug<TMugLike>;
 
 /**
  * The union type of every possible concise mug type for a given mug-like type.
  */
 export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
-  : TMugLike extends Mug<infer TConstruction>
+  : TMugLike extends CleanMug<infer TConstruction>
     ? AnyMug extends TMugLike
       ? PossibleMug<TConstruction>
       : TMugLike | PossibleMug<TConstruction>
@@ -114,10 +110,10 @@ export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
       : PossibleMugOnPrimitive<TMugLike>;
 
 export type NonEmptyPossibleMuggyOverrideOnObjectLike<TMugLike extends AnyObjectLike> =
-  | Mug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
+  | CleanMug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
   | { [TK in keyof TMugLike]?: NonEmptyPossibleMuggyOverride<TMugLike[TK]> };
 
-export type NonEmptyPossibleMuggyOverrideOnPrimitive<TMugLike> = Mug<TMugLike>;
+export type NonEmptyPossibleMuggyOverrideOnPrimitive<TMugLike> = CleanMug<TMugLike>;
 
 export type NonEmptyPossibleMuggyOverride<TMugLike> = TMugLike extends AnyFunction
   ? never
@@ -153,6 +149,22 @@ export type Muggify<
             : TMugLike
           : TMugLike;
 
+/**
+ * The mug type-defining helper.
+ */
+export type Mug<
+  TMugLike,
+  TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem,
+> = CleanMug<Muggify<TMugLike, TMuggyOverride>>;
+
+/**
+ * The mug-like type-extending helper.
+ */
+export type MugLike<
+  TMugLike,
+  TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem,
+> = Muggify<TMugLike, TMuggyOverride>;
+
 export type StateOnObjectLike<TMugLike extends AnyObjectLike> = Conserve<
   TMugLike,
   { [TK in keyof TMugLike]: Conserve<TMugLike[TK], State<TMugLike[TK]>> }
@@ -163,7 +175,7 @@ export type StateOnObjectLike<TMugLike extends AnyObjectLike> = Conserve<
  */
 export type State<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
-  : TMugLike extends Mug<infer TConstruction>
+  : TMugLike extends CleanMug<infer TConstruction>
     ? Conserve<TConstruction, State<TConstruction>>
     : TMugLike extends AnyObjectLike
       ? StateOnObjectLike<TMugLike>

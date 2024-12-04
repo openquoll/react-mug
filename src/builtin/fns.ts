@@ -1,9 +1,9 @@
 import {
+  CleanMug,
   isClassDefinedObject,
   isMug,
   isObjectLike,
   isPlainObject,
-  Mug,
   ownKeysOfObjectLike,
   shallowCloneOfPlainObject,
   State,
@@ -63,7 +63,7 @@ export type PossiblePatchOnNonNullableOnObjectLike<TMugLike extends AnyObjectLik
 
 export type PossiblePatchOnNonNullable<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
-  : TMugLike extends Mug<infer TConstruction>
+  : TMugLike extends CleanMug<infer TConstruction>
     ? PossiblePatch<TConstruction>
     : TMugLike extends AnyReadonlyTuple
       ? PossiblePatchOnNonNullableOnReadonTuple<TMugLike>

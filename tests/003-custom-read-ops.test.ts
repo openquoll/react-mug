@@ -1,4 +1,4 @@
-import { construction, getIt, Mug, Muggify, r, setIt } from '../src';
+import { construction, getIt, Mug, MugLike, r, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('dd10061, reads by an object state custom read op', () => {
@@ -311,7 +311,7 @@ describe('dd10061, reads by an object state custom read op', () => {
         },
       };
 
-      const aMugLike: Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -346,7 +346,7 @@ describe('dd10061, reads by an object state custom read op', () => {
         },
       };
 
-      const aMugLike: Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',
@@ -401,7 +401,7 @@ describe('dd10061, reads by an object state custom read op', () => {
         },
       };
 
-      const aMugLike: Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
+      const aMugLike: MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }> = {
         s: 'asd',
         o: {
           s: 'asd',

@@ -12,9 +12,9 @@ import {
   PossiblePatch,
 } from './builtin';
 import {
-  DirtyMug,
+  Attach,
   Mug,
-  Muggify,
+  MugLike,
   PossibleMug,
   PossibleMugLike,
   pure,
@@ -40,22 +40,22 @@ interface SuperState extends AState {
 
 type AMug = Mug<AState>;
 
-type NestedAMug = Mug<Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>>;
+type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
-type AMugLike = Muggify<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
 type PossibleAMug = PossibleMug<AState>;
 
 type PossibleAMugLike = PossibleMugLike<AState>;
 
-type DirtyAMug = DirtyMug<
-  {
+type DirtyAMug = Attach<
+  Mug<{
     s: string;
     o: {
       s: string;
     };
-    potentialMuggyObject: DirtyMug<ObjectState, { b: boolean }>;
-  },
+    potentialMuggyObject: Attach<Mug<ObjectState>, { b: boolean }>;
+  }>,
   { b: boolean }
 >;
 

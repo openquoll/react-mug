@@ -1,4 +1,4 @@
-import { construction, Mug } from './mug';
+import { CleanMug, construction } from './mug';
 import {
   _forEach,
   _get,
@@ -12,7 +12,7 @@ import {
 } from './shortcuts';
 
 export type RawState<TMugLike> =
-  TMugLike extends Mug<infer TConstruction> ? TConstruction : TMugLike;
+  TMugLike extends CleanMug<infer TConstruction> ? TConstruction : TMugLike;
 
 class RawStateStore {
   private _rawStatesByMug = new _WeakMap<any, any>();

@@ -1,4 +1,4 @@
-import { construction, getIt, initial, Mug, Muggify, restore, setIt } from '../src';
+import { construction, getIt, initial, Mug, MugLike, restore, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 interface ObjectState {
@@ -40,7 +40,7 @@ describe('3866ec1, initial', () => {
       },
     };
 
-    const aMugLike: Muggify<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMugLike: MugLike<AState, { muggyObject: Mug<ObjectState> }> = {
       s: 'asd',
       o: {
         s: 'asd',
@@ -175,7 +175,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
       },
     };
 
-    const aMugLike: Muggify<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMugLike: MugLike<AState, { muggyObject: Mug<ObjectState> }> = {
       s: 'asd',
       o: {
         s: 'asd',
@@ -184,7 +184,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
       muggyObject: objectMug,
     };
 
-    let ret: Muggify<AState, { muggyObject: Mug<ObjectState> }>;
+    let ret: MugLike<AState, { muggyObject: Mug<ObjectState> }>;
     let gotStateBefore: AState, gotStateAfter: AState;
 
     test('[action]', () => {
@@ -218,7 +218,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
       },
     };
 
-    const aMugLike: Muggify<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMugLike: MugLike<AState, { muggyObject: Mug<ObjectState> }> = {
       s: 'asd',
       o: {
         s: 'asd',
@@ -227,7 +227,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
       muggyObject: objectMug,
     };
 
-    let ret: Muggify<AState, { muggyObject: Mug<ObjectState> }>;
+    let ret: MugLike<AState, { muggyObject: Mug<ObjectState> }>;
     let gotStateBefore: AState, gotStateAfter: AState;
     let initialState: AState;
 

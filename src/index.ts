@@ -14,6 +14,7 @@ export {
   WriteOpMeta,
   construction,
   isAction,
+  isMug,
   isOp,
   isReadAction,
   isReadOp,

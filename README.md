@@ -4,9 +4,9 @@ _[Intro](#2e62a5f) &nbsp;•&nbsp; [Features](#e7571e4) &nbsp;•&nbsp; [Tips](#
 
 # <span id="2e62a5f">Intro</span>
 
-This is an incremental evolution from reducer-based state management aiming to remove conceptual burdens with compatibility.
+This provides an incremental evolution from reducer-based state management aiming to minimize conceptual burdens with full compatibility.
 
-With it, the typical reducer-based practice remains doable:
+With it, the typical reducer-based practice remains doable(. See also [an app-level one](#a6bd391)):
 
 ```ts
 // CounterReducer.ts
@@ -46,7 +46,7 @@ export const dispatch = w(counterReducer);
 // <button onClick={() => dispatch({ type: INCREMENT, step: 1 })}>Increment 1</button>
 ```
 
-But a dispatch-free way can also take the place - write actions can be created from pure functions and directly called:
+But a dispatch-free way can also take place - write actions can be created from pure functions and directly called:
 
 ```tsx
 // CounterMug.ts
@@ -111,7 +111,7 @@ export function CounterDisplay() {
 }
 ```
 
-Then, the actions of both types can be easily tested in functional style:
+Meanwhile, the actions of both types can be easily tested in functional style:
 
 ```tsx
 // CounterMug.test.ts
@@ -132,7 +132,7 @@ describe('getValue', () => {
 });
 ```
 
-Less code, same work ☕️.
+Less code, still functional ☕️.
 
 # Installation
 
@@ -148,7 +148,7 @@ npm i react-mug
 - [Zero setup for use in React components](#35ec17a).
 - [Easy tests](#6f5a8fd).
 - [State composition](#09d0796).
-- [Compatibility with the typical reducer-based practice](#a6bd391).
+- [Full compatibility with the typical reducer-based practice](#a6bd391).
 - [Strong support for TypeScript](#3d3b9ce).
 
 ## <span id="cad503d">State containers creation by plain objects</span>
@@ -478,7 +478,7 @@ const barMugLike = tuple(aMug, anotherMug);
 
 Like actions and ops on a composite mug, those can be regularly applied on a mug-like, too.
 
-## <span id="a6bd391">Compatibility with the typical reducer-based practice</span>
+## <span id="a6bd391">Full compatibility with the typical reducer-based practice</span>
 
 Full compatibility is provided for the typical reducer-based practice. The example at the beginning can be further expanded to an app level:
 
@@ -583,7 +583,7 @@ export function CounterDisplay() {
 }
 ```
 
-This serves both an adequate playground for the typical practice and a secure starting point for the evolution.
+This serves as both a proper playground for the typical and a safe starting point for the evolution.
 
 ## <span id="3d3b9ce">Strong support for TypeScript</span>
 

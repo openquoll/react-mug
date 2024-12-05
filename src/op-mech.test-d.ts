@@ -40,7 +40,7 @@ interface SuperState extends AState {
 
 type AMug = Mug<AState>;
 
-type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type CompositeAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
 type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
@@ -136,7 +136,7 @@ test('r, pure, getIt, passThrough', () => {
 
   expectType<AState>(readbf7(fake<AState>()));
   expectType<AState>(readbf7(fake<AMug>()));
-  expectType<AState>(readbf7(fake<NestedAMug>()));
+  expectType<AState>(readbf7(fake<CompositeAMug>()));
   expectType<AState>(readbf7(fake<AMugLike>()));
 
   const r99b = readbf7(fake<PossibleAMug>());
@@ -196,7 +196,7 @@ test('r, pure, getIt, passThrough', () => {
 
   expectType<ObjectState>(readc82(fake<AState>()));
   expectType<ObjectState>(readc82(fake<AMug>()));
-  expectType<ObjectState>(readc82(fake<NestedAMug>()));
+  expectType<ObjectState>(readc82(fake<CompositeAMug>()));
   expectType<ObjectState>(readc82(fake<AMugLike>()));
   expectType<ObjectState>(readc82(fake<PossibleAMug>()));
   expectType<ObjectState>(readc82(fake<PossibleAMugLike>()));
@@ -255,7 +255,7 @@ test('r, pure, getIt, passThrough', () => {
 
   expectType<AState>(read0ea(fake<AState>()));
   expectType<AState>(read0ea(fake<AMug>()));
-  expectType<AState>(read0ea(fake<NestedAMug>()));
+  expectType<AState>(read0ea(fake<CompositeAMug>()));
   expectType<AState>(read0ea(fake<AMugLike>()));
 
   const re70 = read0ea(fake<PossibleAMug>());
@@ -371,7 +371,7 @@ test('w, pure, setIt, mergePatch', () => {
 
   expectType<AState>(write73d(fake<AState>()));
   expectType<AMug>(write73d(fake<AMug>()));
-  expectType<NestedAMug>(write73d(fake<NestedAMug>()));
+  expectType<CompositeAMug>(write73d(fake<CompositeAMug>()));
   expectType<AMugLike>(write73d(fake<AMugLike>()));
   expectType<PossibleAMug>(write73d(fake<PossibleAMug>()));
   expectType<PossibleAMugLike>(write73d(fake<PossibleAMugLike>()));
@@ -423,7 +423,7 @@ test('w, pure, setIt, mergePatch', () => {
 
   expectType<AState>(writecdd(fake<AState>()));
   expectType<AMug>(writecdd(fake<AMug>()));
-  expectType<NestedAMug>(writecdd(fake<NestedAMug>()));
+  expectType<CompositeAMug>(writecdd(fake<CompositeAMug>()));
   expectType<AMugLike>(writecdd(fake<AMugLike>()));
   expectType<PossibleAMug>(writecdd(fake<PossibleAMug>()));
   expectType<PossibleAMugLike>(writecdd(fake<PossibleAMugLike>()));
@@ -480,7 +480,7 @@ test('w, pure, setIt, mergePatch', () => {
   expectType<AState>(write181());
   expectType<AState>(write181(fake<AState>()));
   expectType<AMug>(write181(fake<AMug>()));
-  expectType<NestedAMug>(write181(fake<NestedAMug>()));
+  expectType<CompositeAMug>(write181(fake<CompositeAMug>()));
   expectType<AMugLike>(write181(fake<AMugLike>()));
   expectType<PossibleAMug>(write181(fake<PossibleAMug>()));
   expectType<PossibleAMugLike>(write181(fake<PossibleAMugLike>()));
@@ -509,7 +509,7 @@ test('w, pure, setIt, mergePatch', () => {
 
   expectType<AState>(write09e(fake<AState>(), patchcd2));
   expectType<AMug>(write09e(fake<AMug>(), patchcd2));
-  expectType<NestedAMug>(write09e(fake<NestedAMug>(), patchcd2));
+  expectType<CompositeAMug>(write09e(fake<CompositeAMug>(), patchcd2));
   expectType<AMugLike>(write09e(fake<AMugLike>(), patchcd2));
   expectType<PossibleAMug>(write09e(fake<PossibleAMug>(), patchcd2));
   expectType<PossibleAMugLike>(write09e(fake<PossibleAMugLike>(), patchcd2));
@@ -533,7 +533,7 @@ test('w, pure, setIt, mergePatch', () => {
 test('initial', () => {
   expectType<AState>(initial(fake<AState>()));
   expectType<AState>(initial(fake<AMug>()));
-  expectType<AState>(initial(fake<NestedAMug>()));
+  expectType<AState>(initial(fake<CompositeAMug>()));
   expectType<AState>(initial(fake<AMugLike>()));
 
   const r99b = initial(fake<PossibleAMug>());

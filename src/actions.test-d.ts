@@ -40,7 +40,7 @@ interface SuperState extends AState {
 
 type AMug = Mug<AState>;
 
-type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type CompositeAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
 type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
@@ -59,9 +59,9 @@ type DirtyAMug = WithAttachments<
   { b: boolean }
 >;
 
-const uponNestedAMug = upon(fake<NestedAMug>());
+const uponCompositeAMug = upon(fake<CompositeAMug>());
 
-const [r, w] = uponNestedAMug;
+const [r, w] = uponCompositeAMug;
 
 const [aMugR, aMugW] = upon(fake<AMug>());
 const [aMugLikeR, aMugLikeW] = upon(fake<AMugLike>());
@@ -70,13 +70,13 @@ const [possibleAMugLikeR, possibleAMugLikeW] = upon(fake<PossibleAMugLike>());
 const [dirtyAMugR, dirtyAMugW] = upon(fake<DirtyAMug>());
 
 test('ReadAction, GetIt, PassThrough', () => {
-  type Read3dd = ReadAction<NestedAMug, (state: AState) => ObjectState>;
+  type Read3dd = ReadAction<CompositeAMug, (state: AState) => ObjectState>;
 
   expectType<
-    (() => ObjectState) & ReadActionMeta<NestedAMug, ReadOp<(state: AState) => ObjectState>>
+    (() => ObjectState) & ReadActionMeta<CompositeAMug, ReadOp<(state: AState) => ObjectState>>
   >(fake<Read3dd>());
 
-  expectType<Read3dd>(fake<ReadAction<NestedAMug, ReadOp<(state: AState) => ObjectState>>>());
+  expectType<Read3dd>(fake<ReadAction<CompositeAMug, ReadOp<(state: AState) => ObjectState>>>());
 
   // =-=-=
 
@@ -112,76 +112,76 @@ test('ReadAction, GetIt, PassThrough', () => {
 
   expectType<
     ((s: string) => ObjectState) &
-      ReadActionMeta<NestedAMug, ReadOp<(state: AState, s: string) => ObjectState>>
-  >(fake<ReadAction<NestedAMug, (state: AState, s: string) => ObjectState>>());
+      ReadActionMeta<CompositeAMug, ReadOp<(state: AState, s: string) => ObjectState>>
+  >(fake<ReadAction<CompositeAMug, (state: AState, s: string) => ObjectState>>());
 
   // =-=-=
 
   expectType<
-    (() => ObjectState) & ReadActionMeta<NestedAMug, ReadOp<(state: ObjectState) => ObjectState>>
-  >(fake<ReadAction<NestedAMug, (state: ObjectState) => ObjectState>>());
+    (() => ObjectState) & ReadActionMeta<CompositeAMug, ReadOp<(state: ObjectState) => ObjectState>>
+  >(fake<ReadAction<CompositeAMug, (state: ObjectState) => ObjectState>>());
 
   // =-=-=
 
-  fake<ReadAction<NestedAMug, (state: SuperState) => ObjectState>>();
+  fake<ReadAction<CompositeAMug, (state: SuperState) => ObjectState>>();
 
   // =-=-=
 
-  fake<ReadAction<NestedAMug, (state: { n: number }) => ObjectState>>();
+  fake<ReadAction<CompositeAMug, (state: { n: number }) => ObjectState>>();
 
   // =-=-=
 
-  type Read68a = ReadAction<NestedAMug, <TState>(state: TState) => TState>;
+  type Read68a = ReadAction<CompositeAMug, <TState>(state: TState) => TState>;
 
   expectType<
-    (() => AState) & ReadActionMeta<NestedAMug, ReadOp<<TState>(state: TState) => TState>>
+    (() => AState) & ReadActionMeta<CompositeAMug, ReadOp<<TState>(state: TState) => TState>>
   >(fake<Read68a>());
 
-  expectType<Read68a>(fake<ReadAction<NestedAMug, ReadOp<<TState>(state: TState) => TState>>>());
+  expectType<Read68a>(fake<ReadAction<CompositeAMug, ReadOp<<TState>(state: TState) => TState>>>());
 
   // =-=-=
 
   expectType<
     (() => AState) &
-      ReadActionMeta<NestedAMug, ReadOp<<TState extends AState>(state: TState) => TState>>
-  >(fake<ReadAction<NestedAMug, <TState extends AState>(state: TState) => TState>>());
+      ReadActionMeta<CompositeAMug, ReadOp<<TState extends AState>(state: TState) => TState>>
+  >(fake<ReadAction<CompositeAMug, <TState extends AState>(state: TState) => TState>>());
 
   // =-=-=
 
   expectType<
     (() => AState) &
-      ReadActionMeta<NestedAMug, ReadOp<<TState extends ObjectState>(state: TState) => TState>>
-  >(fake<ReadAction<NestedAMug, <TState extends ObjectState>(state: TState) => TState>>());
+      ReadActionMeta<CompositeAMug, ReadOp<<TState extends ObjectState>(state: TState) => TState>>
+  >(fake<ReadAction<CompositeAMug, <TState extends ObjectState>(state: TState) => TState>>());
 
   // =-=-=
 
-  fake<ReadAction<NestedAMug, <TState extends SuperState>(state: TState) => TState>>();
+  fake<ReadAction<CompositeAMug, <TState extends SuperState>(state: TState) => TState>>();
 
   // =-=-=
 
-  type Readc14 = ReadAction<NestedAMug, () => ObjectState>;
+  type Readc14 = ReadAction<CompositeAMug, () => ObjectState>;
 
-  expectType<(() => ObjectState) & ReadActionMeta<NestedAMug, ReadOp<() => ObjectState>>>(
+  expectType<(() => ObjectState) & ReadActionMeta<CompositeAMug, ReadOp<() => ObjectState>>>(
     fake<Readc14>(),
   );
 
-  expectType<Readc14>(fake<ReadAction<NestedAMug, ReadOp<() => ObjectState>>>());
+  expectType<Readc14>(fake<ReadAction<CompositeAMug, ReadOp<() => ObjectState>>>());
 
   // =-=-=
 
-  type Read43e = ReadAction<NestedAMug>;
+  type Read43e = ReadAction<CompositeAMug>;
 
-  expectType<(() => AState) & ReadActionMeta<NestedAMug, ReadOp>>(fake<Read43e>());
+  expectType<(() => AState) & ReadActionMeta<CompositeAMug, ReadOp>>(fake<Read43e>());
 
-  expectType<Read43e>(fake<ReadAction<NestedAMug, ReadOp>>());
+  expectType<Read43e>(fake<ReadAction<CompositeAMug, ReadOp>>());
 
-  expectType<Read43e>(fake<ReadAction<NestedAMug, PassThrough>>());
+  expectType<Read43e>(fake<ReadAction<CompositeAMug, PassThrough>>());
 
-  expectType<Read43e>(fake<ReadAction<NestedAMug, GetIt>>());
+  expectType<Read43e>(fake<ReadAction<CompositeAMug, GetIt>>());
 });
 
 test('upon#r, pure, getIt, passThrough', () => {
-  expectType<typeof uponNestedAMug.r>(r);
+  expectType<typeof uponCompositeAMug.r>(r);
 
   // @ts-expect-error
   r(w());
@@ -193,7 +193,7 @@ test('upon#r, pure, getIt, passThrough', () => {
     return fake<ObjectState>();
   });
 
-  expectType<ReadAction<NestedAMug, (state: AState) => ObjectState>>(readc7e);
+  expectType<ReadAction<CompositeAMug, (state: AState) => ObjectState>>(readc7e);
 
   expectType<typeof readc7e>(r(flatR((state: AState) => fake<ObjectState>())));
 
@@ -286,7 +286,7 @@ test('upon#r, pure, getIt, passThrough', () => {
 
   const reade33 = r(<TState>(state: TState): TState => state);
 
-  expectType<ReadAction<NestedAMug, <TState>(state: TState) => TState>>(reade33);
+  expectType<ReadAction<CompositeAMug, <TState>(state: TState) => TState>>(reade33);
 
   expectType<typeof reade33>(r(flatR(<TState>(state: TState): TState => state)));
 
@@ -318,7 +318,7 @@ test('upon#r, pure, getIt, passThrough', () => {
 
   const readfeb = r(() => fake<ObjectState>());
 
-  expectType<ReadAction<NestedAMug, () => ObjectState>>(readfeb);
+  expectType<ReadAction<CompositeAMug, () => ObjectState>>(readfeb);
 
   expectType<typeof readfeb>(r(flatR(() => fake<ObjectState>())));
 
@@ -333,7 +333,7 @@ test('upon#r, pure, getIt, passThrough', () => {
 
   const read776 = r();
 
-  expectType<ReadAction<NestedAMug>>(read776);
+  expectType<ReadAction<CompositeAMug>>(read776);
 
   expectType<typeof read776>(r(flatR(<TState>(state: TState) => state)));
 
@@ -350,13 +350,13 @@ test('upon#r, pure, getIt, passThrough', () => {
 });
 
 test('WriteAction, SetIt, MergePatch', () => {
-  type Writea2e = WriteAction<NestedAMug, (state: AState) => AState>;
+  type Writea2e = WriteAction<CompositeAMug, (state: AState) => AState>;
 
-  expectType<(() => void) & WriteActionMeta<NestedAMug, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<(state: AState) => AState>>>(
     fake<Writea2e>(),
   );
 
-  expectType<Writea2e>(fake<WriteAction<NestedAMug, WriteOp<(state: AState) => AState>>>());
+  expectType<Writea2e>(fake<WriteAction<CompositeAMug, WriteOp<(state: AState) => AState>>>());
 
   // =-=-=
 
@@ -392,100 +392,104 @@ test('WriteAction, SetIt, MergePatch', () => {
 
   expectType<
     ((s: string) => void) &
-      WriteActionMeta<NestedAMug, WriteOp<(state: AState, s: string) => AState>>
-  >(fake<WriteAction<NestedAMug, (state: AState, s: string) => AState>>());
+      WriteActionMeta<CompositeAMug, WriteOp<(state: AState, s: string) => AState>>
+  >(fake<WriteAction<CompositeAMug, (state: AState, s: string) => AState>>());
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<NestedAMug, WriteOp<(state: AState) => SuperState>>>(
-    fake<WriteAction<NestedAMug, (state: AState) => SuperState>>(),
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<(state: AState) => SuperState>>>(
+    fake<WriteAction<CompositeAMug, (state: AState) => SuperState>>(),
   );
 
   // =-=-=
 
-  fake<WriteAction<NestedAMug, (state: AState) => ObjectState>>();
+  fake<WriteAction<CompositeAMug, (state: AState) => ObjectState>>();
 
   // =-=-=
-
-  expectType<(() => void) & WriteActionMeta<NestedAMug, WriteOp<(state: ObjectState) => AState>>>(
-    fake<WriteAction<NestedAMug, (state: ObjectState) => AState>>(),
-  );
-
-  // =-=-=
-
-  fake<WriteAction<NestedAMug, (state: SuperState) => AState>>();
-
-  // =-=-=
-
-  fake<WriteAction<NestedAMug, (state: { n: number }) => AState>>();
-
-  // =-=-=
-
-  fake<WriteAction<NestedAMug, (state: AState) => { n: number }>>();
-
-  // =-=-=
-
-  type Write42b = WriteAction<NestedAMug, <TState>(state: TState) => TState>;
 
   expectType<
-    (() => void) & WriteActionMeta<NestedAMug, WriteOp<<TState>(state: TState) => TState>>
+    (() => void) & WriteActionMeta<CompositeAMug, WriteOp<(state: ObjectState) => AState>>
+  >(fake<WriteAction<CompositeAMug, (state: ObjectState) => AState>>());
+
+  // =-=-=
+
+  fake<WriteAction<CompositeAMug, (state: SuperState) => AState>>();
+
+  // =-=-=
+
+  fake<WriteAction<CompositeAMug, (state: { n: number }) => AState>>();
+
+  // =-=-=
+
+  fake<WriteAction<CompositeAMug, (state: AState) => { n: number }>>();
+
+  // =-=-=
+
+  type Write42b = WriteAction<CompositeAMug, <TState>(state: TState) => TState>;
+
+  expectType<
+    (() => void) & WriteActionMeta<CompositeAMug, WriteOp<<TState>(state: TState) => TState>>
   >(fake<Write42b>());
 
-  expectType<Write42b>(fake<WriteAction<NestedAMug, WriteOp<<TState>(state: TState) => TState>>>());
-
-  // =-=-=
-
-  expectType<
-    (() => void) &
-      WriteActionMeta<NestedAMug, WriteOp<<TState extends AState>(state: TState) => TState>>
-  >(fake<WriteAction<NestedAMug, <TState extends AState>(state: TState) => TState>>());
-
-  // =-=-=
-
-  expectType<
-    (() => void) &
-      WriteActionMeta<NestedAMug, WriteOp<<TState extends ObjectState>(state: TState) => TState>>
-  >(fake<WriteAction<NestedAMug, <TState extends ObjectState>(state: TState) => TState>>());
-
-  // =-=-=
-
-  fake<WriteAction<NestedAMug, <TState extends SuperState>(state: TState) => TState>>();
-
-  // =-=-=
-
-  type Write697 = WriteAction<NestedAMug, () => AState>;
-
-  expectType<(() => void) & WriteActionMeta<NestedAMug, WriteOp<() => AState>>>(fake<Write697>());
-
-  expectType<Write697>(fake<WriteAction<NestedAMug, WriteOp<() => AState>>>());
-
-  // =-=-=
-
-  expectType<(() => void) & WriteActionMeta<NestedAMug, WriteOp<() => SuperState>>>(
-    fake<WriteAction<NestedAMug, () => SuperState>>(),
+  expectType<Write42b>(
+    fake<WriteAction<CompositeAMug, WriteOp<<TState>(state: TState) => TState>>>(),
   );
 
   // =-=-=
 
-  fake<WriteAction<NestedAMug, () => ObjectState>>();
+  expectType<
+    (() => void) &
+      WriteActionMeta<CompositeAMug, WriteOp<<TState extends AState>(state: TState) => TState>>
+  >(fake<WriteAction<CompositeAMug, <TState extends AState>(state: TState) => TState>>());
 
   // =-=-=
 
-  type Write4f8 = WriteAction<NestedAMug>;
+  expectType<
+    (() => void) &
+      WriteActionMeta<CompositeAMug, WriteOp<<TState extends ObjectState>(state: TState) => TState>>
+  >(fake<WriteAction<CompositeAMug, <TState extends ObjectState>(state: TState) => TState>>());
+
+  // =-=-=
+
+  fake<WriteAction<CompositeAMug, <TState extends SuperState>(state: TState) => TState>>();
+
+  // =-=-=
+
+  type Write697 = WriteAction<CompositeAMug, () => AState>;
+
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<() => AState>>>(
+    fake<Write697>(),
+  );
+
+  expectType<Write697>(fake<WriteAction<CompositeAMug, WriteOp<() => AState>>>());
+
+  // =-=-=
+
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<() => SuperState>>>(
+    fake<WriteAction<CompositeAMug, () => SuperState>>(),
+  );
+
+  // =-=-=
+
+  fake<WriteAction<CompositeAMug, () => ObjectState>>();
+
+  // =-=-=
+
+  type Write4f8 = WriteAction<CompositeAMug>;
 
   expectType<
-    ((patch: PossiblePatch<NoInfer<AState>>) => void) & WriteActionMeta<NestedAMug, WriteOp>
+    ((patch: PossiblePatch<NoInfer<AState>>) => void) & WriteActionMeta<CompositeAMug, WriteOp>
   >(fake<Write4f8>());
 
-  expectType<Write4f8>(fake<WriteAction<NestedAMug, WriteOp>>());
+  expectType<Write4f8>(fake<WriteAction<CompositeAMug, WriteOp>>());
 
-  expectType<Write4f8>(fake<WriteAction<NestedAMug, MergePatch>>());
+  expectType<Write4f8>(fake<WriteAction<CompositeAMug, MergePatch>>());
 
-  expectType<Write4f8>(fake<WriteAction<NestedAMug, SetIt>>());
+  expectType<Write4f8>(fake<WriteAction<CompositeAMug, SetIt>>());
 });
 
 test('upon#w, pure, setIt, mergePatch', () => {
-  expectType<typeof uponNestedAMug.w>(w);
+  expectType<typeof uponCompositeAMug.w>(w);
 
   // @ts-expect-error
   w(r());
@@ -497,7 +501,7 @@ test('upon#w, pure, setIt, mergePatch', () => {
     return state;
   });
 
-  expectType<WriteAction<NestedAMug, (state: AState) => AState>>(write30d);
+  expectType<WriteAction<CompositeAMug, (state: AState) => AState>>(write30d);
 
   expectType<typeof write30d>(w(flatW((state: AState) => state)));
 
@@ -606,7 +610,7 @@ test('upon#w, pure, setIt, mergePatch', () => {
 
   const write3f7 = w(<TState>(state: TState): TState => state);
 
-  expectType<WriteAction<NestedAMug, <TState>(state: TState) => TState>>(write3f7);
+  expectType<WriteAction<CompositeAMug, <TState>(state: TState) => TState>>(write3f7);
 
   expectType<typeof write3f7>(w(flatW(<TState>(state: TState): TState => state)));
 
@@ -638,7 +642,7 @@ test('upon#w, pure, setIt, mergePatch', () => {
 
   const writed5e = w(() => fake<AState>());
 
-  expectType<WriteAction<NestedAMug, () => AState>>(writed5e);
+  expectType<WriteAction<CompositeAMug, () => AState>>(writed5e);
 
   expectType<typeof writed5e>(w(flatW(() => fake<AState>())));
 
@@ -664,7 +668,7 @@ test('upon#w, pure, setIt, mergePatch', () => {
 
   const write8db = w();
 
-  expectType<WriteAction<NestedAMug>>(write8db);
+  expectType<WriteAction<CompositeAMug>>(write8db);
 
   expectType<{
     <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;

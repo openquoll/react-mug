@@ -150,7 +150,7 @@ test('State', () => {
 
   type AMug = Mug<AState>;
 
-  type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+  type CompositeAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
   type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
@@ -172,7 +172,7 @@ test('State', () => {
 
   expectType<AState>(fake<State<AMug>>());
 
-  expectType<AState>(fake<State<NestedAMug>>());
+  expectType<AState>(fake<State<CompositeAMug>>());
 
   expectType<AState>(fake<State<AMugLike>>());
 

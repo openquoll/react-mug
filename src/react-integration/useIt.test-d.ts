@@ -23,7 +23,7 @@ interface SuperState extends AState {
 
 type AMug = Mug<AState>;
 
-type NestedAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
+type CompositeAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
 type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
 
@@ -52,7 +52,7 @@ test('useIt', () => {
 
   expectType<AState>(useIt(readf23, fake<AState>()));
   expectType<AState>(useIt(readf23, fake<AMug>()));
-  expectType<AState>(useIt(readf23, fake<NestedAMug>()));
+  expectType<AState>(useIt(readf23, fake<CompositeAMug>()));
   expectType<AState>(useIt(readf23, fake<AMugLike>()));
 
   const r711 = useIt(readf23, fake<PossibleAMug>());
@@ -105,7 +105,7 @@ test('useIt', () => {
 
   expectType<ObjectState>(useIt(read198, fake<AState>()));
   expectType<ObjectState>(useIt(read198, fake<AMug>()));
-  expectType<ObjectState>(useIt(read198, fake<NestedAMug>()));
+  expectType<ObjectState>(useIt(read198, fake<CompositeAMug>()));
   expectType<ObjectState>(useIt(read198, fake<AMugLike>()));
   expectType<ObjectState>(useIt(read198, fake<PossibleAMug>()));
   expectType<ObjectState>(useIt(read198, fake<PossibleAMugLike>()));
@@ -148,7 +148,7 @@ test('useIt', () => {
 
   // =-=-=
 
-  const { r } = upon(fake<NestedAMug>());
+  const { r } = upon(fake<CompositeAMug>());
 
   // =-=-=
 
@@ -260,7 +260,7 @@ test('useIt', () => {
 
   // =-=-=
 
-  const { w } = upon(fake<NestedAMug>());
+  const { w } = upon(fake<CompositeAMug>());
 
   // =-=-=
 

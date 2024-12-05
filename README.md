@@ -385,20 +385,20 @@ describe('ReactComponent', () => {
 
     render(<ReactComponent />);
 
-    expect(screen.getByRole('main')).toHaveTextContent('content 1');
+    expect(screen.getByRole('main')).toHaveTextContent('foo');
 
     // If to check user events:
 
     await userEvent.click(screen.getByRole('button'));
 
-    expect(screen.getByRole('main')).toHaveTextContent('content 2');
+    expect(screen.getByRole('main')).toHaveTextContent('bar');
   });
 });
 ```
 
 ## <span id="09d0796">State composition</span>
 
-A mug can be nested in another mug to form a composed state:
+Mugs can be nested in another mug to form a composite mug for a composite state:
 
 ```tsx
 import { construction, Mug } from 'react-mug';
@@ -416,7 +416,7 @@ const anotherMug: Mug<SuperState, { a: Mug<AState> }> = {
 };
 ```
 
-On that, actions and ops can be applied, optionally reusing child mugs' invokables. The current state taken by the pure functions is composed of the current child states. The next state produced by the pure functions is decomposed for the next child states:
+On that, actions and ops can be regularly applied, optionally reusing child mugs' invokables. The current state taken by the pure functions is composed of the current child states. The next state produced by the pure functions is decomposed for the next child states:
 
 ```tsx
 import { pure, upon } from 'react-mug';
@@ -457,9 +457,7 @@ const anotherReadIt = r(
 // const anotherReadItResult = anotherReadIt(anotherMug, 'param1', 'param2');
 ```
 
-For simpler cases, a mug can be nested in a plain object to form a state collection instead of a new state.
-
-That plain object is called a mug-like:
+Meanwhile, if no new fields are needed, mugs can be nested in a plain object to form a state collection container called a mug-like instead for a state collection:
 
 ```tsx
 import { tuple } from 'react-mug';
@@ -474,13 +472,150 @@ const fooMugLike = {
 const barMugLike = tuple(aMug, anotherMug);
 ```
 
-Like on a composed mug, actions and ops can be applied similarly.
+Like actions and ops on a composite mug, those can be regularly applied on a mug-like, too.
 
 ## <span id="a6bd391">Compatibility with the typical reducer-based practice</span>
 
+Full compatibility is provided for the typical reducer-based practice. The example at the beginning can be further expanded to an app level:
+
+```tsx
+// CounterReducer.ts
+import { construction, upon } from 'react-mug';
+
+import type { AppAction, AppState } from './AppReducer';
+
+export interface CounterState {
+  value: number;
+}
+
+export const INCREMENT = 'Counter/Increment';
+
+export const RESET = 'Counter/Reset';
+
+export type CounterAction = { type: typeof INCREMENT; step: number } | { type: typeof RESET };
+
+export const initialCounterState: CounterState = {
+  value: 0,
+};
+
+export function counterReducer(state: CounterState, action: AppAction): CounterState {
+  switch (action.type) {
+    case INCREMENT:
+      return { value: state.value + action.step };
+    case RESET:
+      return initialCounterState;
+    default:
+      return state;
+  }
+}
+
+export function selectValue(appState: AppState) {
+  return appState.counter.value;
+}
+```
+
+```tsx
+// AppReducer.ts
+import { construction, upon, useIt } from 'react-mug';
+
+import { CounterAction, counterReducer, CounterState, initialCounterState } from './CounterReducer';
+
+export interface AppState {
+  counter: CounterState;
+}
+
+export const initialAppState: AppState = {
+  counter: initialCounterState,
+};
+
+export type AppAction = CounterAction;
+
+export function appReducer(state: AppState, action: AppAction): AppState {
+  return {
+    counter: counterReducer(state.counter, action),
+  };
+}
+
+const appMug = { [construction]: initialAppState };
+
+const [r, w] = upon(appMug);
+
+export const getAppState = r();
+
+export const dispatch = w(appReducer);
+
+export function useAppSelector<TSelector extends (appState: AppState) => any>(
+  select: TSelector,
+): ReturnType<TSelector> {
+  const appState = useIt(getAppState);
+  return useMemo(() => select(appState), [appState]);
+}
+```
+
+```tsx
+// CounterControl.tsx
+import { dispatch } from './AppReducer';
+import { INCREMENT, RESET } from './CounterReducer';
+
+function CounterControl() {
+  return (
+    <>
+      <button onClick={() => dispatch({ type: INCREMENT, step: 1 })}>Increment 1</button>
+      <button onClick={() => dispatch({ type: INCREMENT, step: 5 })}>Increment 5</button>
+      <button onClick={() => dispatch({ type: RESET })}>Reset</button>
+    </>
+  );
+}
+```
+
+```tsx
+// CounterDisplay.tsx
+import { useAppSelector } from './AppReducer';
+import { selectValue } from './CounterReducer';
+
+export function CounterDisplay() {
+  const value = useAppSelector(selectValue);
+  return <p>Value: {value}</p>;
+}
+```
+
+This serves both an adequate playground for the typical practice and a secure starting point for the evolution.
+
 ## <span id="3d3b9ce">Strong support for TypeScript</span>
 
+Types, including implicit inference and explicit declaration, are designed as a part of APIs with a holistic mindset.
+
+As a result, types can work quite naturally in practice, requiring nearly no extra effort.
+
 # Tips
+
+- [Best-practice file structure](#0e67afa).
+- [Data flow](#85b87d9).
+- [Mug-state continuum](#1bccb53).
+- [Connections among actions, ops, and pure functions](#652002e).
+- [Advanced action and op types](#b23ecc8).
+- [Merge-patch's patch](#7265ffc).
+- [Type checkers](#c27629b).
+- [Array literal helpers](#4a1a881).
+- [Mugs with attachments](#7c4ab1e).
+
+## <span id="0e67afa">Best-practice file structure</span>
+
+## <span id="85b87d9">Data flow</span>
+
+## <span id="1bccb53">Mug-state continuum</span>
+
+## <span id="652002e">Connections among actions, ops, and pure functions</span>
+
+## <span id="b23ecc8">Advanced action and op types</span>
+
+## <span id="7265ffc">Merge-patch's patch</span>
+
+## <span id="c27629b">Type checkers</span>
+
+## <span id="4a1a881">Array literal helpers</span>
+
+## <span id="7c4ab1e">Mugs with attachments</span>
 
 # FAQs
 

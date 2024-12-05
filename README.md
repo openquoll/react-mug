@@ -1,5 +1,9 @@
 # React Mug
 
+_[Intro](#2e62a5f) &nbsp;•&nbsp; [Features](#e7571e4) &nbsp;•&nbsp; [Tips](#2d0bd16) &nbsp;•&nbsp; [FAQs](#2d56cc3) &nbsp;•&nbsp; [License](#b0280eb)_
+
+# <span id="2e62a5f">Intro</span>
+
 This is an incremental evolution from reducer-based state management aiming to remove conceptual burdens with compatibility.
 
 With it, the typical reducer-based practice remains doable:
@@ -136,7 +140,7 @@ Less code, same work ☕️.
 npm i react-mug
 ```
 
-# Features
+# <span id="e7571e4">Features</span>
 
 - [State containers creation by plain objects](#cad503d).
 - [Functional state access without `dispatch`](#31e08c7).
@@ -587,7 +591,7 @@ Types, including implicit inference and explicit declaration, are designed as a 
 
 As a result, types can work quite naturally in practice, requiring nearly no extra effort.
 
-# Tips
+# <span id="2d0bd16">Tips</span>
 
 - [Best-practice file structure](#0e67afa).
 - [Data flow](#85b87d9).
@@ -617,8 +621,8 @@ As a result, types can work quite naturally in practice, requiring nearly no ext
 
 ## <span id="7c4ab1e">Mugs with attachments</span>
 
-# FAQs
+# <span id="2d56cc3">FAQs</span>
 
-# License
+# <span id="b0280eb">License</span>
 
 [Apache 2.0](./LICENSE).

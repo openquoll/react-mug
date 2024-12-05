@@ -187,7 +187,7 @@ const aMug: Mug<AState> = {
 
 Actions can be created from pure functions as invokables to access states by being directly called rather than dispatched.
 
-They can have a mug specified on creation but omitted on invocation, and be created with the helpers from calling `upon`:
+They can be created with the helpers from calling `upon`:
 
 ```tsx
 import { upon } from 'react-mug';
@@ -238,11 +238,9 @@ const get = r();
 // const aState = get();
 ```
 
-Moreover, there is the other kind of invokables, called operations, to access states.
+Moreover, the other more general kind of invokables, called operations or ops for short, is available.
 
-For short, they are also called ops.
-
-They can have a mug specified on invocation but omitted on creation, and be created similarly but with the helpers straight from `react-mug`:
+They can have mugs dynamically specified on invocation, and be created similarly with the helpers straight from `react-mug`:
 
 ```tsx
 import { r, w } from 'react-mug';
@@ -269,7 +267,7 @@ import { getIt, setIt } from 'react-mug';
 // const aState = getIt(aMug);
 ```
 
-While actions suit most cases of state access, ops especially work well with dynamically created mugs.
+While actions suit regular cases, ops work well with dynamically created mugs.
 
 ## <span id="6658073">Independence from React hooks</span>
 
@@ -589,27 +587,174 @@ This serves as both a proper playground for the typical and a safe starting poin
 
 Types, including implicit inference and explicit declaration, are designed as a part of APIs with a holistic mindset.
 
-As a result, types can work quite naturally in practice, requiring nearly no extra effort.
+As a result, types can work naturally, requiring nearly no extra effort.
 
 # <span id="2d0bd16">Tips</span>
 
-- [Best-practice file structure](#0e67afa).
+- [Best practice to organize states](#0e67afa).
 - [Data flow](#85b87d9).
-- [Mug-state continuum](#1bccb53).
-- [Connections among actions, ops, and pure functions](#652002e).
+- [Mug-state continuums](#1bccb53).
+- [Conversion among actions, ops, and pure functions](#652002e).
 - [Advanced action and op types](#b23ecc8).
 - [Merge-patch's patch](#7265ffc).
 - [Type checkers](#c27629b).
 - [Array literal helpers](#4a1a881).
 - [Mugs with attachments](#7c4ab1e).
 
-## <span id="0e67afa">Best-practice file structure</span>
+## <span id="0e67afa">Best practice to organize states</span>
+
+It'd make the most sense to group everything related to "one state per file".
+
+For regular cases:
+
+```tsx
+// AMug.ts
+import { construction, upon } from 'react-mug';
+
+export interface AState {
+  /* fields */
+}
+
+export const aMug: Mug<AState> = {
+  [construction]: {
+    /* fields */
+  },
+};
+
+const [r, w] = upon(aMug);
+
+export const get = r();
+
+export const read = r((state, param1: string, param2: string) => 'readResult');
+
+export const set = w();
+
+export const write = w((state, param1: string, param2: string) => ({
+  ...state,
+  /* fields to write */
+}));
+```
+
+For dynamically created mugs:
+
+```tsx
+// AMug.ts
+import { construction, r, w } from 'react-mug';
+
+export interface AState {
+  /* fields */
+}
+
+export function createAMug(): Mug<AState> {
+  return {
+    [construction]: {
+      /* fields */
+    },
+  };
+}
+
+export const readIt = r((state: AState, param1: string, param2: string) => 'readItResult');
+
+export const writeIt = w((state: AState, param1: string, param2: string) => ({
+  ...state,
+  /* fields to write */
+}));
+```
 
 ## <span id="85b87d9">Data flow</span>
 
-## <span id="1bccb53">Mug-state continuum</span>
+The data flow is fairly compact, depicted below:
 
-## <span id="652002e">Connections among actions, ops, and pure functions</span>
+```txt
+▶︎ Write Params ┳▶︎ Write Action/Op ▶︎ Next State ┳▶︎ Read Action/Op ▶︎ Read Result ▶︎
+               ┃                               ┃
+ Current State ┛                   Read Params ┛
+```
+
+## <span id="1bccb53">Mug-state continuums</span>
+
+On a state type, a mug-state continuum gets formed by all the possible mugs, mug-likes, and states, sharing the characteristic of 'mugginess' to varying degrees.
+
+The more `construction` fields exist at higher levels in a value, the muggier the value becomes:
+
+- The muggiest values are mugs, which have `construction` fields at the top level.
+- The least muggy values are states, which have no `construction` field at all.
+- Between mugs and states are mug-likes, which have zero or more `construction` fields.
+
+A mug-state continuum becomes concise if excluding the possibility of continuous nesting of `construction` fields, in which all the possible value types can be formulated by the utility `PossibleMugLike`:
+
+```tsx
+import { PossibleMugLike } from 'react-mug';
+
+interface AState {
+  /* fields */
+}
+
+type PossibleAMugLike = PossibleMugLike<AState>;
+```
+
+A concise mug-state continuum, then, precisely defines the scope of the first parameters of ops.
+
+And if to further narrow down the value types to all the possible mug types, the other utility `PossibleMug` can help:
+
+```tsx
+import { PossibleMug } from 'react-mug';
+
+type PossibleAMug = PossibleMug<AState>;
+```
+
+Moreover, similar to `Mug`, `MugLike` can define a mug-like type:
+
+```tsx
+import { Mug, MugLike } from 'react-mug';
+
+interface AnotherState {
+  a: AState;
+  /* rest fields */
+}
+
+type AnotherMugLike = MugLike<AnotherState, { a: Mug<AState> }>;
+```
+
+And conversely, `State` can evaluate a state type:
+
+```tsx
+import { State } from 'react-mug';
+
+type AnotherStateAsBefore = State<AnotherMugLike>;
+```
+
+## <span id="652002e">All conversions among actions, ops, and pure functions</span>
+
+Not only can actions be created from pure functions, but they can also be created from ops:
+
+```tsx
+import { getIt, setIt, upon } from 'react-mug';
+
+const [r, w] = upon(aMug);
+
+const set = w(setIt);
+
+const get = r(getIt);
+```
+
+In fact, actions are "[curried](https://stackoverflow.com/questions/36314/what-is-currying)" ops built from ops, and ops are "muggy-flavored" functions built from pure functions.
+
+The helpers from calling `upon` are merely shortcuts for action creation straight from pure functions.
+
+To put it simply, all conversions among them can be diagrammed as follows:
+
+```txt
+Actions ◀︎━{`upon#w`, `upon#r`}━━━┓
+▲ ┃                              ┃
+┃ ┗━━━━━━━{`pure`}━━━━━━━━━━━━━┓ ┃
+┃                              ┃ ┃
+{`upon#w`, `upon#r`}           ┃ ┃
+┃                              ┃ ┃
+┃ ┏━━━━━━━{'on state input'}━┓ ┃ ┃
+┃ ┃                          ▼ ▼ ┃
+Ops ◀︎━━━━━{`w`, `r`}━━━━━━━━ Pure Functions
+```
 
 ## <span id="b23ecc8">Advanced action and op types</span>
 

@@ -1,4 +1,14 @@
-import { construction, getIt, initial, Mug, MugLike, restore, setIt } from '../src';
+import {
+  attach,
+  construction,
+  getIt,
+  initial,
+  Mug,
+  MugLike,
+  restore,
+  setIt,
+  WithAttachments,
+} from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 interface ObjectState {
@@ -329,6 +339,95 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
     test('[verify] the after-call got state equals initial(the mug) in ref and value', () => {
       expect(gotStateAfter).toBe(initialState);
       expect(gotStateAfter).toStrictEqual(initialState);
+    });
+  });
+});
+
+describe('fb70d22, attach', () => {
+  interface AState extends ObjectState {}
+
+  const fieldsToAttach = {
+    s: 'asd',
+    o: {
+      s: 'asd',
+    },
+    f: () => false,
+  };
+
+  describe('calls on a plain object mug and fields to attach', () => {
+    const paramMug: Mug<AState> = {
+      [construction]: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+      },
+    };
+
+    let retMug: WithAttachments<Mug<AState>, typeof fieldsToAttach>;
+
+    test('[action]', () => {
+      retMug = attach(paramMug, fieldsToAttach);
+    });
+
+    test('[verify] the return mug equals the param mug in ref', () => {
+      expect(retMug).toBe(paramMug);
+    });
+
+    test('[verify] the return mug_s construction equals the mug_s in ref and value', () => {
+      expect(retMug[construction]).toBe(paramMug[construction]);
+      expect(retMug[construction]).toStrictEqual(paramMug[construction]);
+    });
+
+    test('[verify] the return mug_s attached fields equal the fields to attach in ref and value', () => {
+      ownKeysOfObjectLike(fieldsToAttach).forEach((key) => {
+        expect(retMug[key]).toBe(fieldsToAttach[key]);
+        expect(retMug[key]).toStrictEqual(fieldsToAttach[key]);
+      });
+    });
+  });
+
+  describe('reads the param and return mugs before write', () => {
+    test('[action, verify] the return mug_s state equals the param mug_s in ref and value', () => {
+      const paramMug: Mug<AState> = {
+        [construction]: {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+        },
+      };
+
+      const retMug = attach(paramMug, fieldsToAttach);
+
+      const paramState = getIt(paramMug);
+      const retState = getIt(retMug);
+
+      expect(retState).toBe(paramState);
+      expect(retState).toStrictEqual(paramState);
+    });
+  });
+
+  describe('reads the param and return mugs after write', () => {
+    test('[action, verify] the param mug_s state equals the return mug_s in ref and value', () => {
+      const paramMug: Mug<AState> = {
+        [construction]: {
+          s: 'asd',
+          o: {
+            s: 'asd',
+          },
+        },
+      };
+
+      const retMug = attach(paramMug, fieldsToAttach);
+
+      setIt(paramMug, { s: 'sdf' });
+
+      const paramState = getIt(paramMug);
+      const retState = getIt(retMug);
+
+      expect(retState).toBe(paramState);
+      expect(retState).toStrictEqual(paramState);
     });
   });
 });

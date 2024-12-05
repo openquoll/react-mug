@@ -1,7 +1,6 @@
 export { ActionToolbelt, ReadAction, WriteAction, upon } from './actions';
 export { PossiblePatch, mergePatch, none, passThrough } from './builtin';
 export {
-  Attach,
   Mug,
   MugError,
   MugLike,
@@ -10,8 +9,10 @@ export {
   ReadActionMeta,
   ReadOpMeta,
   State,
+  WithAttachments,
   WriteActionMeta,
   WriteOpMeta,
+  attach,
   construction,
   isAction,
   isMug,

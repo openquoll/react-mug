@@ -11,7 +11,6 @@ import {
   PossiblePatch,
 } from './builtin';
 import {
-  Attach,
   Mug,
   MugLike,
   PossibleMug,
@@ -19,6 +18,7 @@ import {
   pure,
   ReadOpMeta,
   State,
+  WithAttachments,
   WriteOpMeta,
 } from './mug';
 import { getIt, GetIt, initial, r, ReadOp, SetIt, setIt, w, WriteOp } from './op-mech';
@@ -48,13 +48,13 @@ type PossibleAMug = PossibleMug<AState>;
 
 type PossibleAMugLike = PossibleMugLike<AState>;
 
-type DirtyAMug = Attach<
+type DirtyAMug = WithAttachments<
   Mug<{
     s: string;
     o: {
       s: string;
     };
-    potentialMuggyObject: Attach<Mug<ObjectState>, { b: boolean }>;
+    potentialMuggyObject: WithAttachments<Mug<ObjectState>, { b: boolean }>;
   }>,
   { b: boolean }
 >;

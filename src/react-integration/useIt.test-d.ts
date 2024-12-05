@@ -2,7 +2,7 @@ import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
 import { upon } from '../actions';
-import { Attach, Mug, MugLike, PossibleMug, PossibleMugLike } from '../mug';
+import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';
 import { r as flatR, w as flatW } from '../op-mech';
 import { useIt } from './useIt';
 
@@ -31,13 +31,13 @@ type PossibleAMug = PossibleMug<AState>;
 
 type PossibleAMugLike = PossibleMugLike<AState>;
 
-type DirtyAMug = Attach<
+type DirtyAMug = WithAttachments<
   Mug<{
     s: string;
     o: {
       s: string;
     };
-    potentialMuggyObject: Attach<Mug<ObjectState>, { b: boolean }>;
+    potentialMuggyObject: WithAttachments<Mug<ObjectState>, { b: boolean }>;
   }>,
   { b: boolean }
 >;

@@ -68,7 +68,8 @@ export type CleanMug<TConstruction> = { [construction]: TConstruction };
 
 export type AnyMug = CleanMug<any>;
 
-export type Attach<TMug extends AnyMug, TAttachments extends AnyObjectLike> = TMug & TAttachments;
+export type WithAttachments<TMug extends AnyMug, TAttachments extends AnyObjectLike> = TMug &
+  TAttachments;
 
 export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
   | CleanMug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
@@ -192,6 +193,11 @@ export class MugError extends _Error {
     _setPrototypeOf(this, MugError.prototype);
   }
 }
+
+export const attach = <TMug extends AnyMug, TAttachments extends AnyObjectLike>(
+  mug: TMug,
+  attachments: TAttachments,
+): WithAttachments<TMug, TAttachments> => _assign(mug, attachments);
 
 export const isObjectLike = (o: any): boolean => typeof o === _object && o !== null;
 

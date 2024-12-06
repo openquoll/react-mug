@@ -72,53 +72,53 @@ const [dirtyAMugR, dirtyAMugW] = upon(fake<DirtyAMug>());
 test('ReadAction, GetIt, PassThrough', () => {
   type Read3dd = ReadAction<CompositeAMug, (state: AState) => ObjectState>;
 
-  expectType<
-    (() => ObjectState) & ReadActionMeta<CompositeAMug, ReadOp<(state: AState) => ObjectState>>
-  >(fake<Read3dd>());
+  expectType<(() => ObjectState) & ReadActionMeta<CompositeAMug, (state: AState) => ObjectState>>(
+    fake<Read3dd>(),
+  );
 
   expectType<Read3dd>(fake<ReadAction<CompositeAMug, ReadOp<(state: AState) => ObjectState>>>());
 
   // =-=-=
 
-  expectType<(() => ObjectState) & ReadActionMeta<AMug, ReadOp<(state: AState) => ObjectState>>>(
+  expectType<(() => ObjectState) & ReadActionMeta<AMug, (state: AState) => ObjectState>>(
     fake<ReadAction<AMug, (state: AState) => ObjectState>>(),
   );
 
   // =-=-=
 
-  expectType<
-    (() => ObjectState) & ReadActionMeta<AMugLike, ReadOp<(state: AState) => ObjectState>>
-  >(fake<ReadAction<AMugLike, (state: AState) => ObjectState>>());
+  expectType<(() => ObjectState) & ReadActionMeta<AMugLike, (state: AState) => ObjectState>>(
+    fake<ReadAction<AMugLike, (state: AState) => ObjectState>>(),
+  );
+
+  // =-=-=
+
+  expectType<(() => ObjectState) & ReadActionMeta<PossibleAMug, (state: AState) => ObjectState>>(
+    fake<ReadAction<PossibleAMug, (state: AState) => ObjectState>>(),
+  );
 
   // =-=-=
 
   expectType<
-    (() => ObjectState) & ReadActionMeta<PossibleAMug, ReadOp<(state: AState) => ObjectState>>
-  >(fake<ReadAction<PossibleAMug, (state: AState) => ObjectState>>());
-
-  // =-=-=
-
-  expectType<
-    (() => ObjectState) & ReadActionMeta<PossibleAMugLike, ReadOp<(state: AState) => ObjectState>>
+    (() => ObjectState) & ReadActionMeta<PossibleAMugLike, (state: AState) => ObjectState>
   >(fake<ReadAction<PossibleAMugLike, (state: AState) => ObjectState>>());
 
   // =-=-=
 
-  expectType<
-    (() => ObjectState) & ReadActionMeta<DirtyAMug, ReadOp<(state: AState) => ObjectState>>
-  >(fake<ReadAction<DirtyAMug, (state: AState) => ObjectState>>());
+  expectType<(() => ObjectState) & ReadActionMeta<DirtyAMug, (state: AState) => ObjectState>>(
+    fake<ReadAction<DirtyAMug, (state: AState) => ObjectState>>(),
+  );
 
   // =-=-=
 
   expectType<
     ((s: string) => ObjectState) &
-      ReadActionMeta<CompositeAMug, ReadOp<(state: AState, s: string) => ObjectState>>
+      ReadActionMeta<CompositeAMug, (state: AState, s: string) => ObjectState>
   >(fake<ReadAction<CompositeAMug, (state: AState, s: string) => ObjectState>>());
 
   // =-=-=
 
   expectType<
-    (() => ObjectState) & ReadActionMeta<CompositeAMug, ReadOp<(state: ObjectState) => ObjectState>>
+    (() => ObjectState) & ReadActionMeta<CompositeAMug, (state: ObjectState) => ObjectState>
   >(fake<ReadAction<CompositeAMug, (state: ObjectState) => ObjectState>>());
 
   // =-=-=
@@ -133,24 +133,23 @@ test('ReadAction, GetIt, PassThrough', () => {
 
   type Read68a = ReadAction<CompositeAMug, <TState>(state: TState) => TState>;
 
-  expectType<
-    (() => AState) & ReadActionMeta<CompositeAMug, ReadOp<<TState>(state: TState) => TState>>
-  >(fake<Read68a>());
+  expectType<(() => AState) & ReadActionMeta<CompositeAMug, <TState>(state: TState) => TState>>(
+    fake<Read68a>(),
+  );
 
   expectType<Read68a>(fake<ReadAction<CompositeAMug, ReadOp<<TState>(state: TState) => TState>>>());
 
   // =-=-=
 
   expectType<
-    (() => AState) &
-      ReadActionMeta<CompositeAMug, ReadOp<<TState extends AState>(state: TState) => TState>>
+    (() => AState) & ReadActionMeta<CompositeAMug, <TState extends AState>(state: TState) => TState>
   >(fake<ReadAction<CompositeAMug, <TState extends AState>(state: TState) => TState>>());
 
   // =-=-=
 
   expectType<
     (() => AState) &
-      ReadActionMeta<CompositeAMug, ReadOp<<TState extends ObjectState>(state: TState) => TState>>
+      ReadActionMeta<CompositeAMug, <TState extends ObjectState>(state: TState) => TState>
   >(fake<ReadAction<CompositeAMug, <TState extends ObjectState>(state: TState) => TState>>());
 
   // =-=-=
@@ -161,7 +160,7 @@ test('ReadAction, GetIt, PassThrough', () => {
 
   type Readc14 = ReadAction<CompositeAMug, () => ObjectState>;
 
-  expectType<(() => ObjectState) & ReadActionMeta<CompositeAMug, ReadOp<() => ObjectState>>>(
+  expectType<(() => ObjectState) & ReadActionMeta<CompositeAMug, () => ObjectState>>(
     fake<Readc14>(),
   );
 
@@ -352,7 +351,7 @@ test('upon#r, pure, getIt, passThrough', () => {
 test('WriteAction, SetIt, MergePatch', () => {
   type Writea2e = WriteAction<CompositeAMug, (state: AState) => AState>;
 
-  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, (state: AState) => AState>>(
     fake<Writea2e>(),
   );
 
@@ -360,44 +359,43 @@ test('WriteAction, SetIt, MergePatch', () => {
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<AMug, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<AMug, (state: AState) => AState>>(
     fake<WriteAction<AMug, (state: AState) => AState>>(),
   );
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<AMugLike, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<AMugLike, (state: AState) => AState>>(
     fake<WriteAction<AMugLike, (state: AState) => AState>>(),
   );
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<PossibleAMug, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<PossibleAMug, (state: AState) => AState>>(
     fake<WriteAction<PossibleAMug, (state: AState) => AState>>(),
   );
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<PossibleAMugLike, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<PossibleAMugLike, (state: AState) => AState>>(
     fake<WriteAction<PossibleAMugLike, (state: AState) => AState>>(),
   );
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<DirtyAMug, WriteOp<(state: AState) => AState>>>(
+  expectType<(() => void) & WriteActionMeta<DirtyAMug, (state: AState) => AState>>(
     fake<WriteAction<DirtyAMug, (state: AState) => AState>>(),
   );
 
   // =-=-=
 
   expectType<
-    ((s: string) => void) &
-      WriteActionMeta<CompositeAMug, WriteOp<(state: AState, s: string) => AState>>
+    ((s: string) => void) & WriteActionMeta<CompositeAMug, (state: AState, s: string) => AState>
   >(fake<WriteAction<CompositeAMug, (state: AState, s: string) => AState>>());
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<(state: AState) => SuperState>>>(
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, (state: AState) => SuperState>>(
     fake<WriteAction<CompositeAMug, (state: AState) => SuperState>>(),
   );
 
@@ -407,9 +405,9 @@ test('WriteAction, SetIt, MergePatch', () => {
 
   // =-=-=
 
-  expectType<
-    (() => void) & WriteActionMeta<CompositeAMug, WriteOp<(state: ObjectState) => AState>>
-  >(fake<WriteAction<CompositeAMug, (state: ObjectState) => AState>>());
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, (state: ObjectState) => AState>>(
+    fake<WriteAction<CompositeAMug, (state: ObjectState) => AState>>(),
+  );
 
   // =-=-=
 
@@ -427,9 +425,9 @@ test('WriteAction, SetIt, MergePatch', () => {
 
   type Write42b = WriteAction<CompositeAMug, <TState>(state: TState) => TState>;
 
-  expectType<
-    (() => void) & WriteActionMeta<CompositeAMug, WriteOp<<TState>(state: TState) => TState>>
-  >(fake<Write42b>());
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, <TState>(state: TState) => TState>>(
+    fake<Write42b>(),
+  );
 
   expectType<Write42b>(
     fake<WriteAction<CompositeAMug, WriteOp<<TState>(state: TState) => TState>>>(),
@@ -438,15 +436,14 @@ test('WriteAction, SetIt, MergePatch', () => {
   // =-=-=
 
   expectType<
-    (() => void) &
-      WriteActionMeta<CompositeAMug, WriteOp<<TState extends AState>(state: TState) => TState>>
+    (() => void) & WriteActionMeta<CompositeAMug, <TState extends AState>(state: TState) => TState>
   >(fake<WriteAction<CompositeAMug, <TState extends AState>(state: TState) => TState>>());
 
   // =-=-=
 
   expectType<
     (() => void) &
-      WriteActionMeta<CompositeAMug, WriteOp<<TState extends ObjectState>(state: TState) => TState>>
+      WriteActionMeta<CompositeAMug, <TState extends ObjectState>(state: TState) => TState>
   >(fake<WriteAction<CompositeAMug, <TState extends ObjectState>(state: TState) => TState>>());
 
   // =-=-=
@@ -457,15 +454,13 @@ test('WriteAction, SetIt, MergePatch', () => {
 
   type Write697 = WriteAction<CompositeAMug, () => AState>;
 
-  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<() => AState>>>(
-    fake<Write697>(),
-  );
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, () => AState>>(fake<Write697>());
 
   expectType<Write697>(fake<WriteAction<CompositeAMug, WriteOp<() => AState>>>());
 
   // =-=-=
 
-  expectType<(() => void) & WriteActionMeta<CompositeAMug, WriteOp<() => SuperState>>>(
+  expectType<(() => void) & WriteActionMeta<CompositeAMug, () => SuperState>>(
     fake<WriteAction<CompositeAMug, () => SuperState>>(),
   );
 

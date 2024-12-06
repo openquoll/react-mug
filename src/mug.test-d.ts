@@ -1,6 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
+import type { MergePatch, PassThrough } from './builtin';
 import {
   AnyMug,
   Mug,
@@ -9,9 +10,12 @@ import {
   PossibleMug,
   PossibleMuggyOverride,
   PossibleMugLike,
+  ReadActionMeta,
   State,
   WithAttachments,
+  WriteActionMeta,
 } from './mug';
+import type { GetIt, SetIt } from './op-mech';
 import { EmptyItem } from './type-utils';
 
 interface ObjectState {
@@ -185,4 +189,12 @@ test('State', () => {
   expectAssignable<AState>(fake<Rd2d>());
 
   expectType<AState>(fake<State<DirtyAMug>>());
+});
+
+test('ReadActionMeta', () => {
+  expectType<ReadActionMeta<AnyMug, PassThrough>>(fake<ReadActionMeta<AnyMug, GetIt>>());
+});
+
+test('WriteActionMeta', () => {
+  expectType<WriteActionMeta<AnyMug, MergePatch>>(fake<WriteActionMeta<AnyMug, SetIt>>());
 });

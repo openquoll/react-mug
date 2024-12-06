@@ -1,3 +1,4 @@
+import type { ReadOp, WriteOp } from './op-mech';
 import {
   _assign,
   _captureStackTrace,
@@ -462,10 +463,14 @@ export const isWriteOp = (f: any): f is AnyWriteOp =>
 
 export const isOp = (f: any): f is AnyOp => isReadOp(f) || isWriteOp(f);
 
-export type ReadActionMeta<TMugLike, TReadOp extends AnyReadOp> = {
+export type ReadActionMetaOnReadOp<TMugLike, TReadOp extends AnyReadOp> = {
   [_mugLike]: TMugLike;
   [_readOp]: TReadOp;
 };
+
+export type ReadActionMeta<TMugLike, TRead extends AnyFunction> = TRead extends AnyReadOp
+  ? ReadActionMetaOnReadOp<TMugLike, TRead>
+  : ReadActionMeta<TMugLike, ReadOp<TRead>>;
 
 export type AnyReadAction = AnyFunction & ReadActionMeta<any, AnyReadOp>;
 
@@ -474,10 +479,14 @@ export type NotReadAction = {
   [_readOp]?: never;
 };
 
-export type WriteActionMeta<TMugLike, TWriteOp extends AnyWriteOp> = {
+export type WriteActionMetaWriteOp<TMugLike, TWriteOp extends AnyWriteOp> = {
   [_mugLike]: TMugLike;
   [_writeOp]: TWriteOp;
 };
+
+export type WriteActionMeta<TMugLike, TWrite extends AnyFunction> = TWrite extends AnyWriteOp
+  ? WriteActionMetaWriteOp<TMugLike, TWrite>
+  : WriteActionMeta<TMugLike, WriteOp<TWrite>>;
 
 export type AnyWriteAction = AnyFunction & WriteActionMeta<any, AnyWriteOp>;
 

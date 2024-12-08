@@ -426,21 +426,21 @@ export const _readFn = Symbol();
  */
 export const _writeFn = Symbol();
 
-export type ReadOpMeta<TReadFn extends AnyFunction> = {
+export type ReadOpMeta<TReadFn extends AnyFunction = AnyFunction> = {
   [_readFn]: TReadFn;
 };
 
-export type AnyReadOp = AnyFunction & ReadOpMeta<AnyFunction>;
+export type AnyReadOp = AnyFunction & ReadOpMeta;
 
 export type NotReadOp = {
   [_readFn]?: never;
 };
 
-export type WriteOpMeta<TWriteFn extends AnyFunction> = {
+export type WriteOpMeta<TWriteFn extends AnyFunction = AnyFunction> = {
   [_writeFn]: TWriteFn;
 };
 
-export type AnyWriteOp = AnyFunction & WriteOpMeta<AnyFunction>;
+export type AnyWriteOp = AnyFunction & WriteOpMeta;
 
 export type NotWriteOp = {
   [_writeFn]?: never;
@@ -463,44 +463,50 @@ export const isWriteOp = (f: any): f is AnyWriteOp =>
 
 export const isOp = (f: any): f is AnyOp => isReadOp(f) || isWriteOp(f);
 
-export type ReadActionMetaOnReadOp<TMugLike, TReadOp extends AnyReadOp> = {
-  [_mugLike]: TMugLike;
+export type ReadActionMetaOnReadOp<TReadOp extends AnyReadOp, TMugLike> = {
   [_readOp]: TReadOp;
+  [_mugLike]: TMugLike;
 };
 
-export type ReadActionMeta<TMugLike, TRead extends AnyFunction> = TRead extends AnyReadOp
-  ? ReadActionMetaOnReadOp<TMugLike, TRead>
-  : ReadActionMeta<TMugLike, ReadOp<TRead>>;
+export type ReadActionMeta<
+  TRead extends AnyFunction = AnyReadOp,
+  TMugLike = any,
+> = TRead extends AnyReadOp
+  ? ReadActionMetaOnReadOp<TRead, TMugLike>
+  : ReadActionMeta<ReadOp<TRead>, TMugLike>;
 
-export type AnyReadAction = AnyFunction & ReadActionMeta<any, AnyReadOp>;
+export type AnyReadAction = AnyFunction & ReadActionMeta;
 
 export type NotReadAction = {
-  [_mugLike]?: never;
   [_readOp]?: never;
+  [_mugLike]?: never;
 };
 
-export type WriteActionMetaWriteOp<TMugLike, TWriteOp extends AnyWriteOp> = {
-  [_mugLike]: TMugLike;
+export type WriteActionMetaWriteOp<TWriteOp extends AnyWriteOp, TMugLike> = {
   [_writeOp]: TWriteOp;
+  [_mugLike]: TMugLike;
 };
 
-export type WriteActionMeta<TMugLike, TWrite extends AnyFunction> = TWrite extends AnyWriteOp
-  ? WriteActionMetaWriteOp<TMugLike, TWrite>
-  : WriteActionMeta<TMugLike, WriteOp<TWrite>>;
+export type WriteActionMeta<
+  TWrite extends AnyFunction = AnyWriteOp,
+  TMugLike = any,
+> = TWrite extends AnyWriteOp
+  ? WriteActionMetaWriteOp<TWrite, TMugLike>
+  : WriteActionMeta<WriteOp<TWrite>, TMugLike>;
 
-export type AnyWriteAction = AnyFunction & WriteActionMeta<any, AnyWriteOp>;
+export type AnyWriteAction = AnyFunction & WriteActionMeta;
 
 export type NotWriteAction = {
-  [_mugLike]?: never;
   [_writeOp]?: never;
+  [_mugLike]?: never;
 };
 
 export type AnyAction = AnyReadAction | AnyWriteAction;
 
 export type NotAction = {
-  [_mugLike]?: never;
   [_readOp]?: never;
   [_writeOp]?: never;
+  [_mugLike]?: never;
 };
 
 export const isReadAction = (f: any): f is AnyReadAction =>

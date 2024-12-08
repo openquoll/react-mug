@@ -192,9 +192,9 @@ test('State', () => {
 });
 
 test('ReadActionMeta', () => {
-  expectType<ReadActionMeta<AnyMug, PassThrough>>(fake<ReadActionMeta<AnyMug, GetIt>>());
+  expectType<ReadActionMeta<PassThrough>>(fake<ReadActionMeta<GetIt>>());
 });
 
 test('WriteActionMeta', () => {
-  expectType<WriteActionMeta<AnyMug, MergePatch>>(fake<WriteActionMeta<AnyMug, SetIt>>());
+  expectType<WriteActionMeta<MergePatch>>(fake<WriteActionMeta<SetIt>>());
 });

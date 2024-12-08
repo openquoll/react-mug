@@ -63,12 +63,11 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
 }
 
 export function useIt<
-  TReadAction extends AnyFunction & ReadActionMeta<any, AnyFunction & ReadOpMeta<() => any>>,
+  TReadAction extends AnyFunction & ReadActionMeta<AnyFunction & ReadOpMeta<() => any>>,
 >(readAction: TReadAction): ReturnType<TReadAction>;
 export function useIt<
   TReadAction extends AnyFunction &
     ReadActionMeta<
-      any,
       AnyFunction & ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
     >,
 >(

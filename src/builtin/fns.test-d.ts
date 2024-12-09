@@ -27,6 +27,7 @@ test('PossiblePatch', () => {
   }
 
   type R314 = PossiblePatch<AMugLike>;
+
   expectType<{
     s?: string;
     o?: { s?: string };

@@ -49,7 +49,7 @@ export type PossiblePatchOnUndefinedive<TMugLike> =
  */
 export type PossiblePatchOnNullive<TMugLike> = State<NonNullable<TMugLike>> | null;
 
-export type PossiblePatchOnNonNullableOnReadonTuple<TMugLike extends AnyReadonlyTuple> = {
+export type PossiblePatchOnNonNullableOnReadonlyTuple<TMugLike extends AnyReadonlyTuple> = {
   [TK in keyof TMugLike]: PossiblePatch<TMugLike[TK]> | EmptyItem;
 };
 
@@ -66,7 +66,7 @@ export type PossiblePatchOnNonNullable<TMugLike> = TMugLike extends AnyFunction
   : TMugLike extends CleanMug<infer TConstruction>
     ? PossiblePatch<TConstruction>
     : TMugLike extends AnyReadonlyTuple
-      ? PossiblePatchOnNonNullableOnReadonTuple<TMugLike>
+      ? PossiblePatchOnNonNullableOnReadonlyTuple<TMugLike>
       : TMugLike extends AnyReadonlyArray
         ? PossiblePatchOnNonNullableOnReadonlyArray<TMugLike>
         : TMugLike extends AnyObjectLike

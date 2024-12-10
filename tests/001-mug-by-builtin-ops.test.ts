@@ -169,7 +169,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
     });
   });
 
-  describe('456487d, first writes "the nullable object field" with a full-fledged value', () => {
+  describe('456487d, first writes "the nullable object field" with a full-fledged object value', () => {
     test('[action, verify] the field changes in ref, equals the new value in ref and value', () => {
       const newNo: ObjectState = { s: '97e', o: { s: '97e' } };
 
@@ -271,62 +271,6 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
         expect(aStateAfter.na).toStrictEqual([574, 574]);
       });
     });
-
-    describe('cf5141b, with a sparse bigger-length array of different items', () => {
-      test('[action, verify] the field changes in ref, length, and non-empty items', () => {
-        setIt(aMug, { na: [195, 195] });
-        const aStateBefore = getIt(aMug);
-        expect(aStateBefore).toMatchObject({ na: [195, 195] });
-
-        setIt(aMug, { na: [, 271, ,] });
-        const aStateAfter = getIt(aMug);
-
-        expect(aStateAfter.na).not.toBe(aStateBefore.na);
-        expect(aStateAfter.na).toStrictEqual([195, 271, ,]);
-      });
-    });
-
-    describe('f0690e6, with a sparse smaller-length array of different items', () => {
-      test('[action, verify] the field changes in ref, length, and non-empty items', () => {
-        setIt(aMug, { na: [127, 127, 127] });
-        const aStateBefore = getIt(aMug);
-        expect(aStateBefore).toMatchObject({ na: [127, 127, 127] });
-
-        setIt(aMug, { na: [443, ,] });
-        const aStateAfter = getIt(aMug);
-
-        expect(aStateAfter.na).not.toBe(aStateBefore.na);
-        expect(aStateAfter.na).toStrictEqual([443, 127]);
-      });
-    });
-
-    describe('5cce97c, with a sparse same-length array of different items', () => {
-      test('[action, verify] the field changes in ref and non-empty items but not in length', () => {
-        setIt(aMug, { na: [380, 380] });
-        const aStateBefore = getIt(aMug);
-        expect(aStateBefore).toMatchObject({ na: [380, 380] });
-
-        setIt(aMug, { na: [269, ,] });
-        const aStateAfter = getIt(aMug);
-
-        expect(aStateAfter.na).not.toBe(aStateBefore.na);
-        expect(aStateAfter.na).toStrictEqual([269, 380]);
-      });
-    });
-
-    describe('79ce862, with a sparse same-length array of empty items', () => {
-      test('[action, verify] the field stays unchanged in ref and value', () => {
-        setIt(aMug, { na: [532, 532] });
-        const aStateBefore = getIt(aMug);
-        expect(aStateBefore).toMatchObject({ na: [532, 532] });
-
-        setIt(aMug, { na: [, ,] });
-        const aStateAfter = getIt(aMug);
-
-        expect(aStateAfter.na).toBe(aStateBefore.na);
-        expect(aStateAfter.na).toStrictEqual([532, 532]);
-      });
-    });
   });
 
   describe('7ba1869, writes "the number tuple field"', () => {
@@ -390,7 +334,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
   });
 
   describe('ae8aba7, writes "the object array field", [cite] .:4dee5ea', () => {
-    describe('7d919a6, with a dense bigger-length array of different full-fledged items', () => {
+    describe('7d919a6, with a dense bigger-length array of different full-fledged object items', () => {
       test('[action, verify] the field changes in ref, length, and all items', () => {
         setIt(aMug, {
           oa: [
@@ -424,7 +368,7 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
       });
     });
 
-    describe('1d6dfa6, with a same-length dense array of full-fledged items one of which has a different string field value', () => {
+    describe('1d6dfa6, with a same-length dense array of full-fledged object items one of which has a different string field value', () => {
       let aStateBefore: AState, aStateAfter: AState;
 
       test('[action]', () => {
@@ -474,44 +418,6 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
       });
 
       test('[verify] the rest items stay unchanged in ref and value', () => {
-        expect(aStateAfter.oa[1]).toBe(aStateBefore.oa[1]);
-        expect(aStateAfter.oa[1]).toStrictEqual(aStateBefore.oa[1]);
-      });
-    });
-
-    describe('5eb2042, with a same-length sparse array of different full-fledged object items', () => {
-      let aStateBefore: AState, aStateAfter: AState;
-
-      test('[action]', () => {
-        setIt(aMug, {
-          oa: [
-            { s: 'ff2', o: { s: 'ff2' } },
-            { s: 'ff2', o: { s: 'ff2' } },
-          ],
-        });
-        aStateBefore = getIt(aMug);
-        expect(aStateBefore).toMatchObject({
-          oa: [
-            { s: 'ff2', o: { s: 'ff2' } },
-            { s: 'ff2', o: { s: 'ff2' } },
-          ],
-        });
-
-        setIt(aMug, {
-          oa: [{ s: '9bd', o: { s: '9bd' } }, ,],
-        });
-        aStateAfter = getIt(aMug);
-      });
-
-      test('[verify] the field changes in ref and non-empty items but not in length', () => {
-        expect(aStateAfter.oa).not.toBe(aStateBefore.oa);
-        expect(aStateAfter.oa).toStrictEqual([
-          { s: '9bd', o: { s: '9bd' } },
-          { s: 'ff2', o: { s: 'ff2' } },
-        ]);
-      });
-
-      test('[verify] the empty items_ counterparts stay unchanged in ref and value', () => {
         expect(aStateAfter.oa[1]).toBe(aStateBefore.oa[1]);
         expect(aStateAfter.oa[1]).toStrictEqual(aStateBefore.oa[1]);
       });
@@ -623,18 +529,22 @@ describe('abed36c, operates "a plain array mug" by builtin ops, [cite] .:11d55b6
     });
   });
 
-  describe('6d47edb, first writes with a sparse bigger-length array of a full-fledged object item that has a different string field value', () => {
+  describe('6d47edb, first writes with a dense bigger-length array of full-fledged object items one of which has a different string field value', () => {
     test('[action, verify] the state changes in ref, length, and value', () => {
       const aStateBefore = getIt(aMug);
 
-      setIt(aMug, [, { s: 'c16', o: { s: 'asd' } }, ,]);
+      setIt(aMug, [
+        { s: 'c16', o: { s: 'asd' } },
+        { s: 'asd', o: { s: 'asd' } },
+        { s: 'asd', o: { s: 'asd' } },
+      ]);
 
       const aStateAfter = getIt(aMug);
       expect(aStateAfter).not.toBe(aStateBefore);
       expect(aStateAfter).toStrictEqual([
-        { s: 'asd', o: { s: 'asd' } },
         { s: 'c16', o: { s: 'asd' } },
-        ,
+        { s: 'asd', o: { s: 'asd' } },
+        { s: 'asd', o: { s: 'asd' } },
       ]);
     });
   });
@@ -1385,7 +1295,7 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
   });
 
-  describe('5761e9a, first writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-0 item that has a different string field value', () => {
+  describe('5761e9a, first writes "the muggy object array field" with a dense same-length array of full-fledged object items index-0 of which has a different string field value', () => {
     let aStateBefore: AState, aStateAfter: AState;
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
@@ -1394,7 +1304,10 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
       muggyObjectArrayItemStateBefore = getIt(muggyObjectArrayItemMug);
 
       setIt(aMug, {
-        muggyObjectArray: [{ s: '58e', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: '58e', o: { s: 'asd' } },
+          { s: 'asd', o: { s: 'asd' } },
+        ],
       });
 
       aStateAfter = getIt(aMug);
@@ -1435,13 +1348,16 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
   });
 
-  describe('29925d3, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-0 item that has a same string field value, [cite] .:5761e9a', () => {
+  describe('29925d3, writes "the muggy object array field" with a dense same-length array of same full-fledged object items, [cite] .:5761e9a', () => {
     let aStateBefore: AState, aStateAfter: AState;
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       setIt(aMug, {
-        muggyObjectArray: [{ s: '4ec', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: '4ec', o: { s: 'asd' } },
+          { s: '4ec', o: { s: 'asd' } },
+        ],
       });
       aStateBefore = getIt(aMug);
       expect(aStateBefore).toMatchObject({
@@ -1454,7 +1370,10 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
       expect(muggyObjectArrayItemStateBefore).toMatchObject({ s: '4ec', o: { s: 'asd' } });
 
       setIt(aMug, {
-        muggyObjectArray: [{ s: '4ec', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: '4ec', o: { s: 'asd' } },
+          { s: '4ec', o: { s: 'asd' } },
+        ],
       });
 
       aStateAfter = getIt(aMug);
@@ -1482,13 +1401,16 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
     });
   });
 
-  describe('f311c76, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-1 item that has a different string field value, [cite] .:5761e9a', () => {
+  describe('f311c76, writes "the muggy object array field" with a dense same-length array of full-fledged object items index-1 of which has a different string field value, [cite] .:5761e9a', () => {
     let aStateBefore: AState, aStateAfter: AState;
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       setIt(aMug, {
-        muggyObjectArray: [{ s: 'f22', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: 'f22', o: { s: 'asd' } },
+          { s: 'f22', o: { s: 'asd' } },
+        ],
       });
       aStateBefore = getIt(aMug);
       expect(aStateBefore).toMatchObject({
@@ -1501,7 +1423,10 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
       expect(muggyObjectArrayItemStateBefore).toMatchObject({ s: 'f22', o: { s: 'asd' } });
 
       setIt(aMug, {
-        muggyObjectArray: [, { s: '018', o: { s: 'asd' } }],
+        muggyObjectArray: [
+          { s: 'f22', o: { s: 'asd' } },
+          { s: '018', o: { s: 'asd' } },
+        ],
       });
 
       aStateAfter = getIt(aMug);
@@ -1534,7 +1459,10 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
 
     test('[action]', () => {
       setIt(aMug, {
-        muggyObjectArray: [{ s: '7e8', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: '7e8', o: { s: 'asd' } },
+          { s: '7e8', o: { s: 'asd' } },
+        ],
       });
       aStateBefore = getIt(aMug);
       expect(aStateBefore).toMatchObject({
@@ -1583,7 +1511,10 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
 
     test('[action]', () => {
       setIt(aMug, {
-        muggyObjectArray: [{ s: 'a3a', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: 'a3a', o: { s: 'asd' } },
+          { s: 'a3a', o: { s: 'asd' } },
+        ],
       });
       aStateBefore = getIt(aMug);
       expect(aStateBefore).toMatchObject({
@@ -1630,7 +1561,10 @@ describe('6a8c78f, operates "a mug-nested object mug" by builtin ops, [cite] .:1
   describe('fff90bc, writes "the muggy object array item mug_s string field" with a same value, [cite] .:5761e9a', () => {
     test('[action, verify], the parent mug_s state, its fields, and the muggy object array items stay unchanged in ref and value', () => {
       setIt(aMug, {
-        muggyObjectArray: [{ s: 'cbd', o: { s: 'asd' } }, ,],
+        muggyObjectArray: [
+          { s: 'cbd', o: { s: 'asd' } },
+          { s: 'cbd', o: { s: 'asd' } },
+        ],
       });
       const aStateBefore = getIt(aMug);
       expect(aStateBefore).toMatchObject({

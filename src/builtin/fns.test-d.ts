@@ -33,8 +33,8 @@ test('PossiblePatch', () => {
     o?: { s?: string };
     f?: Func;
     no?: ObjectState | typeof none;
-    oa?: (ObjectState | EmptyItem)[];
-    roa?: readonly (ObjectState | EmptyItem)[];
+    oa?: ObjectState[];
+    roa?: readonly ObjectState[];
     ot?: [{ s?: string; o?: { s?: string } } | EmptyItem];
     rot?: readonly [{ s?: string; o?: { s?: string } } | EmptyItem];
     muggyObject?: { s?: string; o?: { s?: string } };

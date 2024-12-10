@@ -54,7 +54,7 @@ export type PossiblePatchOnNonNullableOnReadonlyTuple<TMugLike extends AnyReadon
 };
 
 export type PossiblePatchOnNonNullableOnReadonlyArray<TMugLike extends AnyReadonlyArray> = {
-  [TK in keyof TMugLike]?: State<TMugLike[TK]>;
+  [TK in keyof TMugLike]: State<TMugLike[TK]>;
 };
 
 export type PossiblePatchOnNonNullableOnObjectLike<TMugLike extends AnyObjectLike> = {

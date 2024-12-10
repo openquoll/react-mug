@@ -441,13 +441,18 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     });
   });
 
-  describe('497c64f, first writes "the muggy object array field" with a sparse bigger-length array of a full-fledged object index-0 item that has a different string field value', () => {
+  describe('497c64f, first writes "the muggy object array field" with a dense bigger-length array of full-fledged object items index-0 of which has a different string field value', () => {
     let aStateBefore: AState, aStateAfter: AState;
 
     test('[action]', () => {
       aStateBefore = getIt(aMugLike);
 
-      setIt(aMugLike, { muggyObjectArray: [{ s: '705', o: { s: 'asd' } }, , ,] });
+      setIt(aMugLike, {
+        muggyObjectArray: [
+          { s: '705', o: { s: 'asd' } },
+          { s: 'asd', o: { s: 'asd' } },
+        ],
+      });
 
       aStateAfter = getIt(aMugLike);
     });
@@ -463,7 +468,7 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     });
   });
 
-  describe('35a67f9, first writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-1 item that has a different string field value', () => {
+  describe('35a67f9, first writes "the muggy object array field" with a dense same-length array of full-fledged object items index-1 of which has a different string field value', () => {
     let aStateBefore: AState, aStateAfter: AState;
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
@@ -472,7 +477,10 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
       muggyObjectArrayItemStateBefore = getIt(muggyObjectArrayItemMug);
 
       setIt(aMugLike, {
-        muggyObjectArray: [, { s: '58e', o: { s: 'asd' } }],
+        muggyObjectArray: [
+          { s: 'asd', o: { s: 'asd' } },
+          { s: '58e', o: { s: 'asd' } },
+        ],
       });
 
       aStateAfter = getIt(aMugLike);
@@ -513,13 +521,16 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
     });
   });
 
-  describe('3a6041b, writes "the muggy object array field" with a sparse same-length array of a full-fledged object index-1 item that has a same string field value, [cite] .:35a67f9', () => {
+  describe('3a6041b, writes "the muggy object array field" with a dense same-length array of same full-fledged object items, [cite] .:35a67f9', () => {
     let aStateBefore: AState, aStateAfter: AState;
     let muggyObjectArrayItemStateBefore: ObjectState, muggyObjectArrayItemStateAfter: ObjectState;
 
     test('[action]', () => {
       setIt(aMugLike, {
-        muggyObjectArray: [, { s: '4ec', o: { s: 'asd' } }],
+        muggyObjectArray: [
+          { s: 'asd', o: { s: 'asd' } },
+          { s: '4ec', o: { s: 'asd' } },
+        ],
       });
       aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
@@ -532,7 +543,10 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
       expect(muggyObjectArrayItemStateBefore).toMatchObject({ s: '4ec', o: { s: 'asd' } });
 
       setIt(aMugLike, {
-        muggyObjectArray: [, { s: '4ec', o: { s: 'asd' } }],
+        muggyObjectArray: [
+          { s: 'asd', o: { s: 'asd' } },
+          { s: '4ec', o: { s: 'asd' } },
+        ],
       });
 
       aStateAfter = getIt(aMugLike);
@@ -566,7 +580,10 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
 
     test('[action]', () => {
       setIt(aMugLike, {
-        muggyObjectArray: [, { s: 'a3a', o: { s: 'asd' } }],
+        muggyObjectArray: [
+          { s: 'asd', o: { s: 'asd' } },
+          { s: 'a3a', o: { s: 'asd' } },
+        ],
       });
       aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
@@ -619,7 +636,10 @@ describe('5b713bb, operates "a constant mug-nested object mug-like" by builtin o
   describe('f2ddb4d, writes "the muggy object array item mug_s string field" with a same value, [cite] .:35a67f9', () => {
     test('[action, verify] the parent mug-like_s state, its fields, and the muggy object array items stay unchanged in ref and value', () => {
       setIt(aMugLike, {
-        muggyObjectArray: [, { s: 'cbd', o: { s: 'asd' } }],
+        muggyObjectArray: [
+          { s: 'asd', o: { s: 'asd' } },
+          { s: 'cbd', o: { s: 'asd' } },
+        ],
       });
       const aStateBefore = getIt(aMugLike);
       expect(aStateBefore).toMatchObject({
@@ -710,7 +730,7 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
     });
   });
 
-  describe('6d47edb, first writes with a sparse bigger-length array of a full-fledged object index-1 item that has a different string field value', () => {
+  describe('6d47edb, first writes with a dense bigger-length array of full-fledged object items index-1 of which has a different string field value', () => {
     let aStateBefore: AState, aStateAfter: AState;
     let objectStateBefore: ObjectState, objectStateAfter: ObjectState;
 
@@ -718,7 +738,11 @@ describe('d2451be, operates "a constant mug-nested array mug-like" by builtin op
       aStateBefore = getIt(aMugLike);
       objectStateBefore = getIt(objectMug);
 
-      setIt(aMugLike, [, { s: 'bac', o: { s: 'asd' } }, ,]);
+      setIt(aMugLike, [
+        { s: 'asd', o: { s: 'asd' } },
+        { s: 'bac', o: { s: 'asd' } },
+        { s: 'asd', o: { s: 'asd' } },
+      ]);
 
       aStateAfter = getIt(aMugLike);
       objectStateAfter = getIt(objectMug);

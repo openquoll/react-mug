@@ -1,6 +1,8 @@
 # React Mug
 
-_[Intro](#2e62a5f) &nbsp;•&nbsp; [Features](#e7571e4) &nbsp;•&nbsp; [Tips](#2d0bd16) &nbsp;•&nbsp; [FAQs](#2d56cc3) &nbsp;•&nbsp; [License](#b0280eb)_
+![](https://github.com/user-attachments/assets/f47bc69e-fc3f-4465-96af-9aaff65c79ae)
+
+_[Intro](#2e62a5f) &nbsp;•&nbsp; [Installation](#18d3c22) &nbsp;•&nbsp; [Features](#e7571e4) &nbsp;•&nbsp; [Tips](#2d0bd16) &nbsp;•&nbsp; [FAQs](#2d56cc3) &nbsp;•&nbsp; [License](#b0280eb)_
 
 # <span id="2e62a5f">Intro</span>
 
@@ -134,7 +136,7 @@ describe('getValue', () => {
 
 Still pure, less code ☕️.
 
-# Installation
+# <span id="18d3c22">Installation</span>
 
 ```sh
 npm i react-mug
@@ -594,7 +596,7 @@ As seen in the snippets, types can work naturally, requiring nearly no extra eff
 - [Best practice to organize states](#0e67afa).
 - [Data flow](#85b87d9).
 - [Mug-state continuums](#1bccb53).
-- [Conversions among actions, ops, and pure functions](#652002e).
+- [All conversions among actions, ops, and pure functions](#652002e).
 - [Referencing actions and ops](#b23ecc8).
 - [Merge-patch's patches](#7265ffc).
 - [Type checkers](#c27629b).
@@ -817,7 +819,7 @@ setIt(aMug, { tuple: [, 1, , 3, ,] });
 
 ## <span id="c27629b">Type checkers</span>
 
-Several type checkers are provided for mugs, actions, and ops:
+Type checkers are provided for mugs, actions, and ops:
 
 ```tsx
 import { isAction, isMug, isOp, isReadAction, isReadOp, isWriteAction, isWriteOp } from 'react-mug';
@@ -843,7 +845,7 @@ Arrays in TypeScript can be readonly or not, tuple or not, but only the most bas
 const someArray = [0, false, '']; // Type: (number|boolean|string)[]
 ```
 
-Thus, the literal helpers for the rest kinds are provided:
+Therefore, the literal helpers for the rest kinds are provided:
 
 ```tsx
 import { readonlyArray, readonlyTuple, tuple } from 'react-mug';
@@ -857,7 +859,7 @@ const someReadonlyTuple = readonlyTuple(0, false, ''); // Type: readonly [number
 
 In a mug, the fields adjacent to the `construction` field are called attachments. They don't affect state logic but can help organize it in object-oriented flavor.
 
-Specially, the utility `attach` can help bundle a mug and its actions into one bundle.
+Specially, the utility `attach` can help pack a mug and its actions into one bundle.
 
 ```tsx
 // AMug.ts
@@ -887,11 +889,29 @@ function createAMug() {
 }
 
 // const aMug = createAMug();
+//
 // const readResult = aMug.read('param1', 'param2');
+//
 // aMug.write('param1', 'param2');
 ```
 
 # <span id="2d56cc3">FAQs</span>
+
+- [Why the field key `construction` is a symbol but not a string?](#c518968)
+
+## <span id="#c518968">Why the field key `construction` is a symbol but not a string?</span>
+
+Using a symbol as a field key thoroughly eliminates potential key conflicts, enabling a state to safely have any field key that is not exactly that symbol:
+
+```tsx
+import { construction } from 'react-mug';
+
+const bazMug = {
+  [construction]: {
+    construction: 0,
+  },
+};
+```
 
 # <span id="b0280eb">License</span>
 

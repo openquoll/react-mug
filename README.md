@@ -4,9 +4,9 @@ _[Intro](#2e62a5f) &nbsp;•&nbsp; [Features](#e7571e4) &nbsp;•&nbsp; [Tips](#
 
 # <span id="2e62a5f">Intro</span>
 
-This provides an incremental evolution from reducer-based state management aiming to minimize conceptual burdens with full compatibility.
+This library provides an incremental evolution from reducer-based state management aiming to minimize conceptual burdens with full compatibility.
 
-With it, the typical reducer-based practice remains doable(. See also [an app-level one](#a6bd391)):
+With it, the typical reducer-based practice remains doable(. See also [the app-level practice](#a6bd391)):
 
 ```ts
 // CounterReducer.ts
@@ -46,7 +46,7 @@ export const dispatch = w(counterReducer);
 // <button onClick={() => dispatch({ type: INCREMENT, step: 1 })}>Increment 1</button>
 ```
 
-But a dispatch-free way can also take place - write actions can be created from pure functions and directly called:
+But a dispatch-free way can take place - write actions can be created from pure functions and directly called:
 
 ```tsx
 // CounterMug.ts
@@ -132,7 +132,7 @@ describe('getValue', () => {
 });
 ```
 
-Less code, still functional ☕️.
+Still pure, less code ☕️.
 
 # Installation
 
@@ -165,9 +165,9 @@ const aMug = {
 };
 ```
 
-For brevity, a state container is also called a mug.
+For brevity, a state container is called a mug.
 
-In addition, a mug's state type can be either implicitly inferred as above or explicitly declared as below:
+A mug's state type can be either implicitly inferred as above or explicitly declared as below:
 
 ```tsx
 import { construction, Mug } from 'react-mug';
@@ -219,7 +219,7 @@ And if called without pure functions, it can create a merge-patch write action:
 ```tsx
 const set = w();
 
-// set({/* fields */});
+// set({/* patch fields */});
 ```
 
 `r` creates read actions from a pure function that takes the mug's current state, optionally along with additional parameters, and produces a result value:
@@ -238,9 +238,9 @@ const get = r();
 // const aState = get();
 ```
 
-Moreover, the other more general kind of invokables, called operations or ops for short, is available.
+Further more, to have mugs specified on invocation instead of on creation, there comes the other kind of invokables, called operations or ops for short.
 
-They can have mugs dynamically specified on invocation, and be created similarly with the helpers straight from `react-mug`:
+They are created similarly but with the helpers straight from `react-mug`:
 
 ```tsx
 import { r, w } from 'react-mug';
@@ -257,17 +257,17 @@ const readIt = r((state: AState, param1: string, param2: string) => 'readItResul
 // const readItResult = readIt(aMug, 'param1', 'param2');
 ```
 
-And by builtin, a merge-patch op and a pass-through op are provided:
+And by builtin, a merge-patch write op and a pass-through read op are provided:
 
 ```tsx
 import { getIt, setIt } from 'react-mug';
 
-// setIt(aMug, {/* fields */});
+// setIt(aMug, {/* patch fields */});
 
 // const aState = getIt(aMug);
 ```
 
-While actions suit regular cases, ops work well with dynamically created mugs.
+While actions can suit regular cases, ops can work quite well with dynamically created mugs.
 
 ## <span id="6658073">Independence from React hooks</span>
 
@@ -340,7 +340,7 @@ describe('read', () => {
 });
 ```
 
-For ops, they can act as pure functions when states are passed in straight:
+For ops, they act as pure functions when states are passed in straight:
 
 ```tsx
 describe('writeIt', () => {
@@ -368,9 +368,9 @@ describe('readIt', () => {
 });
 ```
 
-Further more, React components can also be easily tested.
+What's more, React components can be easily tested, too.
 
-The builtin `setIt` can help prepare states. Then, after a test, the utility `restore` can help restore them:
+The builtin `setIt` can help prepare states beforehand, then the utility `restore` can help restore them afterward:
 
 ```tsx
 import { restore, setIt } from 'react-mug';
@@ -382,7 +382,7 @@ describe('ReactComponent', () => {
 
   test('behavior', async () => {
     setIt(aMug, {
-      /* ... */
+      /* patch fields */
     });
 
     render(<ReactComponent />);
@@ -418,7 +418,7 @@ const anotherMug: Mug<SuperState, { a: Mug<AState> }> = {
 };
 ```
 
-On that, actions and ops can be regularly applied, optionally reusing child mugs' invokables. The current state taken by the pure functions is composed of the current child states. The next state produced by the pure functions is decomposed for the next child states:
+On that, actions and ops can be applied, optionally reusing child mugs' invokables. The current state taken by the pure functions is composed of the current child states. The next state produced by the pure functions is decomposed for the next child states:
 
 ```tsx
 import { pure, upon } from 'react-mug';
@@ -459,7 +459,7 @@ const anotherReadIt = r(
 // const anotherReadItResult = anotherReadIt(anotherMug, 'param1', 'param2');
 ```
 
-Meanwhile, if no new fields are needed, mugs can be nested in a plain object to form a state collection container called a mug-like instead for a state collection:
+And in simpler cases, mugs can just be nested in a plain object instead to form a state collection container called a mug-like:
 
 ```tsx
 import { tuple } from 'react-mug';
@@ -474,11 +474,11 @@ const fooMugLike = {
 const barMugLike = tuple(aMug, anotherMug);
 ```
 
-Like actions and ops on a composite mug, those can be regularly applied on a mug-like, too.
+Like on a composite mug, actions and ops can be applied on a mug-like, too.
 
 ## <span id="a6bd391">Full compatibility with the typical reducer-based practice</span>
 
-Full compatibility is provided for the typical reducer-based practice. The example at the beginning can be further expanded to an app level:
+Full compatibility is provided for the typical reducer-based practice. The practice in Intro can be easily expanded to an app level:
 
 ```tsx
 // CounterReducer.ts
@@ -587,23 +587,23 @@ This serves as both a proper playground for the typical and a safe starting poin
 
 Types, including implicit inference and explicit declaration, are designed as a part of APIs with a holistic mindset.
 
-As a result, types can work naturally, requiring nearly no extra effort.
+As seen in the snippets, types can work naturally, requiring nearly no extra effort.
 
 # <span id="2d0bd16">Tips</span>
 
 - [Best practice to organize states](#0e67afa).
 - [Data flow](#85b87d9).
 - [Mug-state continuums](#1bccb53).
-- [Conversion among actions, ops, and pure functions](#652002e).
-- [Advanced action and op types](#b23ecc8).
-- [Merge-patch's patch](#7265ffc).
+- [Conversions among actions, ops, and pure functions](#652002e).
+- [Referencing actions and ops](#b23ecc8).
+- [Merge-patch's patches](#7265ffc).
 - [Type checkers](#c27629b).
 - [Array literal helpers](#4a1a881).
 - [Mugs with attachments](#7c4ab1e).
 
 ## <span id="0e67afa">Best practice to organize states</span>
 
-It'd make the most sense to group everything related to "one state per file".
+It would make the most sense to group everything related to "one state per file".
 
 For regular cases:
 
@@ -663,7 +663,7 @@ export const writeIt = w((state: AState, param1: string, param2: string) => ({
 
 ## <span id="85b87d9">Data flow</span>
 
-The data flow is fairly compact, depicted below:
+The data flow is compact, depicted below:
 
 ```txt
 ▶︎ Write Params ┳▶︎ Write Action/Op ▶︎ Next State ┳▶︎ Read Action/Op ▶︎ Read Result ▶︎
@@ -678,24 +678,28 @@ On a state type, a mug-state continuum gets formed by all the possible mugs, mug
 The more `construction` fields exist at higher levels in a value, the muggier the value becomes:
 
 - The muggiest values are mugs, which have `construction` fields at the top level.
-- The least muggy values are states, which have no `construction` field at all.
-- Between mugs and states are mug-likes, which have zero or more `construction` fields.
+- The least muggy values are states, which have no `construction` field.
+- Between mugs and states are mug-likes, which have zero or more `construction` fields. That is, a mug-like can be a mug, a state, or neither so denote everything in a mug-state continuum.
 
-A mug-state continuum becomes concise if excluding the possibility of continuous nesting of `construction` fields, in which all the possible value types can be formulated by the utility `PossibleMugLike`:
+To help evaluate the initial value of a mug-like regardless of mugginess, the utility `initial` is available:
+
+```tsx
+import { initial } from 'react-mug';
+
+const initialAState = initial(aMugLike);
+```
+
+In addition, a mug-state continuum can become concise if the continuous nesting of `construction` fields is all excluded, which, precisely defines the scope for an op's first parameter.
+
+To help formulate possible types in that, the utility `PossibleMugLike` is available:
 
 ```tsx
 import { PossibleMugLike } from 'react-mug';
 
-interface AState {
-  /* fields */
-}
-
 type PossibleAMugLike = PossibleMugLike<AState>;
 ```
 
-A concise mug-state continuum, then, precisely defines the scope of the first parameters of ops.
-
-And if to further narrow down the value types to all the possible mug types, the other utility `PossibleMug` can help:
+And to further narrow down those to possible mug types, the other utility `PossibleMug` is available:
 
 ```tsx
 import { PossibleMug } from 'react-mug';
@@ -703,20 +707,15 @@ import { PossibleMug } from 'react-mug';
 type PossibleAMug = PossibleMug<AState>;
 ```
 
-Moreover, similar to `Mug`, `MugLike` can define a mug-like type:
+On the other hand, to help extend a state type into a mug-like one, `MugLike` is available:
 
 ```tsx
 import { Mug, MugLike } from 'react-mug';
 
-interface AnotherState {
-  a: AState;
-  /* rest fields */
-}
-
 type AnotherMugLike = MugLike<AnotherState, { a: Mug<AState> }>;
 ```
 
-And conversely, `State` can evaluate a state type:
+And to evaluate a state type reversely, `State` is available:
 
 ```tsx
 import { State } from 'react-mug';
@@ -733,38 +732,164 @@ import { getIt, setIt, upon } from 'react-mug';
 
 const [r, w] = upon(aMug);
 
-const set = w(setIt);
-
 const get = r(getIt);
+
+const set = w(setIt);
 ```
 
-In fact, actions are "[curried](https://stackoverflow.com/questions/36314/what-is-currying)" ops built from ops, and ops are "muggy-flavored" functions built from pure functions.
-
-The helpers from calling `upon` are merely shortcuts for action creation straight from pure functions.
-
-To put it simply, all conversions among them can be diagrammed as follows:
+All feasible conversions among the three can be diagrammed as follows:
 
 ```txt
-Actions ◀︎━{`upon#w`, `upon#r`}━━━┓
-▲ ┃                              ┃
-┃ ┗━━━━━━━{`pure`}━━━━━━━━━━━━━┓ ┃
-┃                              ┃ ┃
-{`upon#w`, `upon#r`}           ┃ ┃
-┃                              ┃ ┃
-┃ ┏━━━━━━━{'on state input'}━┓ ┃ ┃
-┃ ┃                          ▼ ▼ ┃
-Ops ◀︎━━━━━{`w`, `r`}━━━━━━━━ Pure Functions
+Actions ◀︎━{`upon#r`, `upon#w`}━┓
+▲ ┃                            ┃
+┃ ┗━━━━━━━{`pure`}━━━━━━━━━━━┓ ┃
+┃                            ┃ ┃
+{`upon#r`, `upon#w`}         ┃ ┃
+┃                            ┃ ┃
+┃ ┌┅┅┅┅┅┅┅{'if states'}┅┅┅┅┐ ┃ ┃
+┃ ┇                        ▼ ▼ ┃
+Ops ◀︎━━━━━{`r`, `w`}━━━━━━ Pure Functions
 ```
 
-## <span id="b23ecc8">Advanced action and op types</span>
+Conceptually, actions are [curried](https://stackoverflow.com/questions/36314/what-is-currying) ops, and ops are muggy-flavored semi-pure functions.
 
-## <span id="7265ffc">Merge-patch's patch</span>
+## <span id="b23ecc8">Referencing actions and ops</span>
+
+The utilities `ReadAction` and `WriteAction` can help declare action types, using pure function types, enabling type-safe references elsewhere:
+
+```tsx
+import { ReadAction, upon, WriteAction } from 'react-mug';
+
+const [r, w] = upon(aMug);
+
+const read = r((state, param1: string, param2: string) => 'readResult');
+
+const write = w((state, param1: string, param2: string) => ({
+  ...state,
+  /* fields to write */
+}));
+
+// ...
+
+const readToo: ReadAction<(state: AState, param1: string, param2: string) => string> = read;
+
+const writeToo: WriteAction<(state: AState, param1: string, param2: string) => AState> = write;
+```
+
+Likewise, `ReadOp` and `WriteOp` can help declare op types:
+
+```tsx
+import { r, ReadOp, w, WriteOp } from 'react-mug';
+
+const readIt = r((state: AState, param1: string, param2: string) => 'readItResult');
+
+const writeIt = w((state: AState, param1: string, param2: string) => ({
+  ...state,
+  /* fields to write */
+}));
+
+// ...
+
+const readItToo: ReadOp<(state: AState, param1: string, param2: string) => string> = readIt;
+
+const writeItToo: WriteOp<(state: AState, param1: string, param2: string) => AState> = writeIt;
+```
+
+## <span id="7265ffc">Merge-patch's patches</span>
+
+A patch value that a merge-patch action or op can take generally conforms to the recursive partial type of the state in question. And to handle edge cases well, nuances are collected below:
+
+- For all fields, a patch value of `undefined` has no effect, preventing the clearance of non-nullable fields.
+- For a field that can be `undefined`, its patch type is the original, `undefined`, or `none` from `react-mug`, preventing the assignment of a partial value when empty but enabling the clearance.
+- For a field that can be `null`, its patch type is the original or `undefined`, preventing the assignment of a partial value when empty.
+- For an array field, its patch length has effect, enabling the addition and removal of items.
+- For an item of an array field, its patch type is the original, preventing the addition of a partial item.
+- For a tuple field, its patch length is fixed, preventing the addition and removal of a item.
+- For an item of a tuple field, its patch type is the recursive partial of the original with the nuances here or `undefined`.
+- For a plain object field, its patch type is the recursive partial of the original with the nuances here or `undefined`.
+- For a primitive field, its patch type is the original or `undefined`.
+
+As a side note, by JavaScript syntax, an item can be omitted as `undefined` in a tuple like a field in a plain object:
+
+```tsx
+setIt(aMug, { tuple: [, 1, , 3, ,] });
+```
 
 ## <span id="c27629b">Type checkers</span>
 
+Several type checkers are provided for mugs, actions, and ops:
+
+```tsx
+import { isAction, isMug, isOp, isReadAction, isReadOp, isWriteAction, isWriteOp } from 'react-mug';
+
+isMug(aMug);
+
+isAction(read);
+isAction(write);
+isReadAction(read);
+isWriteAction(write);
+
+isOp(readIt);
+isOp(writeIt);
+isReadOp(readIt);
+isWriteOp(writeIt);
+```
+
 ## <span id="4a1a881">Array literal helpers</span>
 
+Arrays in TypeScript can be readonly or not, tuple or not, but only the most basic kind has literals:
+
+```tsx
+const someArray = [0, false, '']; // Type: (number|boolean|string)[]
+```
+
+Thus, the literal helpers for the rest kinds are provided:
+
+```tsx
+import { readonlyArray, readonlyTuple, tuple } from 'react-mug';
+
+const someReadonlyArray = readonlyArray(0, false, ''); // Type: readonly (number|boolean|string)[]
+const someTuple = tuple(0, false, ''); // Type: [number, boolean, string]
+const someReadonlyTuple = readonlyTuple(0, false, ''); // Type: readonly [number, boolean, string]
+```
+
 ## <span id="7c4ab1e">Mugs with attachments</span>
+
+In a mug, the fields adjacent to the `construction` field are called attachments. They don't affect state logic but can help organize it in object-oriented flavor.
+
+Specially, the utility `attach` can help bundle a mug and its actions into one bundle.
+
+```tsx
+// AMug.ts
+import { attach, construction, Mug, upon } from 'react-mug';
+
+interface AState {
+  /* fields */
+}
+
+function createAMug() {
+  const mug: Mug<AState> = {
+    [construction]: {
+      /* fields */
+    },
+  };
+
+  const [r, w] = upon(mug);
+
+  const read = r((state, param1: string, param2: string) => 'readResult');
+
+  const write = w((state, param1: string, param2: string) => ({
+    ...state,
+    /* fields to write */
+  }));
+
+  return attach(mug, { read, write });
+}
+
+// const aMug = createAMug();
+// const readResult = aMug.read('param1', 'param2');
+// aMug.write('param1', 'param2');
+```
 
 # <span id="2d56cc3">FAQs</span>
 

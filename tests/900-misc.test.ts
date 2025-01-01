@@ -5,7 +5,7 @@ import {
   initial,
   Mug,
   MugLike,
-  restore,
+  resetIt,
   setIt,
   WithAttachments,
 } from '../src';
@@ -153,7 +153,7 @@ describe('3866ec1, initial', () => {
   });
 });
 
-describe('e7adc62, restore, [cite] .:3866ec1', () => {
+describe('e7adc62, resetIt, [cite] .:3866ec1', () => {
   describe('4b5086d, calls on a plain object state', () => {
     interface AState extends ObjectState {}
 
@@ -165,7 +165,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
     };
 
     test('[action, verify] the return equals the state in ref and value', () => {
-      const ret = restore(aState);
+      const ret = resetIt(aState);
       expect(ret).toBe(aState);
       expect(ret).toStrictEqual(aState);
     });
@@ -199,7 +199,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
 
     test('[action]', () => {
       gotStateBefore = getIt(aMugLike);
-      ret = restore(aMugLike);
+      ret = resetIt(aMugLike);
       gotStateAfter = getIt(aMugLike);
     });
 
@@ -245,7 +245,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
       setIt(aMugLike, { muggyObject: { s: 'sdf' } });
 
       gotStateBefore = getIt(aMugLike);
-      ret = restore(aMugLike);
+      ret = resetIt(aMugLike);
       gotStateAfter = getIt(aMugLike);
 
       initialState = initial(aMugLike);
@@ -286,7 +286,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
 
     test('[action]', () => {
       gotStateBefore = getIt(aMug);
-      ret = restore(aMug);
+      ret = resetIt(aMug);
       gotStateAfter = getIt(aMug);
     });
 
@@ -321,7 +321,7 @@ describe('e7adc62, restore, [cite] .:3866ec1', () => {
       setIt(aMug, { s: 'sdf' });
 
       gotStateBefore = getIt(aMug);
-      ret = restore(aMug);
+      ret = resetIt(aMug);
       gotStateAfter = getIt(aMug);
 
       initialState = initial(aMug);

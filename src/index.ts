@@ -23,6 +23,6 @@ export {
   isWriteOp,
   pure,
 } from './mug';
-export { ReadOp, WriteOp, getIt, initial, r, restore, setIt, w } from './op-mech';
+export { ReadOp, WriteOp, getIt, initial, r, resetIt, setIt, w } from './op-mech';
 export { useIt } from './react-integration';
 export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';

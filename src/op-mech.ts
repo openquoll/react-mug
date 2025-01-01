@@ -403,8 +403,8 @@ export function initial(mugLike: any): any {
   return state;
 }
 
-export function restore<TMugLike>(mugLike: TMugLike): TMugLike;
-export function restore(mugLike: any): any {
+export function resetIt<TMugLike>(mugLike: TMugLike): TMugLike;
+export function resetIt(mugLike: any): any {
   // When the mugLike is a state, return it as it is.
   if (isState(mugLike)) {
     return mugLike;

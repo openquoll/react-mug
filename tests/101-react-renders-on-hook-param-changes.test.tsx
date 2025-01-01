@@ -10,7 +10,7 @@ import {
   ReadAction,
   ReadOp,
   upon,
-  useIt,
+  useR,
 } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
@@ -55,7 +55,7 @@ describe('229a728, react renders on hook param changes', () => {
     type Props = { readOp: ReadOp<(state: AState) => ObjectState['o']> };
 
     const AComponent = jest.fn(({ readOp }: Props) => {
-      const hookReturn = useIt(readOp, aMug);
+      const hookReturn = useR(readOp, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -171,7 +171,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const AComponent = jest.fn(({ mugLike }: Props) => {
-      const hookReturn = useIt(readOp, mugLike);
+      const hookReturn = useR(readOp, mugLike);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -1164,7 +1164,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const AComponent = jest.fn(({ extra }: Props) => {
-      const hookReturn = useIt(readOp, aMug, extra);
+      const hookReturn = useR(readOp, aMug, extra);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -1376,7 +1376,7 @@ describe('229a728, react renders on hook param changes', () => {
     type Props = { readAction: ReadAction<(state: AState) => ObjectState['o']> };
 
     const AComponent = jest.fn(({ readAction }: Props) => {
-      const hookReturn = useIt(readAction);
+      const hookReturn = useR(readAction);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -1517,7 +1517,7 @@ describe('229a728, react renders on hook param changes', () => {
     };
 
     const AComponent = jest.fn(({ extra }: Props) => {
-      const hookReturn = useIt(readAction, extra);
+      const hookReturn = useR(readAction, extra);
       tapHookReturn(hookReturn);
       return <div />;
     });

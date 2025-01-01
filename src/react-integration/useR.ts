@@ -62,10 +62,10 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
   }
 }
 
-export function useIt<
+export function useR<
   TReadAction extends AnyFunction & ReadActionMeta<AnyFunction & ReadOpMeta<() => any>>,
 >(readAction: TReadAction): ReturnType<TReadAction>;
-export function useIt<
+export function useR<
   TReadAction extends AnyFunction &
     ReadActionMeta<
       AnyFunction & ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
@@ -74,24 +74,24 @@ export function useIt<
   readAction: TReadAction,
   ...readActions: Parameters<TReadAction>
 ): State<TReadAction[typeof _mugLike]>;
-export function useIt<TReadAction extends AnyReadAction>(
+export function useR<TReadAction extends AnyReadAction>(
   readAction: TReadAction,
   ...readArgs: Parameters<TReadAction>
 ): ReturnType<TReadAction>;
-export function useIt<TReadOp extends AnyFunction & ReadOpMeta<() => any>>(
+export function useR<TReadOp extends AnyFunction & ReadOpMeta<() => any>>(
   readOp: TReadOp,
   mugLike?: unknown,
 ): ReturnType<TReadOp>;
-export function useIt<
+export function useR<
   TReadOp extends AnyFunction &
     ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
   TMugLike extends Param0<TReadOp>,
 >(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
-export function useIt<TReadOp extends AnyReadOp>(
+export function useR<TReadOp extends AnyReadOp>(
   readOp: TReadOp,
   ...readArgs: Parameters<TReadOp>
 ): ReturnType<TReadOp>;
-export function useIt(
+export function useR(
   read: {
     (...args: any): any;
     [_readOp]?: any;

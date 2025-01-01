@@ -1,3 +1,11 @@
 {
+  "javascript.preferences.organizeImports": {
+    "caseSensitivity": "caseSensitive"
+  },
+
+  "typescript.preferences.organizeImports": {
+    "caseSensitivity": "caseSensitive"
+  },
+
   "typescript.tsdk": "./node_modules/typescript/lib/"
 }

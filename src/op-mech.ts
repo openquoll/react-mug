@@ -1,4 +1,4 @@
-import { MergePatch, mergePatch, PassThrough, passThrough, PossiblePatch } from './builtin/fns';
+import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from './builtin/fns';
 import { _builtinId } from './builtin/ids';
 import {
   _readFn,
@@ -322,11 +322,11 @@ export type WriteOpOnEmptyParamWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteOpMeta<TWriteFn>;
 
-export type WriteOpOnMergePatch = (<TMugLike>(
+export type WriteOpOnAssignPatch = (<TMugLike>(
   mugLike: TMugLike,
   patch: PossiblePatch<NoInfer<TMugLike>>,
 ) => TMugLike) &
-  WriteOpMeta<MergePatch>;
+  WriteOpMeta<AssignPatch>;
 
 export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
   TMugLike extends PossibleMugLike<Param0<TWriteFn>>,
@@ -336,12 +336,12 @@ export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteOpMeta<TWriteFn>;
 
-export type WriteOp<TWrite extends AnyFunction = MergePatch> = TWrite extends AnyWriteOp
+export type WriteOp<TWrite extends AnyFunction = AssignPatch> = TWrite extends AnyWriteOp
   ? TWrite
   : TWrite extends () => any
     ? WriteOpOnEmptyParamWriteFn<TWrite>
-    : TWrite extends MergePatch
-      ? WriteOpOnMergePatch
+    : TWrite extends AssignPatch
+      ? WriteOpOnAssignPatch
       : WriteOpOnTypicalWriteFn<TWrite>;
 
 export type SetIt = WriteOp;
@@ -351,7 +351,7 @@ export function w<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): WriteOp<TWrit
 export function w<
   TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotOp & NotAction,
 >(writeFn: TWriteFn): WriteOp<TWriteFn>;
-export function w(write: AnyFunction = mergePatch): AnyFunction {
+export function w(write: AnyFunction = assignPatch): AnyFunction {
   if (isWriteOp(write)) {
     return write;
   }

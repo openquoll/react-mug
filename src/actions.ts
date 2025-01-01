@@ -1,4 +1,4 @@
-import { MergePatch, PossiblePatch } from './builtin/fns';
+import { AssignPatch, PossiblePatch } from './builtin/fns';
 import {
   _mugLike,
   _readFn,
@@ -73,7 +73,7 @@ export type WriteAction<
 > = TWrite extends AnyWriteOp
   ? TWrite[typeof _writeFn] extends () => any
     ? WriteActionOnEmptyParamWriteOp<TWrite, TMugLike>
-    : TWrite[typeof _writeFn] extends MergePatch
+    : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteActionOnSetIt<TMugLike>
       : WriteActionOnTypicalWriteOp<TWrite, TMugLike>
   : WriteAction<WriteOp<TWrite>, TMugLike>;

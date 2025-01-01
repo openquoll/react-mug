@@ -1,7 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
-import type { MergePatch, PassThrough } from './builtin';
+import type { AssignPatch, PassThrough } from './builtin';
 import {
   AnyMug,
   Mug,
@@ -196,5 +196,5 @@ test('ReadActionMeta', () => {
 });
 
 test('WriteActionMeta', () => {
-  expectType<WriteActionMeta<MergePatch>>(fake<WriteActionMeta<SetIt>>());
+  expectType<WriteActionMeta<AssignPatch>>(fake<WriteActionMeta<SetIt>>());
 });

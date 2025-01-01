@@ -3,10 +3,10 @@ import { expectAssignable, expectType } from 'tsd';
 import { fake } from '../tests/type-utils';
 import { ReadAction, upon, WriteAction } from './actions';
 import {
-  _bidFnMergePatch,
+  _bidFnAssignPatch,
   _builtinId,
-  MergePatch,
-  mergePatch,
+  AssignPatch,
+  assignPatch,
   PassThrough,
   passThrough,
   PossiblePatch,
@@ -347,7 +347,7 @@ test('upon#r, pure, getIt, passThrough', () => {
   read776(fake<any>());
 });
 
-test('WriteAction, SetIt, MergePatch', () => {
+test('WriteAction, SetIt, AssignPatch', () => {
   type Writea2e = WriteAction<(state: AState) => AState, CompositeAMug>;
 
   expectType<(() => void) & WriteActionMeta<(state: AState) => AState, CompositeAMug>>(
@@ -477,10 +477,10 @@ test('WriteAction, SetIt, MergePatch', () => {
 
   expectType<Write4f8>(fake<WriteAction<WriteOp, CompositeAMug>>());
 
-  expectType<Write4f8>(fake<WriteAction<MergePatch, CompositeAMug>>());
+  expectType<Write4f8>(fake<WriteAction<AssignPatch, CompositeAMug>>());
 });
 
-test('upon#w, pure, setIt, mergePatch', () => {
+test('upon#w, pure, setIt, assignPatch', () => {
   expectType<typeof uponCompositeAMug.w>(w);
 
   // @ts-expect-error
@@ -664,10 +664,10 @@ test('upon#w, pure, setIt, mergePatch', () => {
 
   expectType<{
     <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
-    [_builtinId]: typeof _bidFnMergePatch;
+    [_builtinId]: typeof _bidFnAssignPatch;
   }>(pure(write8db));
 
-  expectType<typeof write8db>(w(mergePatch));
+  expectType<typeof write8db>(w(assignPatch));
 
   expectType<typeof write8db>(w(setIt));
 

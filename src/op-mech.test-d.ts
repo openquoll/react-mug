@@ -2,10 +2,10 @@ import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
 import {
-  _bidFnMergePatch,
+  _bidFnAssignPatch,
   _builtinId,
-  MergePatch,
-  mergePatch,
+  AssignPatch,
+  assignPatch,
   passThrough,
   PassThrough,
   PossiblePatch,
@@ -277,7 +277,7 @@ test('r, pure, getIt, passThrough', () => {
   read0ea(fake<AState>(), fake<any>());
 });
 
-test('WriteOp, SetIt, MergePatch', () => {
+test('WriteOp, SetIt, AssignPatch', () => {
   type Write353 = WriteOp<<TState>(state: TState) => TState>;
 
   expectType<
@@ -346,18 +346,18 @@ test('WriteOp, SetIt, MergePatch', () => {
     (<TMugLike>(mugLike: TMugLike, patch: PossiblePatch<NoInfer<TMugLike>>) => TMugLike) &
       WriteOpMeta<{
         <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
-        [_builtinId]: typeof _bidFnMergePatch;
+        [_builtinId]: typeof _bidFnAssignPatch;
       }>
   >(fake<WriteOp>());
 
   expectType<WriteOp>(fake<WriteOp<WriteOp>>());
 
-  expectType<WriteOp>(fake<WriteOp<MergePatch>>());
+  expectType<WriteOp>(fake<WriteOp<AssignPatch>>());
 
   expectType<WriteOp>(fake<SetIt>());
 });
 
-test('w, pure, setIt, mergePatch', () => {
+test('w, pure, setIt, assignPatch', () => {
   // @ts-expect-error
   w(r((state: any) => state));
 
@@ -501,7 +501,7 @@ test('w, pure, setIt, mergePatch', () => {
 
   expectType<typeof write09e>(w(write09e));
 
-  expectType<typeof write09e>(w(mergePatch));
+  expectType<typeof write09e>(w(assignPatch));
 
   expectType<typeof write09e>(setIt);
 

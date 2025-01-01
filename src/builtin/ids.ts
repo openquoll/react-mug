@@ -1,3 +1,3 @@
 export const _builtinId = Symbol();
 
-export const _bidFnMergePatch = 'ed8' as const;
+export const _bidFnAssignPatch = 'ed8' as const;

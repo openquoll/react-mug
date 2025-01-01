@@ -24,7 +24,7 @@ import {
   AnyReadonlyTuple,
   EmptyItem,
 } from '../type-utils';
-import { _bidFnMergePatch, _builtinId } from './ids';
+import { _bidFnAssignPatch, _builtinId } from './ids';
 
 export function passThrough<TState>(state: TState): TState {
   return state;
@@ -79,8 +79,8 @@ export type PossiblePatch<TMugLike> = undefined extends TMugLike
     ? PossiblePatchOnNullive<TMugLike>
     : PossiblePatchOnNonNullable<TMugLike>;
 
-export function mergePatch<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
-export function mergePatch(state: any, patch: any): any {
+export function assignPatch<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
+export function assignPatch(state: any, patch: any): any {
   if (isMug(patch)) {
     return state;
   }
@@ -119,7 +119,7 @@ export function mergePatch(state: any, patch: any): any {
         return result;
       }
 
-      result[patchKey] = mergePatch(state[patchKey], patch[patchKey]);
+      result[patchKey] = assignPatch(state[patchKey], patch[patchKey]);
       return result;
     }, shallowCloneOfPlainObject(state));
   }
@@ -159,7 +159,7 @@ export function mergePatch(state: any, patch: any): any {
         continue;
       }
 
-      result[i] = mergePatch(state[i], patch[i]);
+      result[i] = assignPatch(state[i], patch[i]);
     }
     return result;
   }
@@ -175,6 +175,6 @@ export function mergePatch(state: any, patch: any): any {
   return patch;
 }
 
-mergePatch[_builtinId] = _bidFnMergePatch;
+assignPatch[_builtinId] = _bidFnAssignPatch;
 
-export type MergePatch = typeof mergePatch;
+export type AssignPatch = typeof assignPatch;

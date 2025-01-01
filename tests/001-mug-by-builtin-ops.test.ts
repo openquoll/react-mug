@@ -1,4 +1,4 @@
-import { construction, getIt, Mug, MugError, none, setIt } from '../src';
+import { construction, getIt, Mug, MugError, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
 describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
@@ -186,27 +186,12 @@ describe('11d55b6, operates "a plain object mug" by builtin ops', () => {
   });
 
   describe('629d427, writes "the nullable object field" with undefined', () => {
-    test('[action, verify] the field stay unchanged in ref and value', () => {
+    test('[action, verify] the field changes in ref, becomes undefined', () => {
       setIt(aMug, { no: { s: '880', o: { s: '880' } } });
       const aStateBefore = getIt(aMug);
       expect(aStateBefore).toMatchObject({ no: { s: '880', o: { s: '880' } } });
 
       setIt(aMug, { no: undefined });
-
-      const aStateAfter = getIt(aMug);
-
-      expect(aStateAfter.no).toBe(aStateBefore.no);
-      expect(aStateAfter.no).toStrictEqual(aStateBefore.no);
-    });
-  });
-
-  describe('2655a9f, writes "the nullable object field" with none', () => {
-    test('[action, verify] the field changes in ref, becomes undefined', () => {
-      setIt(aMug, { no: { s: '802', o: { s: '802' } } });
-      const aStateBefore = getIt(aMug);
-      expect(aStateBefore).toMatchObject({ no: { s: '802', o: { s: '802' } } });
-
-      setIt(aMug, { no: none });
 
       const aStateAfter = getIt(aMug);
 

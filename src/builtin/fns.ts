@@ -1,22 +1,13 @@
 import {
   CleanMug,
   isClassDefinedObject,
-  isMug,
   isObjectLike,
   isPlainObject,
   ownKeysOfObjectLike,
   shallowCloneOfPlainObject,
   State,
 } from '../mug';
-import {
-  _constructor,
-  _hasOwnProperty,
-  _is,
-  _isArray,
-  _length,
-  _reduce,
-  _undefined,
-} from '../shortcuts';
+import { _constructor, _hasOwnProperty, _is, _isArray, _length, _reduce } from '../shortcuts';
 import {
   AnyFunction,
   AnyObjectLike,
@@ -32,16 +23,11 @@ export function passThrough<TState>(state: TState): TState {
 
 export type PassThrough = typeof passThrough;
 
-export const none = Symbol();
-
 /**
  * Undefinedive means the type can be undefined.
  * In comparison, Nullable means the type can be undefined or null.
  **/
-export type PossiblePatchOnUndefinedive<TMugLike> =
-  | State<NonNullable<TMugLike>>
-  | undefined
-  | typeof none;
+export type PossiblePatchOnUndefinedive<TMugLike> = State<NonNullable<TMugLike>> | undefined;
 
 /**
  * Nullive means the type can be null.
@@ -81,18 +67,6 @@ export type PossiblePatch<TMugLike> = undefined extends TMugLike
 
 export function assignPatch<TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
 export function assignPatch(state: any, patch: any): any {
-  if (isMug(patch)) {
-    return state;
-  }
-
-  if (patch === _undefined) {
-    return state;
-  }
-
-  if (patch === none) {
-    return _undefined;
-  }
-
   if (_is(state, patch)) {
     return state;
   }
@@ -102,19 +76,6 @@ export function assignPatch(state: any, patch: any): any {
       const patchKeyInState = state[_hasOwnProperty](patchKey);
 
       if (!patchKeyInState) {
-        if (isMug(patch[patchKey])) {
-          return result;
-        }
-
-        if (patch[patchKey] === _undefined) {
-          return result;
-        }
-
-        if (patch[patchKey] === none) {
-          result[patchKey] = _undefined;
-          return result;
-        }
-
         result[patchKey] = patch[patchKey];
         return result;
       }
@@ -142,19 +103,6 @@ export function assignPatch(state: any, patch: any): any {
       }
 
       if (!indexInState && indexInPatch) {
-        if (isMug(patch[i])) {
-          continue;
-        }
-
-        if (patch[i] === _undefined) {
-          continue;
-        }
-
-        if (patch[i] === none) {
-          result[i] = _undefined;
-          continue;
-        }
-
         result[i] = patch[i];
         continue;
       }

@@ -3,7 +3,7 @@ import { expectType } from 'tsd';
 import { fake } from '../../tests/type-utils';
 import { Mug, WithAttachments } from '../mug';
 import { EmptyItem } from '../type-utils';
-import { none, PossiblePatch } from './fns';
+import { PossiblePatch } from './fns';
 
 interface ObjectState {
   s: string;
@@ -32,7 +32,7 @@ test('PossiblePatch', () => {
     s?: string;
     o?: { s?: string };
     f?: Func;
-    no?: ObjectState | typeof none;
+    no?: ObjectState;
     oa?: ObjectState[];
     roa?: readonly ObjectState[];
     ot?: [{ s?: string; o?: { s?: string } } | EmptyItem];

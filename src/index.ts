@@ -1,5 +1,5 @@
 export { ActionToolbelt, ReadAction, WriteAction, upon } from './actions';
-export { PossiblePatch, assignPatch, none, passThrough } from './builtin';
+export { PossiblePatch, assignPatch, passThrough } from './builtin';
 export {
   Mug,
   MugError,

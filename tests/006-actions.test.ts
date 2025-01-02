@@ -1,7 +1,7 @@
 import { construction, getIt, Mug, PossiblePatch, pure, setIt, upon } from '../src';
 
-jest.mock('../src/op-mech', () => {
-  const m = jest.requireActual('../src/op-mech');
+jest.mock('../src/mechanism', () => {
+  const m = jest.requireActual('../src/mechanism');
   const { getIt, setIt } = m;
   jest.spyOn(m, 'r');
   jest.spyOn(m, 'w');

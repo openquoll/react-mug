@@ -15,7 +15,7 @@ import {
   WithAttachments,
   WriteActionMeta,
 } from './mug';
-import type { GetIt, SetIt } from './op-mech';
+import type { GetIt, SetIt } from './mechanism';
 import { EmptyItem } from './type-utils';
 
 interface ObjectState {

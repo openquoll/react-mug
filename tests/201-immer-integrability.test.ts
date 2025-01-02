@@ -13,8 +13,8 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
-describe('4496a38, writes by a custom write op using immer', () => {
-  const customWriteOp = w((state: AState, s: string) =>
+describe('4496a38, writes by a custom write proc using immer', () => {
+  const customWriteProc = w((state: AState, s: string) =>
     produce(state, (draft) => {
       draft.s = s;
       draft.potentialMuggyObject.s = s;
@@ -36,24 +36,24 @@ describe('4496a38, writes by a custom write op using immer', () => {
     },
   };
 
-  const opParamS = '98c';
+  const procParamS = '98c';
   let gotAStateBefore: AState, gotAStateAfter: AState;
 
   test('[action]', () => {
     gotAStateBefore = getIt(aMug);
-    customWriteOp(aMug, opParamS);
+    customWriteProc(aMug, procParamS);
     gotAStateAfter = getIt(aMug);
   });
 
   test('[verify] the got state changes in ref and value', () => {
     expect(gotAStateAfter).not.toBe(gotAStateBefore);
     expect(gotAStateAfter).toStrictEqual({
-      s: opParamS,
+      s: procParamS,
       o: {
         s: 'asd',
       },
       potentialMuggyObject: {
-        s: opParamS,
+        s: procParamS,
         o: {
           s: 'asd',
         },

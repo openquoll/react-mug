@@ -3,7 +3,7 @@ import { expectAssignable, expectType } from 'tsd';
 import { fake } from '../../tests/type-utils';
 import { upon } from '../actions';
 import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';
-import { r as flatR, w as flatW } from '../op-mech';
+import { r as flatR, w as flatW } from '../mechanism';
 import { useR } from './useR';
 
 interface ObjectState {

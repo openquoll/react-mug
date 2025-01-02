@@ -1,7 +1,7 @@
 import { construction, getIt, Mug, MugLike, w } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
-describe('900ce35, writes by an object state custom write op', () => {
+describe('900ce35, writes by an object state custom write proc', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -16,11 +16,11 @@ describe('900ce35, writes by an object state custom write op', () => {
   describe('0deb0f9, the fn directly returns the input state', () => {
     const customWriteFn = jest.fn((state: AState): AState => state);
 
-    const customWriteOp = w(customWriteFn);
+    const customWriteProc = w(customWriteFn);
 
     let gotAStateBefore: AState, gotAStateAfter: AState;
     let gotObjectStateBefore: ObjectState, gotObjectStateAfter: ObjectState;
-    let fnParamState: AState, fnReturn: AState, opReturn: any;
+    let fnParamState: AState, fnReturn: AState, procReturn: any;
 
     describe('5fb96fe, writes a constant plain object state, [cite] 002:31f3463', () => {
       const aState: AState = {
@@ -37,7 +37,7 @@ describe('900ce35, writes by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        opReturn = customWriteOp(aState);
+        procReturn = customWriteProc(aState);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
       });
@@ -50,12 +50,12 @@ describe('900ce35, writes by an object state custom write op', () => {
         expect(fnParamState).toStrictEqual(aState);
       });
 
-      test('[verify] the op return and its fields equal the fn return and its fields in ref and value', () => {
-        expect(opReturn).toBe(fnReturn);
+      test('[verify] the proc return and its fields equal the fn return and its fields in ref and value', () => {
+        expect(procReturn).toBe(fnReturn);
         ownKeysOfObjectLike(fnReturn).forEach((key) => {
-          expect(opReturn[key]).toBe(fnReturn[key]);
+          expect(procReturn[key]).toBe(fnReturn[key]);
         });
-        expect(opReturn).toStrictEqual(fnReturn);
+        expect(procReturn).toStrictEqual(fnReturn);
       });
     });
 
@@ -78,7 +78,7 @@ describe('900ce35, writes by an object state custom write op', () => {
       test('[action]', () => {
         gotAStateBefore = getIt(aMug);
 
-        opReturn = customWriteOp(aMug);
+        procReturn = customWriteProc(aMug);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
@@ -101,13 +101,13 @@ describe('900ce35, writes by an object state custom write op', () => {
         expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return equals the mug in ref and value', () => {
-        expect(opReturn).toBe(aMug);
-        expect(opReturn).toStrictEqual(aMug);
+      test('[verify] the proc return equals the mug in ref and value', () => {
+        expect(procReturn).toBe(aMug);
+        expect(procReturn).toStrictEqual(aMug);
       });
     });
 
@@ -142,7 +142,7 @@ describe('900ce35, writes by an object state custom write op', () => {
       test('[action]', () => {
         gotAStateBefore = getIt(aMug);
 
-        opReturn = customWriteOp(aMug);
+        procReturn = customWriteProc(aMug);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
@@ -165,13 +165,13 @@ describe('900ce35, writes by an object state custom write op', () => {
         expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return equals the mug in ref and value', () => {
-        expect(opReturn).toBe(aMug);
-        expect(opReturn).toStrictEqual(aMug);
+      test('[verify] the proc return equals the mug in ref and value', () => {
+        expect(procReturn).toBe(aMug);
+        expect(procReturn).toStrictEqual(aMug);
       });
     });
 
@@ -197,7 +197,7 @@ describe('900ce35, writes by an object state custom write op', () => {
         gotAStateBefore = getIt(aMugLike);
         gotObjectStateBefore = getIt(objectMug);
 
-        opReturn = customWriteOp(aMugLike);
+        procReturn = customWriteProc(aMugLike);
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
@@ -235,27 +235,27 @@ describe('900ce35, writes by an object state custom write op', () => {
         expect(gotAStateAfter.potentialMuggyObject).toStrictEqual(gotObjectStateAfter);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return and its fields equal the mug-like and its fields in ref and value', () => {
-        expect(opReturn).toBe(aMugLike);
+      test('[verify] the proc return and its fields equal the mug-like and its fields in ref and value', () => {
+        expect(procReturn).toBe(aMugLike);
         ownKeysOfObjectLike(aMugLike).forEach((key) => {
-          expect(opReturn[key]).toBe(aMugLike[key]);
+          expect(procReturn[key]).toBe(aMugLike[key]);
         });
-        expect(opReturn).toStrictEqual(aMugLike);
+        expect(procReturn).toStrictEqual(aMugLike);
       });
     });
 
-    describe('87d8b65, calls "w" with the op', () => {
-      test('[action, verify] the return equals the op in ref', () => {
-        expect(w(customWriteOp)).toBe(customWriteOp);
+    describe('87d8b65, calls "w" with the proc', () => {
+      test('[action, verify] the return equals the proc in ref', () => {
+        expect(w(customWriteProc)).toBe(customWriteProc);
       });
     });
   });
 
-  describe('cddad6f, the op generates a state overriding the input state_s string field and potential muggy object field_s string field with the input string, [cite] .:0deb0f9', () => {
+  describe('cddad6f, the proc generates a state overriding the input state_s string field and potential muggy object field_s string field with the input string, [cite] .:0deb0f9', () => {
     const customWriteFn = jest.fn((state: AState, s: string): AState => {
       return {
         ...state,
@@ -267,11 +267,11 @@ describe('900ce35, writes by an object state custom write op', () => {
       };
     });
 
-    const customWriteOp = w(customWriteFn);
+    const customWriteProc = w(customWriteFn);
 
     let gotAStateBefore: AState, gotAStateAfter: AState;
     let gotObjectStateBefore: ObjectState, gotObjectStateAfter: ObjectState;
-    let fnParamState: AState, fnReturn: AState, opReturn: any;
+    let fnParamState: AState, fnReturn: AState, procReturn: any;
 
     describe('f4df6bd, writes a plain object state with a different string', () => {
       const aState: AState = {
@@ -288,17 +288,17 @@ describe('900ce35, writes by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        opReturn = customWriteOp(aState, 'sdf');
+        procReturn = customWriteProc(aState, 'sdf');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
       });
 
-      test('[verify] the op return and its fields equal the fn return and its fields in ref and value', () => {
-        expect(opReturn).toBe(fnReturn);
+      test('[verify] the proc return and its fields equal the fn return and its fields in ref and value', () => {
+        expect(procReturn).toBe(fnReturn);
         ownKeysOfObjectLike(fnReturn).forEach((key) => {
-          expect(opReturn[key]).toBe(fnReturn[key]);
+          expect(procReturn[key]).toBe(fnReturn[key]);
         });
-        expect(opReturn).toStrictEqual(fnReturn);
+        expect(procReturn).toStrictEqual(fnReturn);
       });
     });
 
@@ -317,17 +317,17 @@ describe('900ce35, writes by an object state custom write op', () => {
       };
 
       test('[action]', () => {
-        opReturn = customWriteOp(aState, 'asd');
+        procReturn = customWriteProc(aState, 'asd');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
       });
 
-      test('[verify] the op return and its fields equal the fn return and its fields in ref and value', () => {
-        expect(opReturn).toBe(fnReturn);
+      test('[verify] the proc return and its fields equal the fn return and its fields in ref and value', () => {
+        expect(procReturn).toBe(fnReturn);
         ownKeysOfObjectLike(fnReturn).forEach((key) => {
-          expect(opReturn[key]).toBe(fnReturn[key]);
+          expect(procReturn[key]).toBe(fnReturn[key]);
         });
-        expect(opReturn).toStrictEqual(fnReturn);
+        expect(procReturn).toStrictEqual(fnReturn);
       });
     });
 
@@ -350,20 +350,20 @@ describe('900ce35, writes by an object state custom write op', () => {
       test('[action]', () => {
         gotAStateBefore = getIt(aMug);
 
-        opReturn = customWriteOp(aMug, 'sdf');
+        procReturn = customWriteProc(aMug, 'sdf');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
         gotAStateAfter = getIt(aMug);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return equals the mug in ref and value', () => {
-        expect(opReturn).toBe(aMug);
-        expect(opReturn).toStrictEqual(aMug);
+      test('[verify] the proc return equals the mug in ref and value', () => {
+        expect(procReturn).toBe(aMug);
+        expect(procReturn).toStrictEqual(aMug);
       });
 
       test('[verify] the before-write got state differs from the fn return in ref', () => {
@@ -407,20 +407,20 @@ describe('900ce35, writes by an object state custom write op', () => {
       test('[action]', () => {
         gotAStateBefore = getIt(aMug);
 
-        opReturn = customWriteOp(aMug, 'asd');
+        procReturn = customWriteProc(aMug, 'asd');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
         gotAStateAfter = getIt(aMug);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return equals the mug in ref and value', () => {
-        expect(opReturn).toBe(aMug);
-        expect(opReturn).toStrictEqual(aMug);
+      test('[verify] the proc return equals the mug in ref and value', () => {
+        expect(procReturn).toBe(aMug);
+        expect(procReturn).toStrictEqual(aMug);
       });
 
       test('[verify] the before-write got state and its potential muggy object field differ from the fn return and its counterpart field in ref', () => {
@@ -472,7 +472,7 @@ describe('900ce35, writes by an object state custom write op', () => {
         gotAStateBefore = getIt(aMugLike);
         gotObjectStateBefore = getIt(objectMug);
 
-        opReturn = customWriteOp(aMugLike, 'sdf');
+        procReturn = customWriteProc(aMugLike, 'sdf');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
@@ -480,26 +480,26 @@ describe('900ce35, writes by an object state custom write op', () => {
         gotObjectStateAfter = getIt(objectMug);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return_s non-muggy fields equal the fn return_s counterpart fields in ref and value', () => {
+      test('[verify] the proc return_s non-muggy fields equal the fn return_s counterpart fields in ref and value', () => {
         ownKeysOfObjectLike(fnReturn)
           .filter((key) => key !== 'potentialMuggyObject')
           .forEach((key) => {
-            expect(opReturn[key]).toBe(fnReturn[key]);
-            expect(opReturn[key]).toStrictEqual(fnReturn[key]);
+            expect(procReturn[key]).toBe(fnReturn[key]);
+            expect(procReturn[key]).toStrictEqual(fnReturn[key]);
           });
       });
 
-      test('[verify] the op return_s muggy object field differs from the fn return_s counterpart field in ref', () => {
-        expect(opReturn.potentialMuggyObject).not.toBe(fnReturn.potentialMuggyObject);
+      test('[verify] the proc return_s muggy object field differs from the fn return_s counterpart field in ref', () => {
+        expect(procReturn.potentialMuggyObject).not.toBe(fnReturn.potentialMuggyObject);
       });
 
-      test('[verify] the op return_s muggy object field equals the object mug in ref and value', () => {
-        expect(opReturn.potentialMuggyObject).toBe(objectMug);
-        expect(opReturn.potentialMuggyObject).toStrictEqual(objectMug);
+      test('[verify] the proc return_s muggy object field equals the object mug in ref and value', () => {
+        expect(procReturn.potentialMuggyObject).toBe(objectMug);
+        expect(procReturn.potentialMuggyObject).toStrictEqual(objectMug);
       });
 
       test('[verify] the before-write got state differs from the fn return in ref', () => {
@@ -578,7 +578,7 @@ describe('900ce35, writes by an object state custom write op', () => {
         gotAStateBefore = getIt(aMugLike);
         gotObjectStateBefore = getIt(objectMug);
 
-        opReturn = customWriteOp(aMugLike, 'asd');
+        procReturn = customWriteProc(aMugLike, 'asd');
         fnParamState = customWriteFn.mock.calls[0][0];
         fnReturn = customWriteFn.mock.results[0].value;
 
@@ -586,26 +586,26 @@ describe('900ce35, writes by an object state custom write op', () => {
         gotObjectStateAfter = getIt(objectMug);
       });
 
-      test('[verify] the op return differs from the fn return in ref', () => {
-        expect(opReturn).not.toBe(fnReturn);
+      test('[verify] the proc return differs from the fn return in ref', () => {
+        expect(procReturn).not.toBe(fnReturn);
       });
 
-      test('[verify] the op return_s non-muggy fields equal the fn return_s counterpart fields in ref and value', () => {
+      test('[verify] the proc return_s non-muggy fields equal the fn return_s counterpart fields in ref and value', () => {
         ownKeysOfObjectLike(fnReturn)
           .filter((key) => key !== 'potentialMuggyObject')
           .forEach((key) => {
-            expect(opReturn[key]).toBe(fnReturn[key]);
-            expect(opReturn[key]).toStrictEqual(fnReturn[key]);
+            expect(procReturn[key]).toBe(fnReturn[key]);
+            expect(procReturn[key]).toStrictEqual(fnReturn[key]);
           });
       });
 
-      test('[verify] the op return_s muggy object field differs from the fn return_s counterpart field in ref', () => {
-        expect(opReturn.potentialMuggyObject).not.toBe(fnReturn.potentialMuggyObject);
+      test('[verify] the proc return_s muggy object field differs from the fn return_s counterpart field in ref', () => {
+        expect(procReturn.potentialMuggyObject).not.toBe(fnReturn.potentialMuggyObject);
       });
 
-      test('[verify] the op return_s muggy object field equals the object mug in ref and value', () => {
-        expect(opReturn.potentialMuggyObject).toBe(objectMug);
-        expect(opReturn.potentialMuggyObject).toStrictEqual(objectMug);
+      test('[verify] the proc return_s muggy object field equals the object mug in ref and value', () => {
+        expect(procReturn.potentialMuggyObject).toBe(objectMug);
+        expect(procReturn.potentialMuggyObject).toStrictEqual(objectMug);
       });
 
       test('[verify] the before-write got state and its potential muggy object field differ from the fn return and its counterpart field in ref', () => {

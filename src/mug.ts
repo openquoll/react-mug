@@ -1,4 +1,4 @@
-import type { ReadOp, WriteOp } from './op-mech';
+import type { ReadProc, WriteProc } from './mechanism';
 import {
   _assign,
   _captureStackTrace,
@@ -396,149 +396,129 @@ export const ownKeysOfObjectLike = <T extends AnyObjectLike>(o: T): NumAsStr<key
     ? ([..._getOwnPropertyNames(o), ..._getOwnPropertySymbols(o)] as NumAsStr<keyof T>[])
     : [];
 
-/**
- * A function with `[_readOp]`/`[_writeOp]` and `[_mugLike]` as fields is an
- * action. The value of `[_mugLike]` is the action's mug-like bound inside.
- */
 export const _mugLike = Symbol();
 
-/**
- * A function with `[_readOp]` and `[_mugLike]` as fields is a read action. The
- * value of `[_readOp]` is the action's operation bound inside.
- */
-export const _readOp = Symbol();
+export const _readProc = Symbol();
 
-/**
- * A function with `[_writeOp]` and `[_mugLike]` as fields is a write action.
- * The value of `[_writeOp]` is the action's operation bound inside.
- */
-export const _writeOp = Symbol();
+export const _writeProc = Symbol();
 
-/**
- * A function with `[_readFn]` as a field is a read operation. The value of
- * `[_readFn]` is the operation's pure function bound inside.
- */
 export const _readFn = Symbol();
 
-/**
- * A function with `[_writeFn]` as a field is a write operation. The value of
- * `[_writeFn]` is the operation's pure function bound inside.
- */
 export const _writeFn = Symbol();
 
-export type ReadOpMeta<TReadFn extends AnyFunction = AnyFunction> = {
+export type ReadProcMeta<TReadFn extends AnyFunction = AnyFunction> = {
   [_readFn]: TReadFn;
 };
 
-export type AnyReadOp = AnyFunction & ReadOpMeta;
+export type AnyReadProc = AnyFunction & ReadProcMeta;
 
-export type NotReadOp = {
+export type NotReadProc = {
   [_readFn]?: never;
 };
 
-export type WriteOpMeta<TWriteFn extends AnyFunction = AnyFunction> = {
+export type WriteProcMeta<TWriteFn extends AnyFunction = AnyFunction> = {
   [_writeFn]: TWriteFn;
 };
 
-export type AnyWriteOp = AnyFunction & WriteOpMeta;
+export type AnyWriteProc = AnyFunction & WriteProcMeta;
 
-export type NotWriteOp = {
+export type NotWriteProc = {
   [_writeFn]?: never;
 };
 
-export type AnyOp = AnyReadOp | AnyWriteOp;
+export type AnyProc = AnyReadProc | AnyWriteProc;
 
-export type NotOp = {
+export type NotProc = {
   [_readFn]?: never;
   [_writeFn]?: never;
 };
 
 export const isFunction = (f: any): boolean => typeof f === _function;
 
-export const isReadOp = (f: any): f is AnyReadOp =>
+export const isReadProc = (f: any): f is AnyReadProc =>
   isFunction(f) && f[_hasOwnProperty](_readFn) && isFunction(f[_readFn]);
 
-export const isWriteOp = (f: any): f is AnyWriteOp =>
+export const isWriteProc = (f: any): f is AnyWriteProc =>
   isFunction(f) && f[_hasOwnProperty](_writeFn) && isFunction(f[_writeFn]);
 
-export const isOp = (f: any): f is AnyOp => isReadOp(f) || isWriteOp(f);
+export const isProc = (f: any): f is AnyProc => isReadProc(f) || isWriteProc(f);
 
-export type ReadActionMetaOnReadOp<TReadOp extends AnyReadOp, TMugLike> = {
-  [_readOp]: TReadOp;
+export type ReadActionMetaOnReadProc<TReadProc extends AnyReadProc, TMugLike> = {
+  [_readProc]: TReadProc;
   [_mugLike]: TMugLike;
 };
 
 export type ReadActionMeta<
-  TRead extends AnyFunction = AnyReadOp,
+  TRead extends AnyFunction = AnyReadProc,
   TMugLike = any,
-> = TRead extends AnyReadOp
-  ? ReadActionMetaOnReadOp<TRead, TMugLike>
-  : ReadActionMeta<ReadOp<TRead>, TMugLike>;
+> = TRead extends AnyReadProc
+  ? ReadActionMetaOnReadProc<TRead, TMugLike>
+  : ReadActionMeta<ReadProc<TRead>, TMugLike>;
 
 export type AnyReadAction = AnyFunction & ReadActionMeta;
 
 export type NotReadAction = {
-  [_readOp]?: never;
+  [_readProc]?: never;
   [_mugLike]?: never;
 };
 
-export type WriteActionMetaWriteOp<TWriteOp extends AnyWriteOp, TMugLike> = {
-  [_writeOp]: TWriteOp;
+export type WriteActionMetaWriteProc<TWriteProc extends AnyWriteProc, TMugLike> = {
+  [_writeProc]: TWriteProc;
   [_mugLike]: TMugLike;
 };
 
 export type WriteActionMeta<
-  TWrite extends AnyFunction = AnyWriteOp,
+  TWrite extends AnyFunction = AnyWriteProc,
   TMugLike = any,
-> = TWrite extends AnyWriteOp
-  ? WriteActionMetaWriteOp<TWrite, TMugLike>
-  : WriteActionMeta<WriteOp<TWrite>, TMugLike>;
+> = TWrite extends AnyWriteProc
+  ? WriteActionMetaWriteProc<TWrite, TMugLike>
+  : WriteActionMeta<WriteProc<TWrite>, TMugLike>;
 
 export type AnyWriteAction = AnyFunction & WriteActionMeta;
 
 export type NotWriteAction = {
-  [_writeOp]?: never;
+  [_writeProc]?: never;
   [_mugLike]?: never;
 };
 
 export type AnyAction = AnyReadAction | AnyWriteAction;
 
 export type NotAction = {
-  [_readOp]?: never;
-  [_writeOp]?: never;
+  [_readProc]?: never;
+  [_writeProc]?: never;
   [_mugLike]?: never;
 };
 
 export const isReadAction = (f: any): f is AnyReadAction =>
   isFunction(f) &&
   f[_hasOwnProperty](_mugLike) &&
-  f[_hasOwnProperty](_readOp) &&
-  isReadOp(f[_readOp]);
+  f[_hasOwnProperty](_readProc) &&
+  isReadProc(f[_readProc]);
 
 export const isWriteAction = (f: any): f is AnyWriteAction =>
   isFunction(f) &&
   f[_hasOwnProperty](_mugLike) &&
-  f[_hasOwnProperty](_writeOp) &&
-  isWriteOp(f[_writeOp]);
+  f[_hasOwnProperty](_writeProc) &&
+  isWriteProc(f[_writeProc]);
 
 export const isAction = (f: any): f is AnyAction => isReadAction(f) || isWriteAction(f);
 
 export function pure<TReadAction extends AnyReadAction>(
   readAction: TReadAction,
-): TReadAction[typeof _readOp][typeof _readFn];
+): TReadAction[typeof _readProc][typeof _readFn];
 export function pure<TWriteAction extends AnyWriteAction>(
   writeAction: TWriteAction,
-): TWriteAction[typeof _writeOp][typeof _writeFn];
+): TWriteAction[typeof _writeProc][typeof _writeFn];
 export function pure(fn: any): any {
   if (isReadAction(fn)) {
-    if (isReadOp(fn[_readOp])) {
-      return fn[_readOp][_readFn];
+    if (isReadProc(fn[_readProc])) {
+      return fn[_readProc][_readFn];
     }
   }
 
   if (isWriteAction(fn)) {
-    if (isWriteOp(fn[_writeOp])) {
-      return fn[_writeOp][_writeFn];
+    if (isWriteProc(fn[_writeProc])) {
+      return fn[_writeProc][_writeFn];
     }
   }
 

@@ -13,7 +13,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
   const tapHookReturn = jest.fn();
 
-  describe('8577c9b, as per a read op and a plain object mug', () => {
+  describe('8577c9b, as per a read proc and a plain object mug', () => {
     interface AState extends ObjectState {}
 
     const aMug: Mug<AState> = {
@@ -27,10 +27,10 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     const readFn = jest.fn((state: AState): AState => ({ ...state }));
 
-    const readOp = r(readFn);
+    const readProc = r(readFn);
 
     const AComponent = jest.fn(() => {
-      const hookReturn = useR(readOp, aMug);
+      const hookReturn = useR(readProc, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -151,7 +151,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     });
   });
 
-  describe('3c20440, as per a read op and a mug-nested object mug', () => {
+  describe('3c20440, as per a read proc and a mug-nested object mug', () => {
     interface AState extends ObjectState {
       muggyObject: ObjectState;
     }
@@ -177,10 +177,10 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     const readFn = jest.fn((state: AState): AState => ({ ...state }));
 
-    const readOp = r(readFn);
+    const readProc = r(readFn);
 
     const AComponent = jest.fn(() => {
-      const hookReturn = useR(readOp, aMug);
+      const hookReturn = useR(readProc, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -554,7 +554,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     });
   });
 
-  describe('2c62e81, as per a read op and a constant mug-nested tuple mug-like', () => {
+  describe('2c62e81, as per a read proc and a constant mug-nested tuple mug-like', () => {
     type AState = [ObjectState, ObjectState];
 
     const objectMug1: Mug<ObjectState> = {
@@ -579,10 +579,10 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     const readFn = jest.fn((state: AState): AState => [...state]);
 
-    const readOp = r(readFn);
+    const readProc = r(readFn);
 
     const AComponent = jest.fn(() => {
-      const hookReturn = useR(readOp, aMugLike);
+      const hookReturn = useR(readProc, aMugLike);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -873,7 +873,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
     });
   });
 
-  describe('bba3052, as per a read op and same-structure temporary mug-nested tuple mug-like', () => {
+  describe('bba3052, as per a read proc and same-structure temporary mug-nested tuple mug-like', () => {
     const objectMug1: Mug<ObjectState> = {
       [construction]: {
         s: 'asd',
@@ -896,10 +896,10 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       tuple(...state),
     );
 
-    const readOp = r(readFn);
+    const readProc = r(readFn);
 
     const AComponent = jest.fn(() => {
-      const hookReturn = useR(readOp, tuple(objectMug1, objectMug2));
+      const hookReturn = useR(readProc, tuple(objectMug1, objectMug2));
       tapHookReturn(hookReturn);
       return <div />;
     });

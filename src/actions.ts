@@ -1,96 +1,101 @@
 import { AssignPatch, PossiblePatch } from './builtin/fns';
+import { GetIt, getIt, r, ReadProc, SetIt, setIt, w, WriteProc } from './mechanism';
 import {
   _mugLike,
   _readFn,
-  _readOp,
+  _readProc,
   _writeFn,
-  _writeOp,
-  AnyReadOp,
-  AnyWriteOp,
+  _writeProc,
+  AnyReadProc,
+  AnyWriteProc,
   NotAction,
-  NotOp,
+  NotProc,
   ReadActionMeta,
-  ReadOpMeta,
+  ReadProcMeta,
   State,
   WriteActionMeta,
-  WriteOpMeta,
+  WriteProcMeta,
 } from './mug';
-import { GetIt, getIt, r, ReadOp, SetIt, setIt, w, WriteOp } from './op-mech';
 import { AnyFunction, Post0Params } from './type-utils';
 
-export type ReadActionOnEmptyParamReadOp<
-  TReadOp extends AnyReadOp,
+export type ReadActionOnEmptyParamReadProc<
+  TReadProc extends AnyReadProc,
   TMugLike,
-> = (() => ReturnType<TReadOp>) & ReadActionMeta<TReadOp, TMugLike>;
+> = (() => ReturnType<TReadProc>) & ReadActionMeta<TReadProc, TMugLike>;
 
-export type ReadActionOnSimpleGenericReadOp<TReadOp extends AnyReadOp, TMugLike> = ((
-  ...args: Post0Params<TReadOp>
+export type ReadActionOnSimpleGenericReadProc<TReadProc extends AnyReadProc, TMugLike> = ((
+  ...args: Post0Params<TReadProc>
 ) => State<TMugLike>) &
-  ReadActionMeta<TReadOp, TMugLike>;
+  ReadActionMeta<TReadProc, TMugLike>;
 
-export type ReadActionOnTypicalReadOp<TReadOp extends AnyReadOp, TMugLike> = ((
-  ...args: Post0Params<TReadOp>
-) => ReturnType<TReadOp>) &
-  ReadActionMeta<TReadOp, TMugLike>;
+export type ReadActionOnTypicalReadProc<TReadProc extends AnyReadProc, TMugLike> = ((
+  ...args: Post0Params<TReadProc>
+) => ReturnType<TReadProc>) &
+  ReadActionMeta<TReadProc, TMugLike>;
 
-export type ReadAction<TRead extends AnyFunction = GetIt, TMugLike = any> = TRead extends AnyReadOp
+export type ReadAction<
+  TRead extends AnyFunction = GetIt,
+  TMugLike = any,
+> = TRead extends AnyReadProc
   ? TRead[typeof _readFn] extends () => any
-    ? ReadActionOnEmptyParamReadOp<TRead, TMugLike>
+    ? ReadActionOnEmptyParamReadProc<TRead, TMugLike>
     : TRead[typeof _readFn] extends <TState extends never>(
           state: TState,
           ...restArgs: any
         ) => TState
-      ? ReadActionOnSimpleGenericReadOp<TRead, TMugLike>
-      : ReadActionOnTypicalReadOp<TRead, TMugLike>
-  : ReadAction<ReadOp<TRead>, TMugLike>;
+      ? ReadActionOnSimpleGenericReadProc<TRead, TMugLike>
+      : ReadActionOnTypicalReadProc<TRead, TMugLike>
+  : ReadAction<ReadProc<TRead>, TMugLike>;
 
 export type R<TMugLike> = {
   (): ReadAction<GetIt, TMugLike>;
 
-  <TReadOp extends AnyFunction & ReadOpMeta<(state: State<TMugLike>, ...restArgs: any) => any>>(
-    readOp: TReadOp,
-  ): ReadAction<TReadOp, TMugLike>;
+  <TReadProc extends AnyFunction & ReadProcMeta<(state: State<TMugLike>, ...restArgs: any) => any>>(
+    readProc: TReadProc,
+  ): ReadAction<TReadProc, TMugLike>;
 
-  <TReadFn extends ((state: State<TMugLike>, ...restArgs: any) => any) & NotOp & NotAction>(
+  <TReadFn extends ((state: State<TMugLike>, ...restArgs: any) => any) & NotProc & NotAction>(
     readFn: TReadFn,
   ): ReadAction<TReadFn, TMugLike>;
 };
 
-export type WriteActionOnEmptyParamWriteOp<TWriteOp extends AnyWriteOp, TMugLike> = (() => void) &
-  WriteActionMeta<TWriteOp, TMugLike>;
+export type WriteActionOnEmptyParamWriteProc<
+  TWriteProc extends AnyWriteProc,
+  TMugLike,
+> = (() => void) & WriteActionMeta<TWriteProc, TMugLike>;
 
 export type WriteActionOnSetIt<TMugLike> = ((patch: PossiblePatch<TMugLike>) => void) &
   WriteActionMeta<SetIt, TMugLike>;
 
-export type WriteActionOnTypicalWriteOp<TWriteOp extends AnyWriteOp, TMugLike> = ((
-  ...args: Post0Params<TWriteOp>
+export type WriteActionOnTypicalWriteProc<TWriteProc extends AnyWriteProc, TMugLike> = ((
+  ...args: Post0Params<TWriteProc>
 ) => void) &
-  WriteActionMeta<TWriteOp, TMugLike>;
+  WriteActionMeta<TWriteProc, TMugLike>;
 
 export type WriteAction<
   TWrite extends AnyFunction = SetIt,
   TMugLike = any,
-> = TWrite extends AnyWriteOp
+> = TWrite extends AnyWriteProc
   ? TWrite[typeof _writeFn] extends () => any
-    ? WriteActionOnEmptyParamWriteOp<TWrite, TMugLike>
+    ? WriteActionOnEmptyParamWriteProc<TWrite, TMugLike>
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteActionOnSetIt<TMugLike>
-      : WriteActionOnTypicalWriteOp<TWrite, TMugLike>
-  : WriteAction<WriteOp<TWrite>, TMugLike>;
+      : WriteActionOnTypicalWriteProc<TWrite, TMugLike>
+  : WriteAction<WriteProc<TWrite>, TMugLike>;
 
 export type W<TMugLike> = {
   (): WriteAction<SetIt, TMugLike>;
 
   <
-    TWriteOp extends AnyFunction &
-      WriteOpMeta<(state: State<TMugLike>, ...restArgs: any) => State<TMugLike>>,
+    TWriteProc extends AnyFunction &
+      WriteProcMeta<(state: State<TMugLike>, ...restArgs: any) => State<TMugLike>>,
   >(
-    writeOp: TWriteOp,
-  ): WriteAction<TWriteOp, TMugLike>;
+    writeProc: TWriteProc,
+  ): WriteAction<TWriteProc, TMugLike>;
 
   <
     TWriteFn extends ((state: State<TMugLike>, ...restArgs: any) => State<TMugLike>) &
-      NotOp &
+      NotProc &
       NotAction,
   >(
     writeFn: TWriteFn,
@@ -104,19 +109,19 @@ export type ActionToolbelt<TMugLike> = ActionToolbeltFormat<R<TMugLike>, W<TMugL
 export function upon<TMugLike>(mugLike: TMugLike): ActionToolbelt<TMugLike>;
 export function upon(mugLike: any): any {
   function _r(read: (mugLike: any, ...restArgs: any) => any = getIt) {
-    const readOp = r(read);
-    const readAction = (...args: any) => readOp(mugLike, ...args);
-    readAction[_readOp] = readOp;
+    const readProc = r(read);
+    const readAction = (...args: any) => readProc(mugLike, ...args);
+    readAction[_readProc] = readProc;
     readAction[_mugLike] = mugLike;
     return readAction;
   }
 
   function _w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
-    const writeOp = w(write);
+    const writeProc = w(write);
     const writeAction = (...args: any) => {
-      writeOp(mugLike, ...args);
+      writeProc(mugLike, ...args);
     };
-    writeAction[_writeOp] = writeOp;
+    writeAction[_writeProc] = writeProc;
     writeAction[_mugLike] = mugLike;
     return writeAction;
   }

@@ -1,6 +1,6 @@
 import { construction, getIt, Mug, r, setIt, w } from '../src';
 
-describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a market, [cite] 003, 004', () => {
+describe('3b2660f, composites procs to model a farmer_s chicken rabbit cage on a market, [cite] 003, 004', () => {
   interface MarketState {
     chickenUnitValue: number;
     rabbitUnitValue: number;
@@ -38,27 +38,27 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
   const getChickenValueFn = jest.fn((marketState: MarketState, chickenCount: number): number => {
     return marketState.chickenUnitValue * chickenCount;
   });
-  const getChickenValueOp = r(getChickenValueFn);
+  const getChickenValueProc = r(getChickenValueFn);
 
   const getRabbitValueFn = jest.fn((marketState: MarketState, rabbitCount: number): number => {
     return marketState.rabbitUnitValue * rabbitCount;
   });
-  const getRabbitValueOp = r(getRabbitValueFn);
+  const getRabbitValueProc = r(getRabbitValueFn);
 
   const getCageValueFn = jest.fn(([marketState, cageState]: [MarketState, CageState]): number => {
     return (
-      getChickenValueOp(marketState, cageState.chickenCount) +
-      getRabbitValueOp(marketState, cageState.rabbitCount)
+      getChickenValueProc(marketState, cageState.chickenCount) +
+      getRabbitValueProc(marketState, cageState.rabbitCount)
     );
   });
-  const getCageValueOp = r(getCageValueFn);
+  const getCageValueProc = r(getCageValueFn);
 
   const buyChickensFn = jest.fn(
     (
       [marketState, cageState, walletState]: [MarketState, CageState, WalletState],
       count: number,
     ): [MarketState, CageState, WalletState] => {
-      const outcome = getChickenValueOp(marketState, count);
+      const outcome = getChickenValueProc(marketState, count);
       return [
         marketState,
         { ...cageState, chickenCount: cageState.chickenCount + count },
@@ -66,14 +66,14 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       ];
     },
   );
-  const buyChickensOp = w(buyChickensFn);
+  const buyChickensProc = w(buyChickensFn);
 
   const sellChickensFn = jest.fn(
     (
       [marketState, cageState, walletState]: [MarketState, CageState, WalletState],
       count: number,
     ): [MarketState, CageState, WalletState] => {
-      const income = getChickenValueOp(marketState, count);
+      const income = getChickenValueProc(marketState, count);
       return [
         marketState,
         { ...cageState, chickenCount: cageState.chickenCount - count },
@@ -81,14 +81,14 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       ];
     },
   );
-  const sellChickensOp = w(sellChickensFn);
+  const sellChickensProc = w(sellChickensFn);
 
   const buyRabbitsFn = jest.fn(
     (
       [marketState, cageState, walletState]: [MarketState, CageState, WalletState],
       count: number,
     ): [MarketState, CageState, WalletState] => {
-      const outcome = getRabbitValueOp(marketState, count);
+      const outcome = getRabbitValueProc(marketState, count);
       return [
         marketState,
         { ...cageState, rabbitCount: cageState.rabbitCount + count },
@@ -96,14 +96,14 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       ];
     },
   );
-  const buyRabbitsOp = w(buyRabbitsFn);
+  const buyRabbitsProc = w(buyRabbitsFn);
 
   const sellRabbitsFn = jest.fn(
     (
       [marketState, cageState, walletState]: [MarketState, CageState, WalletState],
       count: number,
     ): [MarketState, CageState, WalletState] => {
-      const income = getRabbitValueOp(marketState, count);
+      const income = getRabbitValueProc(marketState, count);
       return [
         marketState,
         { ...cageState, rabbitCount: cageState.rabbitCount - count },
@@ -111,7 +111,7 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       ];
     },
   );
-  const sellRabbitsOp = w(sellRabbitsFn);
+  const sellRabbitsProc = w(sellRabbitsFn);
 
   const tradeChickensForRabbitsFn = jest.fn(
     ([marketState, cageState, walletState]: [MarketState, CageState, WalletState]): [
@@ -120,38 +120,38 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       WalletState,
     ] => {
       const sellingChickenCount = cageState.chickenCount;
-      const chickenValue = getChickenValueOp(marketState, sellingChickenCount);
+      const chickenValue = getChickenValueProc(marketState, sellingChickenCount);
       const buyingRabbitCount = Math.floor(chickenValue / marketState.rabbitUnitValue);
 
-      return buyRabbitsOp(
-        sellChickensOp([marketState, cageState, walletState], sellingChickenCount),
+      return buyRabbitsProc(
+        sellChickensProc([marketState, cageState, walletState], sellingChickenCount),
         buyingRabbitCount,
       );
     },
   );
-  const tradeChickensForRabbitsOp = w(tradeChickensForRabbitsFn);
+  const tradeChickensForRabbitsProc = w(tradeChickensForRabbitsFn);
 
   function tradeRabbitsForChickensProcedure() {
     const sellingRabbitCount = getIt(cageMug).rabbitCount;
     const chickenUnitValue = getIt(marketMug).chickenUnitValue;
 
-    const rabbitValue = getRabbitValueOp(marketMug, sellingRabbitCount);
+    const rabbitValue = getRabbitValueProc(marketMug, sellingRabbitCount);
     const buyingChickenCount = Math.floor(rabbitValue / chickenUnitValue);
 
-    buyChickensOp(
-      sellRabbitsOp([marketMug, cageMug, walletMug], sellingRabbitCount),
+    buyChickensProc(
+      sellRabbitsProc([marketMug, cageMug, walletMug], sellingRabbitCount),
       buyingChickenCount,
     );
   }
 
-  describe('c6e13d1, calls getCageValueOp', () => {
+  describe('c6e13d1, calls getCageValueProc', () => {
     let gotMarketState: MarketState, gotCageState: CageState;
-    let getCageValueOpReturn: number;
+    let getCageValueProcReturn: number;
 
     test('[action]', () => {
       gotMarketState = getIt(marketMug);
       gotCageState = getIt(cageMug);
-      getCageValueOpReturn = getCageValueOp([marketMug, cageMug]);
+      getCageValueProcReturn = getCageValueProc([marketMug, cageMug]);
     });
 
     test('[verify] getCageValueFn is called 1 time', () => {
@@ -196,16 +196,16 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       expect(rabbitCount).toBe(gotCageState.rabbitCount);
     });
 
-    test('[verify] getCageValueOp return equals "5 * 5 + 8 * 5"', () => {
-      expect(getCageValueOpReturn).toBe(5 * 5 + 8 * 5);
+    test('[verify] getCageValueProc return equals "5 * 5 + 8 * 5"', () => {
+      expect(getCageValueProcReturn).toBe(5 * 5 + 8 * 5);
     });
   });
 
-  describe('75168d5, calls tradeChickensForRabbitsOp', () => {
+  describe('75168d5, calls tradeChickensForRabbitsProc', () => {
     let gotMarketStateBefore: MarketState, gotMarketStateAfter: MarketState;
     let gotCageStateBefore: CageState, gotCageStateAfter: CageState;
     let gotWalletStateBefore: WalletState, gotWalletStateAfter: WalletState;
-    let tradeChickensForRabbitsOpReturn: [Mug<MarketState>, Mug<CageState>, Mug<WalletState>];
+    let tradeChickensForRabbitsProcReturn: [Mug<MarketState>, Mug<CageState>, Mug<WalletState>];
 
     test('[action]', () => {
       setIt(marketMug, marketMug[construction]);
@@ -217,7 +217,11 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       gotMarketStateBefore = getIt(marketMug);
       gotCageStateBefore = getIt(cageMug);
       gotWalletStateBefore = getIt(walletMug);
-      tradeChickensForRabbitsOpReturn = tradeChickensForRabbitsOp([marketMug, cageMug, walletMug]);
+      tradeChickensForRabbitsProcReturn = tradeChickensForRabbitsProc([
+        marketMug,
+        cageMug,
+        walletMug,
+      ]);
       gotMarketStateAfter = getIt(marketMug);
       gotCageStateAfter = getIt(cageMug);
       gotWalletStateAfter = getIt(walletMug);
@@ -323,13 +327,13 @@ describe('3b2660f, composites ops to model a farmer_s chicken rabbit cage on a m
       });
     });
 
-    test('[verify] tradeChickensForRabbitsOp return_s items equal the market mug, the cage mug, and the wallet mug in ref and value', () => {
-      expect(tradeChickensForRabbitsOpReturn[0]).toBe(marketMug);
-      expect(tradeChickensForRabbitsOpReturn[0]).toStrictEqual(marketMug);
-      expect(tradeChickensForRabbitsOpReturn[1]).toBe(cageMug);
-      expect(tradeChickensForRabbitsOpReturn[1]).toStrictEqual(cageMug);
-      expect(tradeChickensForRabbitsOpReturn[2]).toBe(walletMug);
-      expect(tradeChickensForRabbitsOpReturn[2]).toStrictEqual(walletMug);
+    test('[verify] tradeChickensForRabbitsProc return_s items equal the market mug, the cage mug, and the wallet mug in ref and value', () => {
+      expect(tradeChickensForRabbitsProcReturn[0]).toBe(marketMug);
+      expect(tradeChickensForRabbitsProcReturn[0]).toStrictEqual(marketMug);
+      expect(tradeChickensForRabbitsProcReturn[1]).toBe(cageMug);
+      expect(tradeChickensForRabbitsProcReturn[1]).toStrictEqual(cageMug);
+      expect(tradeChickensForRabbitsProcReturn[2]).toBe(walletMug);
+      expect(tradeChickensForRabbitsProcReturn[2]).toStrictEqual(walletMug);
     });
   });
 

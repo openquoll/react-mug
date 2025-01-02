@@ -3,8 +3,8 @@ import { _builtinId } from './builtin/ids';
 import {
   _readFn,
   _writeFn,
-  AnyReadOp,
-  AnyWriteOp,
+  AnyReadProc,
+  AnyWriteProc,
   areEqualMugLikes,
   assignConservatively,
   construction,
@@ -12,17 +12,17 @@ import {
   isMug,
   isObjectLike,
   isPlainObject,
-  isReadOp,
+  isReadProc,
   isState,
-  isWriteOp,
+  isWriteProc,
   MugError,
   NotAction,
-  NotOp,
+  NotProc,
   ownKeysOfObjectLike,
   PossibleMugLike,
-  ReadOpMeta,
+  ReadProcMeta,
   State,
-  WriteOpMeta,
+  WriteProcMeta,
 } from './mug';
 import { rawStateStore } from './raw-state';
 import {
@@ -256,46 +256,46 @@ class MugLikeWriteTask {
   }
 }
 
-export type ReadOpOnEmptyParamReadFn<TReadFn extends AnyFunction> = ((
+export type ReadProcOnEmptyParamReadFn<TReadFn extends AnyFunction> = ((
   mugLike?: unknown,
 ) => ReturnType<TReadFn>) &
-  ReadOpMeta<TReadFn>;
+  ReadProcMeta<TReadFn>;
 
-export type ReadOpOnSimpleGenericReadFn<TReadFn extends AnyFunction> = (<
+export type ReadProcOnSimpleGenericReadFn<TReadFn extends AnyFunction> = (<
   TMugLike extends PossibleMugLike<Param0<TReadFn>>,
 >(
   mugLike: TMugLike,
   ...restArgs: Post0Params<TReadFn>
 ) => State<TMugLike>) &
-  ReadOpMeta<TReadFn>;
+  ReadProcMeta<TReadFn>;
 
-export type ReadOpOnTypicalReadFn<TReadFn extends AnyFunction> = ((
+export type ReadProcOnTypicalReadFn<TReadFn extends AnyFunction> = ((
   mugLike: PossibleMugLike<Param0<TReadFn>>,
   ...restArgs: Post0Params<TReadFn>
 ) => ReturnType<TReadFn>) &
-  ReadOpMeta<TReadFn>;
+  ReadProcMeta<TReadFn>;
 
-export type ReadOp<TRead extends AnyFunction = PassThrough> = TRead extends AnyReadOp
+export type ReadProc<TRead extends AnyFunction = PassThrough> = TRead extends AnyReadProc
   ? TRead
   : TRead extends () => any
-    ? ReadOpOnEmptyParamReadFn<TRead>
+    ? ReadProcOnEmptyParamReadFn<TRead>
     : TRead extends <TState extends never>(state: TState, ...restArgs: any) => TState
-      ? ReadOpOnSimpleGenericReadFn<TRead>
-      : ReadOpOnTypicalReadFn<TRead>;
+      ? ReadProcOnSimpleGenericReadFn<TRead>
+      : ReadProcOnTypicalReadFn<TRead>;
 
-export type GetIt = ReadOp;
+export type GetIt = ReadProc;
 
 export function r(): GetIt;
-export function r<TReadOp extends AnyReadOp>(readOp: TReadOp): ReadOp<TReadOp>;
-export function r<TReadFn extends AnyFunction & NotOp & NotAction>(
+export function r<TReadProc extends AnyReadProc>(readProc: TReadProc): ReadProc<TReadProc>;
+export function r<TReadFn extends AnyFunction & NotProc & NotAction>(
   readFn: TReadFn,
-): ReadOp<TReadFn>;
+): ReadProc<TReadFn>;
 export function r(read: AnyFunction = passThrough): AnyFunction {
-  if (isReadOp(read)) {
+  if (isReadProc(read)) {
     return read;
   }
 
-  const readOp = (mugLike: any, ...restArgs: any): any => {
+  const readProc = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the read as it is.
     if (isState(mugLike)) {
       return read(mugLike, ...restArgs);
@@ -308,55 +308,55 @@ export function r(read: AnyFunction = passThrough): AnyFunction {
     return read(state, ...restArgs);
   };
 
-  readOp[_readFn] = read;
+  readProc[_readFn] = read;
 
-  return readOp;
+  return readProc;
 }
 
 export const getIt = r();
 
-export type WriteOpOnEmptyParamWriteFn<TWriteFn extends AnyFunction> = (<
+export type WriteProcOnEmptyParamWriteFn<TWriteFn extends AnyFunction> = (<
   TMugLike extends PossibleMugLike<ReturnType<TWriteFn>>,
 >(
   mugLike?: TMugLike,
 ) => TMugLike) &
-  WriteOpMeta<TWriteFn>;
+  WriteProcMeta<TWriteFn>;
 
-export type WriteOpOnAssignPatch = (<TMugLike>(
+export type WriteProcOnAssignPatch = (<TMugLike>(
   mugLike: TMugLike,
   patch: PossiblePatch<NoInfer<TMugLike>>,
 ) => TMugLike) &
-  WriteOpMeta<AssignPatch>;
+  WriteProcMeta<AssignPatch>;
 
-export type WriteOpOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
+export type WriteProcOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
   TMugLike extends PossibleMugLike<Param0<TWriteFn>>,
 >(
   mugLike: TMugLike,
   ...restArgs: Post0Params<TWriteFn>
 ) => TMugLike) &
-  WriteOpMeta<TWriteFn>;
+  WriteProcMeta<TWriteFn>;
 
-export type WriteOp<TWrite extends AnyFunction = AssignPatch> = TWrite extends AnyWriteOp
+export type WriteProc<TWrite extends AnyFunction = AssignPatch> = TWrite extends AnyWriteProc
   ? TWrite
   : TWrite extends () => any
-    ? WriteOpOnEmptyParamWriteFn<TWrite>
+    ? WriteProcOnEmptyParamWriteFn<TWrite>
     : TWrite extends AssignPatch
-      ? WriteOpOnAssignPatch
-      : WriteOpOnTypicalWriteFn<TWrite>;
+      ? WriteProcOnAssignPatch
+      : WriteProcOnTypicalWriteFn<TWrite>;
 
-export type SetIt = WriteOp;
+export type SetIt = WriteProc;
 
 export function w(): SetIt;
-export function w<TWriteOp extends AnyWriteOp>(writeOp: TWriteOp): WriteOp<TWriteOp>;
+export function w<TWriteProc extends AnyWriteProc>(writeProc: TWriteProc): WriteProc<TWriteProc>;
 export function w<
-  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotOp & NotAction,
->(writeFn: TWriteFn): WriteOp<TWriteFn>;
+  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotProc & NotAction,
+>(writeFn: TWriteFn): WriteProc<TWriteFn>;
 export function w(write: AnyFunction = assignPatch): AnyFunction {
-  if (isWriteOp(write)) {
+  if (isWriteProc(write)) {
     return write;
   }
 
-  const writeOp = (mugLike: any, ...restArgs: any): any => {
+  const writeProc = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.
     if (isState(mugLike)) {
       const newState = write(mugLike, ...restArgs);
@@ -382,9 +382,9 @@ export function w(write: AnyFunction = assignPatch): AnyFunction {
     return assignConservatively(mugLike, newState);
   };
 
-  writeOp[_writeFn] = write;
+  writeProc[_writeFn] = write;
 
-  return writeOp;
+  return writeProc;
 }
 
 export const setIt = w();

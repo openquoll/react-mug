@@ -1,5 +1,6 @@
 export { ActionToolbelt, ReadAction, WriteAction, upon } from './actions';
 export { PossiblePatch, assignPatch, passThrough } from './builtin';
+export { ReadProc, WriteProc, getIt, initial, r, resetIt, setIt, w } from './mechanism';
 export {
   Mug,
   MugError,
@@ -7,22 +8,21 @@ export {
   PossibleMug,
   PossibleMugLike,
   ReadActionMeta,
-  ReadOpMeta,
+  ReadProcMeta,
   State,
   WithAttachments,
   WriteActionMeta,
-  WriteOpMeta,
+  WriteProcMeta,
   attach,
   construction,
   isAction,
   isMug,
-  isOp,
+  isProc,
   isReadAction,
-  isReadOp,
+  isReadProc,
   isWriteAction,
-  isWriteOp,
+  isWriteProc,
   pure,
 } from './mug';
-export { ReadOp, WriteOp, getIt, initial, r, resetIt, setIt, w } from './op-mech';
 export { useR } from './react-integration';
 export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';

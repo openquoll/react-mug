@@ -2,16 +2,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   _mugLike,
-  _readOp,
+  _readProc,
   AnyReadAction,
-  AnyReadOp,
+  AnyReadProc,
   areEqualMugLikes,
   construction,
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
   ReadActionMeta,
-  ReadOpMeta,
+  ReadProcMeta,
   State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
@@ -63,12 +63,12 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
 }
 
 export function useR<
-  TReadAction extends AnyFunction & ReadActionMeta<AnyFunction & ReadOpMeta<() => any>>,
+  TReadAction extends AnyFunction & ReadActionMeta<AnyFunction & ReadProcMeta<() => any>>,
 >(readAction: TReadAction): ReturnType<TReadAction>;
 export function useR<
   TReadAction extends AnyFunction &
     ReadActionMeta<
-      AnyFunction & ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
+      AnyFunction & ReadProcMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
     >,
 >(
   readAction: TReadAction,
@@ -78,33 +78,33 @@ export function useR<TReadAction extends AnyReadAction>(
   readAction: TReadAction,
   ...readArgs: Parameters<TReadAction>
 ): ReturnType<TReadAction>;
-export function useR<TReadOp extends AnyFunction & ReadOpMeta<() => any>>(
-  readOp: TReadOp,
+export function useR<TReadProc extends AnyFunction & ReadProcMeta<() => any>>(
+  readProc: TReadProc,
   mugLike?: unknown,
-): ReturnType<TReadOp>;
+): ReturnType<TReadProc>;
 export function useR<
-  TReadOp extends AnyFunction &
-    ReadOpMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
-  TMugLike extends Param0<TReadOp>,
->(readOp: TReadOp, mugLike: TMugLike, ...restArgs: Post0Params<TReadOp>): State<TMugLike>;
-export function useR<TReadOp extends AnyReadOp>(
-  readOp: TReadOp,
-  ...readArgs: Parameters<TReadOp>
-): ReturnType<TReadOp>;
+  TReadProc extends AnyFunction &
+    ReadProcMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
+  TMugLike extends Param0<TReadProc>,
+>(readProc: TReadProc, mugLike: TMugLike, ...restArgs: Post0Params<TReadProc>): State<TMugLike>;
+export function useR<TReadProc extends AnyReadProc>(
+  readProc: TReadProc,
+  ...readArgs: Parameters<TReadProc>
+): ReturnType<TReadProc>;
 export function useR(
   read: {
     (...args: any): any;
-    [_readOp]?: any;
+    [_readProc]?: any;
     [_mugLike]?: any;
   },
   ...readArgs: any
 ): any {
-  const readOp = read[_readOp] ?? read;
+  const readProc = read[_readProc] ?? read;
   const [mugLike, restArgs] = read[_mugLike]
     ? [read[_mugLike], readArgs]
     : [readArgs[0], readArgs[_slice](1)];
 
-  const readOpRef = useRef(readOp);
+  const readProcRef = useRef(readProc);
   const mugLikeRef = useRef(mugLike);
   const restArgsRef = useRef(restArgs);
 
@@ -113,7 +113,7 @@ export function useR(
 
   const [, setNuance] = useState(0);
 
-  const makeResult = () => readOpRef[_current](mugLikeRef[_current], ...restArgsRef[_current]);
+  const makeResult = () => readProcRef[_current](mugLikeRef[_current], ...restArgsRef[_current]);
 
   const triggerRerender = () => setNuance((n) => (n + 1) % 1e8);
 

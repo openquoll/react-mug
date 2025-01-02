@@ -16,12 +16,12 @@ import {
   PossibleMug,
   PossibleMugLike,
   pure,
-  ReadOpMeta,
+  ReadProcMeta,
   State,
   WithAttachments,
-  WriteOpMeta,
+  WriteProcMeta,
 } from './mug';
-import { getIt, GetIt, initial, r, ReadOp, SetIt, setIt, w, WriteOp } from './op-mech';
+import { getIt, GetIt, initial, r, ReadProc, SetIt, setIt, w, WriteProc } from './mechanism';
 
 interface ObjectState {
   s: string;
@@ -59,67 +59,67 @@ type DirtyAMug = WithAttachments<
   { b: boolean }
 >;
 
-test('ReadOp, GetIt, PassThrough', () => {
-  type Readbfd = ReadOp<<TState>(state: TState) => TState>;
+test('ReadProc, GetIt, PassThrough', () => {
+  type Readbfd = ReadProc<<TState>(state: TState) => TState>;
 
   expectType<
     (<TMugLike>(mugLike: TMugLike) => State<TMugLike>) &
-      ReadOpMeta<<TState>(state: TState) => TState>
+      ReadProcMeta<<TState>(state: TState) => TState>
   >(fake<Readbfd>());
 
-  expectType<Readbfd>(fake<ReadOp<Readbfd>>());
+  expectType<Readbfd>(fake<ReadProc<Readbfd>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike>(mugLike: TMugLike, s: string) => State<TMugLike>) &
-      ReadOpMeta<<TState>(state: TState, s: string) => TState>
-  >(fake<ReadOp<<TState>(state: TState, s: string) => TState>>());
+      ReadProcMeta<<TState>(state: TState, s: string) => TState>
+  >(fake<ReadProc<<TState>(state: TState, s: string) => TState>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => State<TMugLike>) &
-      ReadOpMeta<<TState extends AState>(state: TState) => TState>
-  >(fake<ReadOp<<TState extends AState>(state: TState) => TState>>());
+      ReadProcMeta<<TState extends AState>(state: TState) => TState>
+  >(fake<ReadProc<<TState extends AState>(state: TState) => TState>>());
 
   // =-=-=
 
-  type Readdd9 = ReadOp<(state: AState) => ObjectState>;
+  type Readdd9 = ReadProc<(state: AState) => ObjectState>;
 
   expectType<
-    ((mugLike: PossibleMugLike<AState>) => ObjectState) & ReadOpMeta<(state: AState) => ObjectState>
+    ((mugLike: PossibleMugLike<AState>) => ObjectState) & ReadProcMeta<(state: AState) => ObjectState>
   >(fake<Readdd9>());
 
-  expectType<Readdd9>(fake<ReadOp<Readdd9>>());
+  expectType<Readdd9>(fake<ReadProc<Readdd9>>());
 
   // =-=-=
 
   expectType<
     ((mugLike: PossibleMugLike<AState>, s: string) => ObjectState) &
-      ReadOpMeta<(state: AState, s: string) => ObjectState>
-  >(fake<ReadOp<(state: AState, s: string) => ObjectState>>());
+      ReadProcMeta<(state: AState, s: string) => ObjectState>
+  >(fake<ReadProc<(state: AState, s: string) => ObjectState>>());
 
   // =-=-=
 
-  type Readdf3 = ReadOp<() => ObjectState>;
+  type Readdf3 = ReadProc<() => ObjectState>;
 
-  expectType<((mugLike?: unknown) => ObjectState) & ReadOpMeta<() => ObjectState>>(fake<Readdf3>());
+  expectType<((mugLike?: unknown) => ObjectState) & ReadProcMeta<() => ObjectState>>(fake<Readdf3>());
 
-  expectType<Readdf3>(fake<ReadOp<Readdf3>>());
+  expectType<Readdf3>(fake<ReadProc<Readdf3>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike>(mugLike: TMugLike) => State<TMugLike>) &
-      ReadOpMeta<<TState>(state: TState) => TState>
-  >(fake<ReadOp>());
+      ReadProcMeta<<TState>(state: TState) => TState>
+  >(fake<ReadProc>());
 
-  expectType<ReadOp>(fake<ReadOp<ReadOp>>());
+  expectType<ReadProc>(fake<ReadProc<ReadProc>>());
 
-  expectType<ReadOp>(fake<ReadOp<PassThrough>>());
+  expectType<ReadProc>(fake<ReadProc<PassThrough>>());
 
-  expectType<ReadOp>(fake<GetIt>());
+  expectType<ReadProc>(fake<GetIt>());
 });
 
 test('r, pure, getIt, passThrough', () => {
@@ -130,7 +130,7 @@ test('r, pure, getIt, passThrough', () => {
 
   const readbf7 = r(<TState>(state: TState): TState => state);
 
-  expectType<ReadOp<<TState>(state: TState) => TState>>(readbf7);
+  expectType<ReadProc<<TState>(state: TState) => TState>>(readbf7);
 
   expectType<typeof readbf7>(r(readbf7));
 
@@ -190,7 +190,7 @@ test('r, pure, getIt, passThrough', () => {
 
   const readc82 = r((state: AState) => fake<ObjectState>());
 
-  expectType<ReadOp<(state: AState) => ObjectState>>(readc82);
+  expectType<ReadProc<(state: AState) => ObjectState>>(readc82);
 
   expectType<typeof readc82>(r(readc82));
 
@@ -231,7 +231,7 @@ test('r, pure, getIt, passThrough', () => {
 
   const readc5d = r(() => fake<ObjectState>());
 
-  expectType<ReadOp<() => ObjectState>>(readc5d);
+  expectType<ReadProc<() => ObjectState>>(readc5d);
 
   expectType<typeof readc5d>(r(readc5d));
 
@@ -245,7 +245,7 @@ test('r, pure, getIt, passThrough', () => {
 
   const read0ea = r();
 
-  expectType<ReadOp>(read0ea);
+  expectType<ReadProc>(read0ea);
 
   expectType<typeof read0ea>(r(read0ea));
 
@@ -277,84 +277,84 @@ test('r, pure, getIt, passThrough', () => {
   read0ea(fake<AState>(), fake<any>());
 });
 
-test('WriteOp, SetIt, AssignPatch', () => {
-  type Write353 = WriteOp<<TState>(state: TState) => TState>;
+test('WriteProc, SetIt, AssignPatch', () => {
+  type Write353 = WriteProc<<TState>(state: TState) => TState>;
 
   expectType<
-    (<TMugLike>(mugLike: TMugLike) => TMugLike) & WriteOpMeta<<TState>(state: TState) => TState>
+    (<TMugLike>(mugLike: TMugLike) => TMugLike) & WriteProcMeta<<TState>(state: TState) => TState>
   >(fake<Write353>());
 
-  expectType<Write353>(fake<WriteOp<Write353>>());
+  expectType<Write353>(fake<WriteProc<Write353>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike>(mugLike: TMugLike, s: string) => TMugLike) &
-      WriteOpMeta<<TState>(state: TState, s: string) => TState>
-  >(fake<WriteOp<<TState>(state: TState, s: string) => TState>>());
+      WriteProcMeta<<TState>(state: TState, s: string) => TState>
+  >(fake<WriteProc<<TState>(state: TState, s: string) => TState>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
-      WriteOpMeta<<TState extends AState>(state: TState) => TState>
-  >(fake<WriteOp<<TState extends AState>(state: TState) => TState>>());
+      WriteProcMeta<<TState extends AState>(state: TState) => TState>
+  >(fake<WriteProc<<TState extends AState>(state: TState) => TState>>());
 
   // =-=-=
 
-  type Writecbd = WriteOp<(state: AState) => AState>;
+  type Writecbd = WriteProc<(state: AState) => AState>;
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
-      WriteOpMeta<(state: AState) => AState>
+      WriteProcMeta<(state: AState) => AState>
   >(fake<Writecbd>());
 
-  expectType<Writecbd>(fake<WriteOp<Writecbd>>());
+  expectType<Writecbd>(fake<WriteProc<Writecbd>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike, s: string) => TMugLike) &
-      WriteOpMeta<(state: AState, s: string) => AState>
-  >(fake<WriteOp<(state: AState, s: string) => AState>>());
+      WriteProcMeta<(state: AState, s: string) => AState>
+  >(fake<WriteProc<(state: AState, s: string) => AState>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike, s: string) => TMugLike) &
-      WriteOpMeta<(state: AState, s: string) => SuperState>
-  >(fake<WriteOp<(state: AState, s: string) => SuperState>>());
+      WriteProcMeta<(state: AState, s: string) => SuperState>
+  >(fake<WriteProc<(state: AState, s: string) => SuperState>>());
 
   // =-=-=
 
-  fake<WriteOp<(state: AState, s: string) => ObjectState>>();
+  fake<WriteProc<(state: AState, s: string) => ObjectState>>();
 
   // =-=-=
 
-  type Writec03 = WriteOp<() => AState>;
+  type Writec03 = WriteProc<() => AState>;
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike?: TMugLike) => TMugLike) &
-      WriteOpMeta<() => AState>
+      WriteProcMeta<() => AState>
   >(fake<Writec03>());
 
-  expectType<Writec03>(fake<WriteOp<Writec03>>());
+  expectType<Writec03>(fake<WriteProc<Writec03>>());
 
   // =-=-=
 
   expectType<
     (<TMugLike>(mugLike: TMugLike, patch: PossiblePatch<NoInfer<TMugLike>>) => TMugLike) &
-      WriteOpMeta<{
+      WriteProcMeta<{
         <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
         [_builtinId]: typeof _bidFnAssignPatch;
       }>
-  >(fake<WriteOp>());
+  >(fake<WriteProc>());
 
-  expectType<WriteOp>(fake<WriteOp<WriteOp>>());
+  expectType<WriteProc>(fake<WriteProc<WriteProc>>());
 
-  expectType<WriteOp>(fake<WriteOp<AssignPatch>>());
+  expectType<WriteProc>(fake<WriteProc<AssignPatch>>());
 
-  expectType<WriteOp>(fake<SetIt>());
+  expectType<WriteProc>(fake<SetIt>());
 });
 
 test('w, pure, setIt, assignPatch', () => {
@@ -367,7 +367,7 @@ test('w, pure, setIt, assignPatch', () => {
 
   expectType<typeof write73d>(w(write73d));
 
-  expectType<WriteOp<<TState>(state: TState) => TState>>(write73d);
+  expectType<WriteProc<<TState>(state: TState) => TState>>(write73d);
 
   expectType<AState>(write73d(fake<AState>()));
   expectType<AMug>(write73d(fake<AMug>()));
@@ -417,7 +417,7 @@ test('w, pure, setIt, assignPatch', () => {
 
   const writecdd = w((state: AState) => state);
 
-  expectType<WriteOp<(state: AState) => AState>>(writecdd);
+  expectType<WriteProc<(state: AState) => AState>>(writecdd);
 
   expectType<typeof writecdd>(w(writecdd));
 
@@ -458,7 +458,7 @@ test('w, pure, setIt, assignPatch', () => {
 
   const write490 = w((state: AState) => fake<SuperState>());
 
-  expectType<WriteOp<(state: AState) => SuperState>>(write490);
+  expectType<WriteProc<(state: AState) => SuperState>>(write490);
 
   expectType<AState>(write490(fake<AState>()));
   expectType<SuperState>(write490(fake<SuperState>()));
@@ -475,7 +475,7 @@ test('w, pure, setIt, assignPatch', () => {
 
   const write181 = w(() => fake<AState>());
 
-  expectType<WriteOp<() => AState>>(write181);
+  expectType<WriteProc<() => AState>>(write181);
 
   expectType<AState>(write181());
   expectType<AState>(write181(fake<AState>()));
@@ -497,7 +497,7 @@ test('w, pure, setIt, assignPatch', () => {
 
   const write09e = w();
 
-  expectType<WriteOp>(write09e);
+  expectType<WriteProc>(write09e);
 
   expectType<typeof write09e>(w(write09e));
 

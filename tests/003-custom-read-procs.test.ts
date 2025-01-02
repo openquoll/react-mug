@@ -1,7 +1,7 @@
 import { construction, getIt, Mug, MugLike, r, setIt } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 
-describe('dd10061, reads by an object state custom read op', () => {
+describe('dd10061, reads by an object state custom read proc', () => {
   interface ObjectState {
     s: string;
     o: {
@@ -13,7 +13,7 @@ describe('dd10061, reads by an object state custom read op', () => {
     potentialMuggyObject: ObjectState;
   }
 
-  describe('a9760b1, the op accepts a constant extra and generates a new return', () => {
+  describe('a9760b1, the proc accepts a constant extra and generates a new return', () => {
     const customReadFn = jest.fn(
       (state: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {
         return {
@@ -24,7 +24,7 @@ describe('dd10061, reads by an object state custom read op', () => {
       },
     );
 
-    const customReadOp = r(customReadFn);
+    const customReadProc = r(customReadFn);
 
     const extra: Pick<ObjectState, 'o'> = {
       o: {
@@ -36,15 +36,15 @@ describe('dd10061, reads by an object state custom read op', () => {
     let fnParamState1: AState, fnParamState2: AState;
     let fnParamExtra1: Pick<ObjectState, 'o'>, fnParamExtra2: Pick<ObjectState, 'o'>;
     let fnReturn1: Pick<ObjectState, 'o'>, fnReturn2: Pick<ObjectState, 'o'>;
-    let opReturn1: Pick<ObjectState, 'o'>, opReturn2: Pick<ObjectState, 'o'>;
+    let procReturn1: Pick<ObjectState, 'o'>, procReturn2: Pick<ObjectState, 'o'>;
 
     /**
      * Required variables:
      * - gotAState
-     * - opParamState1, opParamState2
-     * - opParamExtra1, opParamExtra2
-     * - opReturn1, opReturn2,
-     * - opReturn1, opReturn2
+     * - fnParamState1, fnParamState2
+     * - fnParamExtra1, fnParamExtra2
+     * - procReturn1, procReturn2,
+     * - procReturn1, procReturn2
      */
     function sharedVerifyCases() {
       test('[verify] the first fn-param state and its fields equal the got state and its fields in ref and value', () => {
@@ -79,26 +79,26 @@ describe('dd10061, reads by an object state custom read op', () => {
         expect(fnParamExtra2).toStrictEqual(fnParamExtra1);
       });
 
-      test('[verify] the op return and its fields keep equal to the fn return and its fields in ref and value', () => {
-        expect(opReturn1).toBe(fnReturn1);
+      test('[verify] the proc return and its fields keep equal to the fn return and its fields in ref and value', () => {
+        expect(procReturn1).toBe(fnReturn1);
         ownKeysOfObjectLike(fnReturn1).forEach((key) => {
-          expect(opReturn1[key]).toBe(fnReturn1[key]);
+          expect(procReturn1[key]).toBe(fnReturn1[key]);
         });
-        expect(opReturn1).toStrictEqual(fnReturn1);
+        expect(procReturn1).toStrictEqual(fnReturn1);
 
-        expect(opReturn2).toBe(fnReturn2);
+        expect(procReturn2).toBe(fnReturn2);
         ownKeysOfObjectLike(fnReturn2).forEach((key) => {
-          expect(opReturn2[key]).toBe(fnReturn2[key]);
+          expect(procReturn2[key]).toBe(fnReturn2[key]);
         });
-        expect(opReturn2).toStrictEqual(fnReturn2);
+        expect(procReturn2).toStrictEqual(fnReturn2);
       });
 
-      test('[verify] the op return and its fields change in ref but not in value', () => {
-        expect(opReturn2).not.toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(opReturn2[key]).not.toBe(opReturn1[key]);
+      test('[verify] the proc return and its fields change in ref but not in value', () => {
+        expect(procReturn2).not.toBe(procReturn1);
+        ownKeysOfObjectLike(procReturn1).forEach((key) => {
+          expect(procReturn2[key]).not.toBe(procReturn1[key]);
         });
-        expect(opReturn2).toStrictEqual(opReturn1);
+        expect(procReturn2).toStrictEqual(procReturn1);
       });
     }
 
@@ -119,12 +119,12 @@ describe('dd10061, reads by an object state custom read op', () => {
       test('[action]', () => {
         gotAState = getIt(aState);
 
-        opReturn1 = customReadOp(aState, extra);
+        procReturn1 = customReadProc(aState, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aState, extra);
+        procReturn2 = customReadProc(aState, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -152,12 +152,12 @@ describe('dd10061, reads by an object state custom read op', () => {
       test('[action]', () => {
         gotAState = getIt(aMug);
 
-        opReturn1 = customReadOp(aMug, extra);
+        procReturn1 = customReadProc(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aMug, extra);
+        procReturn2 = customReadProc(aMug, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -191,12 +191,12 @@ describe('dd10061, reads by an object state custom read op', () => {
           potentialMuggyObject: { s: 'sdf' },
         });
 
-        opReturn1 = customReadOp(aMug, extra);
+        procReturn1 = customReadProc(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aMug, extra);
+        procReturn2 = customReadProc(aMug, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -236,12 +236,12 @@ describe('dd10061, reads by an object state custom read op', () => {
       test('[action]', () => {
         gotAState = getIt(aMug);
 
-        opReturn1 = customReadOp(aMug, extra);
+        procReturn1 = customReadProc(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aMug, extra);
+        procReturn2 = customReadProc(aMug, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -287,12 +287,12 @@ describe('dd10061, reads by an object state custom read op', () => {
           potentialMuggyObject: { s: 'sdf' },
         });
 
-        opReturn1 = customReadOp(aMug, extra);
+        procReturn1 = customReadProc(aMug, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aMug, extra);
+        procReturn2 = customReadProc(aMug, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -322,12 +322,12 @@ describe('dd10061, reads by an object state custom read op', () => {
       test('[action]', () => {
         gotAState = getIt(aMugLike);
 
-        opReturn1 = customReadOp(aMugLike, extra);
+        procReturn1 = customReadProc(aMugLike, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aMugLike, extra);
+        procReturn2 = customReadProc(aMugLike, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -363,12 +363,12 @@ describe('dd10061, reads by an object state custom read op', () => {
           potentialMuggyObject: { s: 'sdf' },
         });
 
-        opReturn1 = customReadOp(aMugLike, extra);
+        procReturn1 = customReadProc(aMugLike, extra);
         fnParamState1 = customReadFn.mock.calls[0][0];
         fnParamExtra1 = customReadFn.mock.calls[0][1];
         fnReturn1 = customReadFn.mock.results[0].value;
 
-        opReturn2 = customReadOp(aMugLike, extra);
+        procReturn2 = customReadProc(aMugLike, extra);
         fnParamState2 = customReadFn.mock.calls[1][0];
         fnParamExtra2 = customReadFn.mock.calls[1][1];
         fnReturn2 = customReadFn.mock.results[1].value;
@@ -377,19 +377,19 @@ describe('dd10061, reads by an object state custom read op', () => {
       sharedVerifyCases();
     });
 
-    describe('87d8b65, calls "r" with the op', () => {
-      test('[action, verify] the return equals the op in ref', () => {
-        expect(r(customReadOp)).toBe(customReadOp);
+    describe('87d8b65, calls "r" with the proc', () => {
+      test('[action, verify] the return equals the proc in ref', () => {
+        expect(r(customReadProc)).toBe(customReadProc);
       });
     });
   });
 
-  describe('dec9c67, the op only selects an existing field, [cite] .:a9760b1', () => {
+  describe('dec9c67, the proc only selects an existing field, [cite] .:a9760b1', () => {
     const customReadFn = jest.fn((state: AState): ObjectState => {
       return state.potentialMuggyObject;
     });
 
-    const customReadOp = r(customReadFn);
+    const customReadProc = r(customReadFn);
 
     describe('0ae4ce0, continuously reads a constant mug-nested object mug-like after write', () => {
       const objectMug: Mug<ObjectState> = {
@@ -409,7 +409,7 @@ describe('dd10061, reads by an object state custom read op', () => {
         potentialMuggyObject: objectMug,
       };
 
-      test('[action, verify] the op return and its fields stay unchanged in ref and value', () => {
+      test('[action, verify] the proc return and its fields stay unchanged in ref and value', () => {
         setIt(aMugLike, {
           potentialMuggyObject: { s: 'sdf' },
         });
@@ -420,15 +420,15 @@ describe('dd10061, reads by an object state custom read op', () => {
         const gotObjectState = getIt(objectMug);
         expect(gotObjectState).toMatchObject({ s: 'sdf' });
 
-        const opReturn1 = customReadOp(aMugLike);
+        const procReturn1 = customReadProc(aMugLike);
 
-        const opReturn2 = customReadOp(aMugLike);
+        const procReturn2 = customReadProc(aMugLike);
 
-        expect(opReturn2).toBe(opReturn1);
-        ownKeysOfObjectLike(opReturn1).forEach((key) => {
-          expect(opReturn2[key]).toBe(opReturn1[key]);
+        expect(procReturn2).toBe(procReturn1);
+        ownKeysOfObjectLike(procReturn1).forEach((key) => {
+          expect(procReturn2[key]).toBe(procReturn1[key]);
         });
-        expect(opReturn2).toStrictEqual(opReturn1);
+        expect(procReturn2).toStrictEqual(procReturn1);
       });
     });
   });

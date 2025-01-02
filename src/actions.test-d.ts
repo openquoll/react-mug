@@ -21,7 +21,7 @@ import {
   WithAttachments,
   WriteActionMeta,
 } from './mug';
-import { r as flatR, w as flatW, GetIt, getIt, ReadOp, SetIt, setIt, WriteOp } from './op-mech';
+import { r as flatR, w as flatW, GetIt, getIt, ReadProc, SetIt, setIt, WriteProc } from './mechanism';
 
 interface ObjectState {
   s: string;
@@ -76,7 +76,7 @@ test('ReadAction, GetIt, PassThrough', () => {
     fake<Read3dd>(),
   );
 
-  expectType<Read3dd>(fake<ReadAction<ReadOp<(state: AState) => ObjectState>, CompositeAMug>>());
+  expectType<Read3dd>(fake<ReadAction<ReadProc<(state: AState) => ObjectState>, CompositeAMug>>());
 
   // =-=-=
 
@@ -137,7 +137,7 @@ test('ReadAction, GetIt, PassThrough', () => {
     fake<Read68a>(),
   );
 
-  expectType<Read68a>(fake<ReadAction<ReadOp<<TState>(state: TState) => TState>, CompositeAMug>>());
+  expectType<Read68a>(fake<ReadAction<ReadProc<<TState>(state: TState) => TState>, CompositeAMug>>());
 
   // =-=-=
 
@@ -164,15 +164,15 @@ test('ReadAction, GetIt, PassThrough', () => {
     fake<Readc14>(),
   );
 
-  expectType<Readc14>(fake<ReadAction<ReadOp<() => ObjectState>, CompositeAMug>>());
+  expectType<Readc14>(fake<ReadAction<ReadProc<() => ObjectState>, CompositeAMug>>());
 
   // =-=-=
 
   type Read43e = ReadAction<GetIt, CompositeAMug>;
 
-  expectType<(() => AState) & ReadActionMeta<ReadOp, CompositeAMug>>(fake<Read43e>());
+  expectType<(() => AState) & ReadActionMeta<ReadProc, CompositeAMug>>(fake<Read43e>());
 
-  expectType<Read43e>(fake<ReadAction<ReadOp, CompositeAMug>>());
+  expectType<Read43e>(fake<ReadAction<ReadProc, CompositeAMug>>());
 
   expectType<Read43e>(fake<ReadAction<PassThrough, CompositeAMug>>());
 });
@@ -354,7 +354,7 @@ test('WriteAction, SetIt, AssignPatch', () => {
     fake<Writea2e>(),
   );
 
-  expectType<Writea2e>(fake<WriteAction<WriteOp<(state: AState) => AState>, CompositeAMug>>());
+  expectType<Writea2e>(fake<WriteAction<WriteProc<(state: AState) => AState>, CompositeAMug>>());
 
   // =-=-=
 
@@ -429,7 +429,7 @@ test('WriteAction, SetIt, AssignPatch', () => {
   );
 
   expectType<Write42b>(
-    fake<WriteAction<WriteOp<<TState>(state: TState) => TState>, CompositeAMug>>(),
+    fake<WriteAction<WriteProc<<TState>(state: TState) => TState>, CompositeAMug>>(),
   );
 
   // =-=-=
@@ -455,7 +455,7 @@ test('WriteAction, SetIt, AssignPatch', () => {
 
   expectType<(() => void) & WriteActionMeta<() => AState, CompositeAMug>>(fake<Write697>());
 
-  expectType<Write697>(fake<WriteAction<WriteOp<() => AState>, CompositeAMug>>());
+  expectType<Write697>(fake<WriteAction<WriteProc<() => AState>, CompositeAMug>>());
 
   // =-=-=
 
@@ -472,10 +472,10 @@ test('WriteAction, SetIt, AssignPatch', () => {
   type Write4f8 = WriteAction<SetIt, CompositeAMug>;
 
   expectType<
-    ((patch: PossiblePatch<NoInfer<AState>>) => void) & WriteActionMeta<WriteOp, CompositeAMug>
+    ((patch: PossiblePatch<NoInfer<AState>>) => void) & WriteActionMeta<WriteProc, CompositeAMug>
   >(fake<Write4f8>());
 
-  expectType<Write4f8>(fake<WriteAction<WriteOp, CompositeAMug>>());
+  expectType<Write4f8>(fake<WriteAction<WriteProc, CompositeAMug>>());
 
   expectType<Write4f8>(fake<WriteAction<AssignPatch, CompositeAMug>>());
 });

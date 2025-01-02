@@ -8,7 +8,7 @@ import {
   PossibleMugLike,
   r,
   ReadAction,
-  ReadOp,
+  ReadProc,
   upon,
   useR,
 } from '../src';
@@ -28,14 +28,14 @@ describe('229a728, react renders on hook param changes', () => {
 
   const tapHookReturn = jest.fn();
 
-  describe('cbf2e14, the read op changes, the mug-like keeps unchanged', () => {
+  describe('cbf2e14, the read proc changes, the mug-like keeps unchanged', () => {
     const readFn1 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'ba9' }));
 
-    const readOp1 = r(readFn1);
+    const readProc1 = r(readFn1);
 
     const readFn2 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'c50' }));
 
-    const readOp2 = r(readFn2);
+    const readProc2 = r(readFn2);
 
     const aMug: Mug<AState> = {
       [construction]: {
@@ -52,22 +52,22 @@ describe('229a728, react renders on hook param changes', () => {
       },
     };
 
-    type Props = { readOp: ReadOp<(state: AState) => ObjectState['o']> };
+    type Props = { readProc: ReadProc<(state: AState) => ObjectState['o']> };
 
-    const AComponent = jest.fn(({ readOp }: Props) => {
-      const hookReturn = useR(readOp, aMug);
+    const AComponent = jest.fn(({ readProc }: Props) => {
+      const hookReturn = useR(readProc, aMug);
       tapHookReturn(hookReturn);
       return <div />;
     });
 
-    describe('ff6702a, initially renders with read op#1', () => {
+    describe('ff6702a, initially renders with read proc#1', () => {
       let gotState1: AState;
       let readFn1ParamState1: AState, readFn1Return1: ObjectState['o'];
       let hookReturn1: ObjectState['o'];
 
       test('[action]', () => {
         gotState1 = getIt(aMug);
-        render(<AComponent readOp={readOp1} />);
+        render(<AComponent readProc={readProc1} />);
         readFn1ParamState1 = readFn1.mock.calls[0][0];
         readFn1Return1 = readFn1.mock.results[0].value;
         hookReturn1 = tapHookReturn.mock.calls[0][0];
@@ -98,15 +98,15 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('209e098, initially renders with read op#1, rerenders with read op#2, [cite] .:ff6702a', () => {
+    describe('209e098, initially renders with read proc#1, rerenders with read proc#2, [cite] .:ff6702a', () => {
       let hookReturn1: ObjectState['o'], hookReturn2: ObjectState['o'];
 
       test('[action]', () => {
-        const { rerender } = render(<AComponent readOp={readOp1} />);
+        const { rerender } = render(<AComponent readProc={readProc1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         readFn1.mockClear();
-        rerender(<AComponent readOp={readOp2} />);
+        rerender(<AComponent readProc={readProc2} />);
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
@@ -131,15 +131,15 @@ describe('229a728, react renders on hook param changes', () => {
       });
     });
 
-    describe('be7a5e5, initially renders and rerenders with read op#1, [cite] .:ff6702a', () => {
+    describe('be7a5e5, initially renders and rerenders with read proc#1, [cite] .:ff6702a', () => {
       let hookReturn1: ObjectState['o'], hookReturn2: ObjectState['o'];
 
       test('[action]', () => {
-        const { rerender } = render(<AComponent readOp={readOp1} />);
+        const { rerender } = render(<AComponent readProc={readProc1} />);
         hookReturn1 = tapHookReturn.mock.calls[0][0];
 
         readFn1.mockClear();
-        rerender(<AComponent readOp={readOp1} />);
+        rerender(<AComponent readProc={readProc1} />);
         hookReturn2 = tapHookReturn.mock.calls[1][0];
       });
 
@@ -161,17 +161,17 @@ describe('229a728, react renders on hook param changes', () => {
     });
   });
 
-  describe('0e73ab1, the read op keeps unchanged, the mug-like changes', () => {
+  describe('0e73ab1, the read proc keeps unchanged, the mug-like changes', () => {
     const readFn = jest.fn((state: AState): AState => state);
 
-    const readOp = r(readFn);
+    const readProc = r(readFn);
 
     type Props = {
       mugLike: PossibleMugLike<AState>;
     };
 
     const AComponent = jest.fn(({ mugLike }: Props) => {
-      const hookReturn = useR(readOp, mugLike);
+      const hookReturn = useR(readProc, mugLike);
       tapHookReturn(hookReturn);
       return <div />;
     });
@@ -1131,7 +1131,7 @@ describe('229a728, react renders on hook param changes', () => {
     });
   });
 
-  describe('adfe9bc, the read op and the mug-like keep unchanged, the rest args change', () => {
+  describe('adfe9bc, the read proc and the mug-like keep unchanged, the rest args change', () => {
     const aMug: Mug<AState> = {
       [construction]: {
         s: 'asd',
@@ -1157,14 +1157,14 @@ describe('229a728, react renders on hook param changes', () => {
       },
     );
 
-    const readOp = r(readFn);
+    const readProc = r(readFn);
 
     type Props = {
       extra: Pick<ObjectState, 'o'>;
     };
 
     const AComponent = jest.fn(({ extra }: Props) => {
-      const hookReturn = useR(readOp, aMug, extra);
+      const hookReturn = useR(readProc, aMug, extra);
       tapHookReturn(hookReturn);
       return <div />;
     });

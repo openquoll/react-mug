@@ -16,7 +16,7 @@ import {
   isState,
   isWriteProc,
   MugError,
-  NotAction,
+  NotSpecialOp,
   NotProc,
   ownKeysOfObjectLike,
   PossibleMugLike,
@@ -287,7 +287,7 @@ export type GetIt = ReadProc;
 
 export function r(): GetIt;
 export function r<TReadProc extends AnyReadProc>(readProc: TReadProc): ReadProc<TReadProc>;
-export function r<TReadFn extends AnyFunction & NotProc & NotAction>(
+export function r<TReadFn extends AnyFunction & NotProc & NotSpecialOp>(
   readFn: TReadFn,
 ): ReadProc<TReadFn>;
 export function r(read: AnyFunction = passThrough): AnyFunction {
@@ -349,7 +349,7 @@ export type SetIt = WriteProc;
 export function w(): SetIt;
 export function w<TWriteProc extends AnyWriteProc>(writeProc: TWriteProc): WriteProc<TWriteProc>;
 export function w<
-  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotProc & NotAction,
+  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotProc & NotSpecialOp,
 >(writeFn: TWriteFn): WriteProc<TWriteFn>;
 export function w(write: AnyFunction = assignPatch): AnyFunction {
   if (isWriteProc(write)) {

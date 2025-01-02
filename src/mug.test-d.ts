@@ -2,6 +2,7 @@ import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
 import type { AssignPatch, PassThrough } from './builtin';
+import type { GetIt, SetIt } from './mechanism';
 import {
   AnyMug,
   Mug,
@@ -10,12 +11,11 @@ import {
   PossibleMug,
   PossibleMuggyOverride,
   PossibleMugLike,
-  ReadActionMeta,
+  ReadSpecialOpMeta,
   State,
   WithAttachments,
-  WriteActionMeta,
+  WriteSpecialOpMeta,
 } from './mug';
-import type { GetIt, SetIt } from './mechanism';
 import { EmptyItem } from './type-utils';
 
 interface ObjectState {
@@ -191,10 +191,10 @@ test('State', () => {
   expectType<AState>(fake<State<DirtyAMug>>());
 });
 
-test('ReadActionMeta', () => {
-  expectType<ReadActionMeta<PassThrough>>(fake<ReadActionMeta<GetIt>>());
+test('ReadSpecialOpMeta', () => {
+  expectType<ReadSpecialOpMeta<PassThrough>>(fake<ReadSpecialOpMeta<GetIt>>());
 });
 
-test('WriteActionMeta', () => {
-  expectType<WriteActionMeta<AssignPatch>>(fake<WriteActionMeta<SetIt>>());
+test('WriteSpecialOpMeta', () => {
+  expectType<WriteSpecialOpMeta<AssignPatch>>(fake<WriteSpecialOpMeta<SetIt>>());
 });

@@ -3,15 +3,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   _mugLike,
   _readProc,
-  AnyReadAction,
   AnyReadProc,
+  AnyReadSpecialOp,
   areEqualMugLikes,
   construction,
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
-  ReadActionMeta,
   ReadProcMeta,
+  ReadSpecialOpMeta,
   State,
 } from '../mug';
 import { rawStateStore } from '../raw-state';
@@ -63,21 +63,21 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
 }
 
 export function useR<
-  TReadAction extends AnyFunction & ReadActionMeta<AnyFunction & ReadProcMeta<() => any>>,
->(readAction: TReadAction): ReturnType<TReadAction>;
+  TReadSpecialOp extends AnyFunction & ReadSpecialOpMeta<AnyFunction & ReadProcMeta<() => any>>,
+>(readSpecialOp: TReadSpecialOp): ReturnType<TReadSpecialOp>;
 export function useR<
-  TReadAction extends AnyFunction &
-    ReadActionMeta<
+  TReadSpecialOp extends AnyFunction &
+    ReadSpecialOpMeta<
       AnyFunction & ReadProcMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
     >,
 >(
-  readAction: TReadAction,
-  ...readActions: Parameters<TReadAction>
-): State<TReadAction[typeof _mugLike]>;
-export function useR<TReadAction extends AnyReadAction>(
-  readAction: TReadAction,
-  ...readArgs: Parameters<TReadAction>
-): ReturnType<TReadAction>;
+  readSpecialOp: TReadSpecialOp,
+  ...readArgs: Parameters<TReadSpecialOp>
+): State<TReadSpecialOp[typeof _mugLike]>;
+export function useR<TReadSpecialOp extends AnyReadSpecialOp>(
+  readSpecialOp: TReadSpecialOp,
+  ...readArgs: Parameters<TReadSpecialOp>
+): ReturnType<TReadSpecialOp>;
 export function useR<TReadProc extends AnyFunction & ReadProcMeta<() => any>>(
   readProc: TReadProc,
   mugLike?: unknown,

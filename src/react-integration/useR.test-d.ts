@@ -1,7 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import { upon } from '../actions';
+import { upon } from '../ops/special';
 import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';
 import { r as flatR, w as flatW } from '../mechanism';
 import { useR } from './useR';

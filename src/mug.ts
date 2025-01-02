@@ -443,80 +443,80 @@ export const isWriteProc = (f: any): f is AnyWriteProc =>
 
 export const isProc = (f: any): f is AnyProc => isReadProc(f) || isWriteProc(f);
 
-export type ReadActionMetaOnReadProc<TReadProc extends AnyReadProc, TMugLike> = {
+export type ReadSpecialOpMetaOnReadProc<TReadProc extends AnyReadProc, TMugLike> = {
   [_readProc]: TReadProc;
   [_mugLike]: TMugLike;
 };
 
-export type ReadActionMeta<
+export type ReadSpecialOpMeta<
   TRead extends AnyFunction = AnyReadProc,
   TMugLike = any,
 > = TRead extends AnyReadProc
-  ? ReadActionMetaOnReadProc<TRead, TMugLike>
-  : ReadActionMeta<ReadProc<TRead>, TMugLike>;
+  ? ReadSpecialOpMetaOnReadProc<TRead, TMugLike>
+  : ReadSpecialOpMeta<ReadProc<TRead>, TMugLike>;
 
-export type AnyReadAction = AnyFunction & ReadActionMeta;
+export type AnyReadSpecialOp = AnyFunction & ReadSpecialOpMeta;
 
-export type NotReadAction = {
+export type NotReadSpecialOp = {
   [_readProc]?: never;
   [_mugLike]?: never;
 };
 
-export type WriteActionMetaWriteProc<TWriteProc extends AnyWriteProc, TMugLike> = {
+export type WriteSpecialOpMetaWriteProc<TWriteProc extends AnyWriteProc, TMugLike> = {
   [_writeProc]: TWriteProc;
   [_mugLike]: TMugLike;
 };
 
-export type WriteActionMeta<
+export type WriteSpecialOpMeta<
   TWrite extends AnyFunction = AnyWriteProc,
   TMugLike = any,
 > = TWrite extends AnyWriteProc
-  ? WriteActionMetaWriteProc<TWrite, TMugLike>
-  : WriteActionMeta<WriteProc<TWrite>, TMugLike>;
+  ? WriteSpecialOpMetaWriteProc<TWrite, TMugLike>
+  : WriteSpecialOpMeta<WriteProc<TWrite>, TMugLike>;
 
-export type AnyWriteAction = AnyFunction & WriteActionMeta;
+export type AnyWriteSpecialOp = AnyFunction & WriteSpecialOpMeta;
 
-export type NotWriteAction = {
+export type NotWriteSpecialOp = {
   [_writeProc]?: never;
   [_mugLike]?: never;
 };
 
-export type AnyAction = AnyReadAction | AnyWriteAction;
+export type AnySpecialOp = AnyReadSpecialOp | AnyWriteSpecialOp;
 
-export type NotAction = {
+export type NotSpecialOp = {
   [_readProc]?: never;
   [_writeProc]?: never;
   [_mugLike]?: never;
 };
 
-export const isReadAction = (f: any): f is AnyReadAction =>
+export const isReadSpecialOp = (f: any): f is AnyReadSpecialOp =>
   isFunction(f) &&
   f[_hasOwnProperty](_mugLike) &&
   f[_hasOwnProperty](_readProc) &&
   isReadProc(f[_readProc]);
 
-export const isWriteAction = (f: any): f is AnyWriteAction =>
+export const isWriteSpecialOp = (f: any): f is AnyWriteSpecialOp =>
   isFunction(f) &&
   f[_hasOwnProperty](_mugLike) &&
   f[_hasOwnProperty](_writeProc) &&
   isWriteProc(f[_writeProc]);
 
-export const isAction = (f: any): f is AnyAction => isReadAction(f) || isWriteAction(f);
+export const isSpecialOp = (f: any): f is AnySpecialOp => isReadSpecialOp(f) || isWriteSpecialOp(f);
 
-export function pure<TReadAction extends AnyReadAction>(
-  readAction: TReadAction,
-): TReadAction[typeof _readProc][typeof _readFn];
-export function pure<TWriteAction extends AnyWriteAction>(
-  writeAction: TWriteAction,
-): TWriteAction[typeof _writeProc][typeof _writeFn];
+export function pure<TReadSpecialOp extends AnyReadSpecialOp>(
+  readSpecialOp: TReadSpecialOp,
+): TReadSpecialOp[typeof _readProc][typeof _readFn];
+export function pure<TWriteSpecialOp extends AnyWriteSpecialOp>(
+  writeSpecialOp: TWriteSpecialOp,
+): TWriteSpecialOp[typeof _writeProc][typeof _writeFn];
 export function pure(fn: any): any {
-  if (isReadAction(fn)) {
+  if (isReadSpecialOp(fn)) {
     if (isReadProc(fn[_readProc])) {
       return fn[_readProc][_readFn];
     }
   }
 
-  if (isWriteAction(fn)) {
+  if (isWriteSpecialOp(fn)) {
     if (isWriteProc(fn[_writeProc])) {
       return fn[_writeProc][_writeFn];
     }

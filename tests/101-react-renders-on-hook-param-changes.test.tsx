@@ -1348,7 +1348,7 @@ describe('229a728, react renders on hook param changes', () => {
   });
 
   describe('a11c7f9, the read special-op changes, [cite] .:cbf2e14', () => {
-    const aMug: Mug<AState> = {
+    const aMug = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1363,7 +1363,7 @@ describe('229a728, react renders on hook param changes', () => {
       },
     };
 
-    const [r] = upon(aMug);
+    const [r] = upon<AState>(aMug);
 
     const readFn1 = jest.fn((state: AState): ObjectState['o'] => ({ s: 'ba9' }));
 
@@ -1373,7 +1373,7 @@ describe('229a728, react renders on hook param changes', () => {
 
     const readSpecialOp2 = r(readFn2);
 
-    type Props = { readSpecialOp: ReadSpecialOp<(state: AState) => ObjectState['o']> };
+    type Props = { readSpecialOp: ReadSpecialOp<(state: AState) => ObjectState['o'], AState> };
 
     const AComponent = jest.fn(({ readSpecialOp }: Props) => {
       const hookReturn = useR(readSpecialOp);
@@ -1483,7 +1483,7 @@ describe('229a728, react renders on hook param changes', () => {
   });
 
   describe('6c88bf9, the read special-op keeps unchanged, the rest args change, [cite] .:adfe9bc', () => {
-    const aMug: Mug<AState> = {
+    const aMug = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1498,7 +1498,7 @@ describe('229a728, react renders on hook param changes', () => {
       },
     };
 
-    const [r] = upon(aMug);
+    const [r] = upon<AState>(aMug);
 
     const readFn = jest.fn(
       (state: AState, extra: Pick<ObjectState, 'o'>): Pick<ObjectState, 'o'> => {

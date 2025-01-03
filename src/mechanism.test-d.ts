@@ -10,6 +10,7 @@ import {
   PassThrough,
   PossiblePatch,
 } from './builtin';
+import { getIt, GetIt, initial, r, ReadProc, SetIt, setIt, w, WriteProc } from './mechanism';
 import {
   Mug,
   MugLike,
@@ -21,7 +22,6 @@ import {
   WithAttachments,
   WriteProcMeta,
 } from './mug';
-import { getIt, GetIt, initial, r, ReadProc, SetIt, setIt, w, WriteProc } from './mechanism';
 
 interface ObjectState {
   s: string;
@@ -34,7 +34,7 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
-interface SuperState extends AState {
+interface BiggerState extends AState {
   n: number;
 }
 
@@ -88,7 +88,8 @@ test('ReadProc, GetIt, PassThrough', () => {
   type Readdd9 = ReadProc<(state: AState) => ObjectState>;
 
   expectType<
-    ((mugLike: PossibleMugLike<AState>) => ObjectState) & ReadProcMeta<(state: AState) => ObjectState>
+    ((mugLike: PossibleMugLike<AState>) => ObjectState) &
+      ReadProcMeta<(state: AState) => ObjectState>
   >(fake<Readdd9>());
 
   expectType<Readdd9>(fake<ReadProc<Readdd9>>());
@@ -104,22 +105,19 @@ test('ReadProc, GetIt, PassThrough', () => {
 
   type Readdf3 = ReadProc<() => ObjectState>;
 
-  expectType<((mugLike?: unknown) => ObjectState) & ReadProcMeta<() => ObjectState>>(fake<Readdf3>());
+  expectType<((mugLike?: unknown) => ObjectState) & ReadProcMeta<() => ObjectState>>(
+    fake<Readdf3>(),
+  );
 
   expectType<Readdf3>(fake<ReadProc<Readdf3>>());
 
   // =-=-=
 
-  expectType<
-    (<TMugLike>(mugLike: TMugLike) => State<TMugLike>) &
-      ReadProcMeta<<TState>(state: TState) => TState>
-  >(fake<ReadProc>());
+  expectType<(<TMugLike>(mugLike: TMugLike) => State<TMugLike>) & ReadProcMeta<PassThrough>>(
+    fake<GetIt>(),
+  );
 
-  expectType<ReadProc>(fake<ReadProc<ReadProc>>());
-
-  expectType<ReadProc>(fake<ReadProc<PassThrough>>());
-
-  expectType<ReadProc>(fake<GetIt>());
+  expectType<GetIt>(fake<ReadProc<GetIt>>());
 });
 
 test('r, pure, getIt, passThrough', () => {
@@ -148,7 +146,7 @@ test('r, pure, getIt, passThrough', () => {
   expectAssignable<typeof rc79>(fake<AState>());
 
   expectType<AState>(readbf7(fake<DirtyAMug>()));
-  expectType<SuperState>(readbf7(fake<SuperState>()));
+  expectType<BiggerState>(readbf7(fake<BiggerState>()));
   expectType<ObjectState>(readbf7(fake<ObjectState>()));
 
   // @ts-expect-error
@@ -181,7 +179,7 @@ test('r, pure, getIt, passThrough', () => {
 
   expectType<AState>(read194(fake<AState>()));
 
-  expectType<SuperState>(read194(fake<SuperState>()));
+  expectType<BiggerState>(read194(fake<BiggerState>()));
 
   // @ts-expect-error
   read194(fake<ObjectState>());
@@ -201,7 +199,7 @@ test('r, pure, getIt, passThrough', () => {
   expectType<ObjectState>(readc82(fake<PossibleAMug>()));
   expectType<ObjectState>(readc82(fake<PossibleAMugLike>()));
   expectType<ObjectState>(readc82(fake<DirtyAMug>()));
-  expectType<ObjectState>(readc82(fake<SuperState>()));
+  expectType<ObjectState>(readc82(fake<BiggerState>()));
 
   // @ts-expect-error
   readc82(fake<ObjectState>());
@@ -245,7 +243,7 @@ test('r, pure, getIt, passThrough', () => {
 
   const read0ea = r();
 
-  expectType<ReadProc>(read0ea);
+  expectType<GetIt>(read0ea);
 
   expectType<typeof read0ea>(r(read0ea));
 
@@ -267,7 +265,7 @@ test('r, pure, getIt, passThrough', () => {
   expectAssignable<typeof rcfc>(fake<AState>());
 
   expectType<AState>(read0ea(fake<DirtyAMug>()));
-  expectType<SuperState>(read0ea(fake<SuperState>()));
+  expectType<BiggerState>(read0ea(fake<BiggerState>()));
   expectType<ObjectState>(read0ea(fake<ObjectState>()));
 
   // @ts-expect-error
@@ -322,8 +320,8 @@ test('WriteProc, SetIt, AssignPatch', () => {
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike, s: string) => TMugLike) &
-      WriteProcMeta<(state: AState, s: string) => SuperState>
-  >(fake<WriteProc<(state: AState, s: string) => SuperState>>());
+      WriteProcMeta<(state: AState, s: string) => BiggerState>
+  >(fake<WriteProc<(state: AState, s: string) => BiggerState>>());
 
   // =-=-=
 
@@ -344,17 +342,10 @@ test('WriteProc, SetIt, AssignPatch', () => {
 
   expectType<
     (<TMugLike>(mugLike: TMugLike, patch: PossiblePatch<NoInfer<TMugLike>>) => TMugLike) &
-      WriteProcMeta<{
-        <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
-        [_builtinId]: typeof _bidFnAssignPatch;
-      }>
-  >(fake<WriteProc>());
+      WriteProcMeta<AssignPatch>
+  >(fake<SetIt>());
 
-  expectType<WriteProc>(fake<WriteProc<WriteProc>>());
-
-  expectType<WriteProc>(fake<WriteProc<AssignPatch>>());
-
-  expectType<WriteProc>(fake<SetIt>());
+  expectType<SetIt>(fake<WriteProc<SetIt>>());
 });
 
 test('w, pure, setIt, assignPatch', () => {
@@ -376,7 +367,7 @@ test('w, pure, setIt, assignPatch', () => {
   expectType<PossibleAMug>(write73d(fake<PossibleAMug>()));
   expectType<PossibleAMugLike>(write73d(fake<PossibleAMugLike>()));
   expectType<DirtyAMug>(write73d(fake<DirtyAMug>()));
-  expectType<SuperState>(write73d(fake<SuperState>()));
+  expectType<BiggerState>(write73d(fake<BiggerState>()));
   expectType<ObjectState>(write73d(fake<ObjectState>()));
 
   // @ts-expect-error
@@ -408,7 +399,7 @@ test('w, pure, setIt, assignPatch', () => {
   const writed09 = w(<TState extends AState>(state: TState): TState => state);
 
   expectType<AState>(writed09(fake<AState>()));
-  expectType<SuperState>(writed09(fake<SuperState>()));
+  expectType<BiggerState>(writed09(fake<BiggerState>()));
 
   // @ts-expect-error
   writed09(fake<ObjectState>());
@@ -428,7 +419,7 @@ test('w, pure, setIt, assignPatch', () => {
   expectType<PossibleAMug>(writecdd(fake<PossibleAMug>()));
   expectType<PossibleAMugLike>(writecdd(fake<PossibleAMugLike>()));
   expectType<DirtyAMug>(writecdd(fake<DirtyAMug>()));
-  expectType<SuperState>(writecdd(fake<SuperState>()));
+  expectType<BiggerState>(writecdd(fake<BiggerState>()));
 
   // @ts-expect-error
   writecdd(fake<ObjectState>());
@@ -456,12 +447,12 @@ test('w, pure, setIt, assignPatch', () => {
 
   // =-=-=
 
-  const write490 = w((state: AState) => fake<SuperState>());
+  const write490 = w((state: AState) => fake<BiggerState>());
 
-  expectType<WriteProc<(state: AState) => SuperState>>(write490);
+  expectType<WriteProc<(state: AState) => BiggerState>>(write490);
 
   expectType<AState>(write490(fake<AState>()));
-  expectType<SuperState>(write490(fake<SuperState>()));
+  expectType<BiggerState>(write490(fake<BiggerState>()));
 
   // @ts-expect-error
   write490(fake<ObjectState>());
@@ -485,7 +476,7 @@ test('w, pure, setIt, assignPatch', () => {
   expectType<PossibleAMug>(write181(fake<PossibleAMug>()));
   expectType<PossibleAMugLike>(write181(fake<PossibleAMugLike>()));
   expectType<DirtyAMug>(write181(fake<DirtyAMug>()));
-  expectType<SuperState>(write181(fake<SuperState>()));
+  expectType<BiggerState>(write181(fake<BiggerState>()));
 
   // @ts-expect-error
   write181(fake<ObjectState>());
@@ -497,7 +488,7 @@ test('w, pure, setIt, assignPatch', () => {
 
   const write09e = w();
 
-  expectType<WriteProc>(write09e);
+  expectType<SetIt>(write09e);
 
   expectType<typeof write09e>(w(write09e));
 
@@ -515,7 +506,7 @@ test('w, pure, setIt, assignPatch', () => {
   expectType<PossibleAMugLike>(write09e(fake<PossibleAMugLike>(), patchcd2));
   expectType<DirtyAMug>(write09e(fake<DirtyAMug>(), patchcd2));
   expectType<ObjectState>(write09e(fake<ObjectState>(), { o: { s: fake<string>() } }));
-  expectType<SuperState>(write09e(fake<SuperState>(), patchcd2));
+  expectType<BiggerState>(write09e(fake<BiggerState>(), patchcd2));
 
   // @ts-expect-error
   write09e(fake<AState>(), { n: fake<number>() });

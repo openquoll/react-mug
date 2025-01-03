@@ -16,8 +16,8 @@ import {
   isState,
   isWriteProc,
   MugError,
-  NotSpecialOp,
   NotProc,
+  NotSpecialOp,
   ownKeysOfObjectLike,
   PossibleMugLike,
   ReadProcMeta,
@@ -275,7 +275,7 @@ export type ReadProcOnTypicalReadFn<TReadFn extends AnyFunction> = ((
 ) => ReturnType<TReadFn>) &
   ReadProcMeta<TReadFn>;
 
-export type ReadProc<TRead extends AnyFunction = PassThrough> = TRead extends AnyReadProc
+export type ReadProc<TRead extends AnyFunction> = TRead extends AnyReadProc
   ? TRead
   : TRead extends () => any
     ? ReadProcOnEmptyParamReadFn<TRead>
@@ -283,7 +283,7 @@ export type ReadProc<TRead extends AnyFunction = PassThrough> = TRead extends An
       ? ReadProcOnSimpleGenericReadFn<TRead>
       : ReadProcOnTypicalReadFn<TRead>;
 
-export type GetIt = ReadProc;
+export type GetIt = ReadProc<PassThrough>;
 
 export function r(): GetIt;
 export function r<TReadProc extends AnyReadProc>(readProc: TReadProc): ReadProc<TReadProc>;
@@ -336,7 +336,7 @@ export type WriteProcOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteProcMeta<TWriteFn>;
 
-export type WriteProc<TWrite extends AnyFunction = AssignPatch> = TWrite extends AnyWriteProc
+export type WriteProc<TWrite extends AnyFunction> = TWrite extends AnyWriteProc
   ? TWrite
   : TWrite extends () => any
     ? WriteProcOnEmptyParamWriteFn<TWrite>
@@ -344,7 +344,7 @@ export type WriteProc<TWrite extends AnyFunction = AssignPatch> = TWrite extends
       ? WriteProcOnAssignPatch
       : WriteProcOnTypicalWriteFn<TWrite>;
 
-export type SetIt = WriteProc;
+export type SetIt = WriteProc<AssignPatch>;
 
 export function w(): SetIt;
 export function w<TWriteProc extends AnyWriteProc>(writeProc: TWriteProc): WriteProc<TWriteProc>;

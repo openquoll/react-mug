@@ -192,9 +192,9 @@ test('State', () => {
 });
 
 test('ReadSpecialOpMeta', () => {
-  expectType<ReadSpecialOpMeta<PassThrough>>(fake<ReadSpecialOpMeta<GetIt>>());
+  expectType<ReadSpecialOpMeta<PassThrough, any>>(fake<ReadSpecialOpMeta<GetIt, any>>());
 });
 
 test('WriteSpecialOpMeta', () => {
-  expectType<WriteSpecialOpMeta<AssignPatch>>(fake<WriteSpecialOpMeta<SetIt>>());
+  expectType<WriteSpecialOpMeta<AssignPatch, any>>(fake<WriteSpecialOpMeta<SetIt, any>>());
 });

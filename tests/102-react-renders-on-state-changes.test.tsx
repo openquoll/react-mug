@@ -1021,7 +1021,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
   describe('50fdf5e, as per a read special-op and a plain object mug, [cite] .:8577c9b', () => {
     interface AState extends ObjectState {}
 
-    const aMug: Mug<AState> = {
+    const aMug = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1030,7 +1030,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const [r] = upon(aMug);
+    const [r] = upon<AState>(aMug);
 
     const readFn = jest.fn((state: AState): AState => ({ ...state }));
 
@@ -1172,7 +1172,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const aMug: Mug<AState, { muggyObject: Mug<ObjectState> }> = {
+    const aMug = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1182,7 +1182,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const [r] = upon(aMug);
+    const [r] = upon<AState>(aMug);
 
     const readFn = jest.fn((state: AState): AState => ({ ...state }));
 
@@ -1566,7 +1566,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
   describe('31ee94b, as per a read special-op and a mug-nested tuple mug-like, [cite] .:2c62e81', () => {
     type AState = [ObjectState, ObjectState];
 
-    const objectMug1: Mug<ObjectState> = {
+    const objectMug1 = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1575,7 +1575,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
       },
     };
 
-    const objectMug2: Mug<ObjectState> = {
+    const objectMug2 = {
       [construction]: {
         s: 'asd',
         o: {
@@ -1586,7 +1586,7 @@ describe('be37cdc, react renders on state changes, [cite] 001, 002, 101', () => 
 
     const aMugLike = tuple(objectMug1, objectMug2);
 
-    const [r] = upon(aMugLike);
+    const [r] = upon<AState>(aMugLike);
 
     const readFn = jest.fn((state: AState): AState => [...state]);
 

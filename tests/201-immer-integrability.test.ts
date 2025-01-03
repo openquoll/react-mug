@@ -63,7 +63,7 @@ describe('4496a38, writes by a custom write proc using immer', () => {
 });
 
 describe('eb74997, writes by a custom write special-op using immer', () => {
-  const aMug: Mug<AState> = {
+  const aMug = {
     [construction]: {
       s: 'asd',
       o: {
@@ -78,7 +78,7 @@ describe('eb74997, writes by a custom write special-op using immer', () => {
     },
   };
 
-  const [, w] = upon(aMug);
+  const [, w] = upon<AState>(aMug);
 
   const customWriteSpecialOp = w((state, s: string) =>
     produce(state, (draft) => {

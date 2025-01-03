@@ -1,9 +1,9 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import { upon } from '../ops/special';
-import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';
 import { r as flatR, w as flatW } from '../mechanism';
+import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';
+import { upon } from '../ops/special';
 import { useR } from './useR';
 
 interface ObjectState {
@@ -17,7 +17,7 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
-interface SuperState extends AState {
+interface BiggerState extends AState {
   n: number;
 }
 
@@ -64,7 +64,7 @@ test('useR', () => {
   expectAssignable<typeof r649>(fake<AState>());
 
   expectType<AState>(useR(readf23, fake<DirtyAMug>()));
-  expectType<SuperState>(useR(readf23, fake<SuperState>()));
+  expectType<BiggerState>(useR(readf23, fake<BiggerState>()));
   expectType<ObjectState>(useR(readf23, fake<ObjectState>()));
 
   // @ts-expect-error
@@ -94,7 +94,7 @@ test('useR', () => {
 
   expectType<AState>(useR(read69c, fake<AState>()));
 
-  expectType<SuperState>(useR(read69c, fake<SuperState>()));
+  expectType<BiggerState>(useR(read69c, fake<BiggerState>()));
 
   // @ts-expect-error
   useR(read69c, fake<ObjectState>());
@@ -110,7 +110,7 @@ test('useR', () => {
   expectType<ObjectState>(useR(read198, fake<PossibleAMug>()));
   expectType<ObjectState>(useR(read198, fake<PossibleAMugLike>()));
   expectType<ObjectState>(useR(read198, fake<DirtyAMug>()));
-  expectType<ObjectState>(useR(read198, fake<SuperState>()));
+  expectType<ObjectState>(useR(read198, fake<BiggerState>()));
 
   // @ts-expect-error
   useR(read198, fake<ObjectState>());
@@ -148,7 +148,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const { r } = upon(fake<CompositeAMug>());
+  const { r } = upon<AState>(fake<CompositeAMug>());
 
   // =-=-=
 
@@ -163,7 +163,7 @@ test('useR', () => {
 
   const read95a = r((state, s: string) => fake<ObjectState>());
 
-  useR(read95a, fake<string>());
+  expectType<ObjectState>(useR(read95a, fake<string>()));
 
   // @ts-expect-error
   useR(read95a);
@@ -183,7 +183,7 @@ test('useR', () => {
   // =-=-=
 
   // @ts-expect-error
-  r((state: SuperState) => fake<ObjectState>());
+  r((state: BiggerState) => fake<ObjectState>());
 
   // =-=-=
 
@@ -229,7 +229,7 @@ test('useR', () => {
   // =-=-=
 
   // @ts-expect-error
-  r(<TState extends SuperState>(state: TState): TState => state);
+  r(<TState extends BiggerState>(state: TState): TState => state);
 
   // =-=-=
 

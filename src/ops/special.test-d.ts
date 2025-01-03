@@ -1,15 +1,7 @@
-import { expectAssignable, expectType } from 'tsd';
+import { expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import {
-  _bidFnAssignPatch,
-  _builtinId,
-  AssignPatch,
-  assignPatch,
-  PassThrough,
-  passThrough,
-  PossiblePatch,
-} from '../builtin';
+import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from '../builtin';
 import {
   r as flatR,
   w as flatW,
@@ -20,16 +12,7 @@ import {
   setIt,
   WriteProc,
 } from '../mechanism';
-import {
-  Mug,
-  MugLike,
-  PossibleMug,
-  PossibleMugLike,
-  pure,
-  ReadSpecialOpMeta,
-  WithAttachments,
-  WriteSpecialOpMeta,
-} from '../mug';
+import { Mug, pure, ReadSpecialOpMeta, WriteSpecialOpMeta } from '../mug';
 import { ReadSpecialOp, upon, WriteSpecialOp } from './special';
 
 interface ObjectState {
@@ -43,156 +26,92 @@ interface AState extends ObjectState {
   potentialMuggyObject: ObjectState;
 }
 
-interface SuperState extends AState {
+interface BiggerState extends AState {
   n: number;
 }
 
-type AMug = Mug<AState>;
+const toolbelt = upon<AState>(fake<Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>>());
 
-type CompositeAMug = Mug<AState, { potentialMuggyObject: Mug<ObjectState> }>;
-
-type AMugLike = MugLike<AState, { potentialMuggyObject: Mug<ObjectState> }>;
-
-type PossibleAMug = PossibleMug<AState>;
-
-type PossibleAMugLike = PossibleMugLike<AState>;
-
-type DirtyAMug = WithAttachments<
-  Mug<{
-    s: string;
-    o: {
-      s: string;
-    };
-    potentialMuggyObject: WithAttachments<Mug<ObjectState>, { b: boolean }>;
-  }>,
-  { b: boolean }
->;
-
-const uponCompositeAMug = upon(fake<CompositeAMug>());
-
-const [r, w] = uponCompositeAMug;
-
-const [aMugR, aMugW] = upon(fake<AMug>());
-const [aMugLikeR, aMugLikeW] = upon(fake<AMugLike>());
-const [possibleAMugR, possibleAMugW] = upon(fake<PossibleAMug>());
-const [possibleAMugLikeR, possibleAMugLikeW] = upon(fake<PossibleAMugLike>());
-const [dirtyAMugR, dirtyAMugW] = upon(fake<DirtyAMug>());
+const [r, w] = toolbelt;
 
 test('ReadSpecialOp, GetIt, PassThrough', () => {
-  type Read3dd = ReadSpecialOp<(state: AState) => ObjectState, CompositeAMug>;
+  type Read3dd = ReadSpecialOp<(state: AState) => ObjectState, AState>;
 
   expectType<
-    (() => ObjectState) & ReadSpecialOpMeta<(state: AState) => ObjectState, CompositeAMug>
+    (() => ObjectState) &
+      ((state: AState) => ObjectState) &
+      ReadSpecialOpMeta<(state: AState) => ObjectState, AState>
   >(fake<Read3dd>());
 
-  expectType<Read3dd>(
-    fake<ReadSpecialOp<ReadProc<(state: AState) => ObjectState>, CompositeAMug>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => ObjectState) & ReadSpecialOpMeta<(state: AState) => ObjectState, AMug>>(
-    fake<ReadSpecialOp<(state: AState) => ObjectState, AMug>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => ObjectState) & ReadSpecialOpMeta<(state: AState) => ObjectState, AMugLike>>(
-    fake<ReadSpecialOp<(state: AState) => ObjectState, AMugLike>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => ObjectState) & ReadSpecialOpMeta<(state: AState) => ObjectState, PossibleAMug>>(
-    fake<ReadSpecialOp<(state: AState) => ObjectState, PossibleAMug>>(),
-  );
-
-  // =-=-=
-
-  expectType<
-    (() => ObjectState) & ReadSpecialOpMeta<(state: AState) => ObjectState, PossibleAMugLike>
-  >(fake<ReadSpecialOp<(state: AState) => ObjectState, PossibleAMugLike>>());
-
-  // =-=-=
-
-  expectType<(() => ObjectState) & ReadSpecialOpMeta<(state: AState) => ObjectState, DirtyAMug>>(
-    fake<ReadSpecialOp<(state: AState) => ObjectState, DirtyAMug>>(),
-  );
+  expectType<Read3dd>(fake<ReadSpecialOp<ReadProc<(state: AState) => ObjectState>, AState>>());
 
   // =-=-=
 
   expectType<
     ((s: string) => ObjectState) &
-      ReadSpecialOpMeta<(state: AState, s: string) => ObjectState, CompositeAMug>
-  >(fake<ReadSpecialOp<(state: AState, s: string) => ObjectState, CompositeAMug>>());
+      ((state: AState, s: string) => ObjectState) &
+      ReadSpecialOpMeta<(state: AState, s: string) => ObjectState, AState>
+  >(fake<ReadSpecialOp<(state: AState, s: string) => ObjectState, AState>>());
 
   // =-=-=
 
   expectType<
-    (() => ObjectState) & ReadSpecialOpMeta<(state: ObjectState) => ObjectState, CompositeAMug>
-  >(fake<ReadSpecialOp<(state: ObjectState) => ObjectState, CompositeAMug>>());
+    (() => ObjectState) &
+      ((state: ObjectState) => ObjectState) &
+      ReadSpecialOpMeta<(state: ObjectState) => ObjectState, AState>
+  >(fake<ReadSpecialOp<(state: ObjectState) => ObjectState, AState>>());
 
   // =-=-=
 
-  fake<ReadSpecialOp<(state: SuperState) => ObjectState, CompositeAMug>>();
+  type Read68a = ReadSpecialOp<<TState>(state: TState) => TState, AState>;
 
-  // =-=-=
+  expectType<
+    (() => AState) &
+      (<TState>(state: TState) => TState) &
+      ReadSpecialOpMeta<<TState>(state: TState) => TState, AState>
+  >(fake<Read68a>());
 
-  fake<ReadSpecialOp<(state: { n: number }) => ObjectState, CompositeAMug>>();
-
-  // =-=-=
-
-  type Read68a = ReadSpecialOp<<TState>(state: TState) => TState, CompositeAMug>;
-
-  expectType<(() => AState) & ReadSpecialOpMeta<<TState>(state: TState) => TState, CompositeAMug>>(
-    fake<Read68a>(),
-  );
-
-  expectType<Read68a>(
-    fake<ReadSpecialOp<ReadProc<<TState>(state: TState) => TState>, CompositeAMug>>(),
-  );
+  expectType<Read68a>(fake<ReadSpecialOp<ReadProc<<TState>(state: TState) => TState>, AState>>());
 
   // =-=-=
 
   expectType<
     (() => AState) &
-      ReadSpecialOpMeta<<TState extends AState>(state: TState) => TState, CompositeAMug>
-  >(fake<ReadSpecialOp<<TState extends AState>(state: TState) => TState, CompositeAMug>>());
+      (<TState extends AState>(state: TState) => TState) &
+      ReadSpecialOpMeta<<TState extends AState>(state: TState) => TState, AState>
+  >(fake<ReadSpecialOp<<TState extends AState>(state: TState) => TState, AState>>());
 
   // =-=-=
 
   expectType<
     (() => AState) &
-      ReadSpecialOpMeta<<TState extends ObjectState>(state: TState) => TState, CompositeAMug>
-  >(fake<ReadSpecialOp<<TState extends ObjectState>(state: TState) => TState, CompositeAMug>>());
+      (<TState extends ObjectState>(state: TState) => TState) &
+      ReadSpecialOpMeta<<TState extends ObjectState>(state: TState) => TState, AState>
+  >(fake<ReadSpecialOp<<TState extends ObjectState>(state: TState) => TState, AState>>());
 
   // =-=-=
 
-  fake<ReadSpecialOp<<TState extends SuperState>(state: TState) => TState, CompositeAMug>>();
+  type Readc14 = ReadSpecialOp<() => ObjectState, AState>;
+
+  expectType<
+    (() => ObjectState) &
+      ((state: unknown) => ObjectState) &
+      ReadSpecialOpMeta<() => ObjectState, AState>
+  >(fake<Readc14>());
+
+  expectType<Readc14>(fake<ReadSpecialOp<ReadProc<() => ObjectState>, AState>>());
 
   // =-=-=
 
-  type Readc14 = ReadSpecialOp<() => ObjectState, CompositeAMug>;
+  type Read43e = ReadSpecialOp<GetIt, AState>;
 
-  expectType<(() => ObjectState) & ReadSpecialOpMeta<() => ObjectState, CompositeAMug>>(
-    fake<Readc14>(),
-  );
+  expectType<(() => AState) & PassThrough & ReadSpecialOpMeta<GetIt, AState>>(fake<Read43e>());
 
-  expectType<Readc14>(fake<ReadSpecialOp<ReadProc<() => ObjectState>, CompositeAMug>>());
-
-  // =-=-=
-
-  type Read43e = ReadSpecialOp<GetIt, CompositeAMug>;
-
-  expectType<(() => AState) & ReadSpecialOpMeta<ReadProc, CompositeAMug>>(fake<Read43e>());
-
-  expectType<Read43e>(fake<ReadSpecialOp<ReadProc, CompositeAMug>>());
-
-  expectType<Read43e>(fake<ReadSpecialOp<PassThrough, CompositeAMug>>());
+  expectType<Read43e>(fake<ReadSpecialOp<PassThrough, AState>>());
 });
 
-test('upon#r, pure, getIt, passThrough', () => {
-  expectType<typeof uponCompositeAMug.r>(r);
+test('upon#r, getIt, passThrough', () => {
+  expectType<typeof toolbelt.r>(r);
 
   // @ts-expect-error
   r(w());
@@ -204,90 +123,49 @@ test('upon#r, pure, getIt, passThrough', () => {
     return fake<ObjectState>();
   });
 
-  expectType<ReadSpecialOp<(state: AState) => ObjectState, CompositeAMug>>(readc7e);
+  expectType<ReadSpecialOp<(state: AState) => ObjectState, AState>>(readc7e);
 
   expectType<typeof readc7e>(r(flatR((state: AState) => fake<ObjectState>())));
 
-  pure(readc7e);
-  expectType<(state: AState) => ObjectState>(pure(readc7e));
-
   expectType<ObjectState>(readc7e());
+  expectType<ObjectState>(readc7e(fake<AState>()));
 
   // @ts-expect-error
-  readc7e(fake<any>());
-
-  // =-=-=
-
-  const read50d = aMugR((state) => {
-    expectType<AState>(state);
-    return fake<ObjectState>();
-  });
-
-  expectType<ObjectState>(read50d());
-
-  // =-=-=
-
-  const read3c4 = aMugLikeR((state) => {
-    expectType<AState>(state);
-    return fake<ObjectState>();
-  });
-
-  expectType<ObjectState>(read3c4());
-
-  // =-=-=
-
-  const readd1a = possibleAMugR((state) => {
-    expectAssignable<AState>(state);
-    expectAssignable<typeof state>(fake<AState>());
-    return fake<ObjectState>();
-  });
-
-  expectType<ObjectState>(readd1a());
-
-  // =-=-=
-
-  const read1c3 = possibleAMugLikeR((state) => {
-    expectAssignable<AState>(state);
-    expectAssignable<typeof state>(fake<AState>());
-    return fake<ObjectState>();
-  });
-
-  expectType<ObjectState>(read1c3());
-
-  // =-=-=
-
-  const read8d6 = dirtyAMugR((state) => {
-    expectType<AState>(state);
-    return fake<ObjectState>();
-  });
-
-  expectType<ObjectState>(read8d6());
+  readc7e(fake<AState>(), fake<any>());
 
   // =-=-=
 
   const read9ad = r((state, s: string) => fake<ObjectState>());
 
   read9ad(fake<string>());
+  read9ad(fake<AState>(), fake<string>());
 
   // @ts-expect-error
   read9ad();
+  // @ts-expect-error
+  read9ad(fake<AState>());
 
   // @ts-expect-error
   read9ad(fake<number>());
+  // @ts-expect-error
+  read9ad(fake<AState>(), fake<number>());
 
   // @ts-expect-error
   read9ad(fake<string>(), fake<any>());
+  // @ts-expect-error
+  read9ad(fake<AState>(), fake<string>(), fake<any>());
 
   // =-=-=
 
   const read6a9 = r((state: ObjectState) => fake<ObjectState>());
 
   expectType<ObjectState>(read6a9());
+  expectType<ObjectState>(read6a9(fake<AState>()));
 
   // =-=-=
 
   // @ts-expect-error
-  r((state: SuperState) => fake<ObjectState>());
+  r((state: BiggerState) => fake<ObjectState>());
 
   // =-=-=
 
@@ -298,205 +176,162 @@ test('upon#r, pure, getIt, passThrough', () => {
 
   const reade33 = r(<TState>(state: TState): TState => state);
 
-  expectType<ReadSpecialOp<<TState>(state: TState) => TState, CompositeAMug>>(reade33);
+  expectType<ReadSpecialOp<<TState>(state: TState) => TState, AState>>(reade33);
 
   expectType<typeof reade33>(r(flatR(<TState>(state: TState): TState => state)));
 
-  expectType<<TState>(state: TState) => TState>(pure(reade33));
-
   expectType<AState>(reade33());
+  expectType<AState>(reade33(fake<AState>()));
 
   // @ts-expect-error
-  reade33(fake<any>());
+  reade33(fake<AState>(), fake<any>());
 
   // =-=-=
 
   const readf8d = r(<TState extends AState>(state: TState): TState => state);
 
   expectType<AState>(readf8d());
+  expectType<AState>(readf8d(fake<AState>()));
 
   // =-=-=
 
   const read45f = r(<TState extends ObjectState>(state: TState): TState => state);
 
   expectType<AState>(read45f());
+  expectType<AState>(read45f(fake<AState>()));
 
   // =-=-=
 
   // @ts-expect-error
-  r(<TState extends SuperState>(state: TState): TState => state);
+  r(<TState extends BiggerState>(state: TState): TState => state);
 
   // =-=-=
 
   const readfeb = r(() => fake<ObjectState>());
 
-  expectType<ReadSpecialOp<() => ObjectState, CompositeAMug>>(readfeb);
+  expectType<ReadSpecialOp<() => ObjectState, AState>>(readfeb);
 
   expectType<typeof readfeb>(r(flatR(() => fake<ObjectState>())));
 
-  expectType<() => ObjectState>(pure(readfeb));
-
   expectType<ObjectState>(readfeb());
+  expectType<ObjectState>(readfeb(fake<unknown>()));
 
   // @ts-expect-error
-  readfeb(fake<any>());
+  readfeb(fake<unknown>(), fake<any>());
 
   // =-=-=
 
   const read776 = r();
 
-  expectType<ReadSpecialOp<GetIt, CompositeAMug>>(read776);
-
-  expectType<typeof read776>(r(flatR(<TState>(state: TState) => state)));
-
-  expectType<<TState>(state: TState) => TState>(pure(read776));
-
-  expectType<typeof read776>(r(passThrough));
+  expectType<ReadSpecialOp<GetIt, AState>>(read776);
 
   expectType<typeof read776>(r(getIt));
 
+  expectType<typeof read776>(r(passThrough));
+
   expectType<AState>(read776());
+  expectType<AState>(read776(fake<AState>()));
 
   // @ts-expect-error
-  read776(fake<any>());
+  read776(fake<AState>(), fake<any>());
 });
 
 test('WriteSpecialOp, SetIt, AssignPatch', () => {
-  type Writea2e = WriteSpecialOp<(state: AState) => AState, CompositeAMug>;
+  type Writea2e = WriteSpecialOp<(state: AState) => AState, AState>;
 
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => AState, CompositeAMug>>(
-    fake<Writea2e>(),
-  );
+  expectType<
+    (() => void) &
+      ((state: AState) => AState) &
+      WriteSpecialOpMeta<(state: AState) => AState, AState>
+  >(fake<Writea2e>());
 
-  expectType<Writea2e>(fake<WriteSpecialOp<WriteProc<(state: AState) => AState>, CompositeAMug>>());
-
-  // =-=-=
-
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => AState, AMug>>(
-    fake<WriteSpecialOp<(state: AState) => AState, AMug>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => AState, AMugLike>>(
-    fake<WriteSpecialOp<(state: AState) => AState, AMugLike>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => AState, PossibleAMug>>(
-    fake<WriteSpecialOp<(state: AState) => AState, PossibleAMug>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => AState, PossibleAMugLike>>(
-    fake<WriteSpecialOp<(state: AState) => AState, PossibleAMugLike>>(),
-  );
-
-  // =-=-=
-
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => AState, DirtyAMug>>(
-    fake<WriteSpecialOp<(state: AState) => AState, DirtyAMug>>(),
-  );
+  expectType<Writea2e>(fake<WriteSpecialOp<WriteProc<(state: AState) => AState>, AState>>());
 
   // =-=-=
 
   expectType<
-    ((s: string) => void) & WriteSpecialOpMeta<(state: AState, s: string) => AState, CompositeAMug>
-  >(fake<WriteSpecialOp<(state: AState, s: string) => AState, CompositeAMug>>());
+    ((s: string) => void) &
+      ((state: AState, s: string) => AState) &
+      WriteSpecialOpMeta<(state: AState, s: string) => AState, AState>
+  >(fake<WriteSpecialOp<(state: AState, s: string) => AState, AState>>());
 
   // =-=-=
 
-  expectType<(() => void) & WriteSpecialOpMeta<(state: AState) => SuperState, CompositeAMug>>(
-    fake<WriteSpecialOp<(state: AState) => SuperState, CompositeAMug>>(),
-  );
+  expectType<
+    (() => void) &
+      ((state: AState) => BiggerState) &
+      WriteSpecialOpMeta<(state: AState) => BiggerState, AState>
+  >(fake<WriteSpecialOp<(state: AState) => BiggerState, AState>>());
 
   // =-=-=
 
-  fake<WriteSpecialOp<(state: AState) => ObjectState, CompositeAMug>>();
+  expectType<
+    (() => void) &
+      ((state: ObjectState) => AState) &
+      WriteSpecialOpMeta<(state: ObjectState) => AState, AState>
+  >(fake<WriteSpecialOp<(state: ObjectState) => AState, AState>>());
 
   // =-=-=
 
-  expectType<(() => void) & WriteSpecialOpMeta<(state: ObjectState) => AState, CompositeAMug>>(
-    fake<WriteSpecialOp<(state: ObjectState) => AState, CompositeAMug>>(),
-  );
+  type Write42b = WriteSpecialOp<<TState>(state: TState) => TState, AState>;
 
-  // =-=-=
-
-  fake<WriteSpecialOp<(state: SuperState) => AState, CompositeAMug>>();
-
-  // =-=-=
-
-  fake<WriteSpecialOp<(state: { n: number }) => AState, CompositeAMug>>();
-
-  // =-=-=
-
-  fake<WriteSpecialOp<(state: AState) => { n: number }, CompositeAMug>>();
-
-  // =-=-=
-
-  type Write42b = WriteSpecialOp<<TState>(state: TState) => TState, CompositeAMug>;
-
-  expectType<(() => void) & WriteSpecialOpMeta<<TState>(state: TState) => TState, CompositeAMug>>(
-    fake<Write42b>(),
-  );
+  expectType<
+    (() => void) &
+      (<TState>(state: TState) => TState) &
+      WriteSpecialOpMeta<<TState>(state: TState) => TState, AState>
+  >(fake<Write42b>());
 
   expectType<Write42b>(
-    fake<WriteSpecialOp<WriteProc<<TState>(state: TState) => TState>, CompositeAMug>>(),
+    fake<WriteSpecialOp<WriteProc<<TState>(state: TState) => TState>, AState>>(),
   );
 
   // =-=-=
 
   expectType<
     (() => void) &
-      WriteSpecialOpMeta<<TState extends AState>(state: TState) => TState, CompositeAMug>
-  >(fake<WriteSpecialOp<<TState extends AState>(state: TState) => TState, CompositeAMug>>());
+      (<TState extends AState>(state: TState) => TState) &
+      WriteSpecialOpMeta<<TState extends AState>(state: TState) => TState, AState>
+  >(fake<WriteSpecialOp<<TState extends AState>(state: TState) => TState, AState>>());
 
   // =-=-=
 
   expectType<
     (() => void) &
-      WriteSpecialOpMeta<<TState extends ObjectState>(state: TState) => TState, CompositeAMug>
-  >(fake<WriteSpecialOp<<TState extends ObjectState>(state: TState) => TState, CompositeAMug>>());
+      (<TState extends ObjectState>(state: TState) => TState) &
+      WriteSpecialOpMeta<<TState extends ObjectState>(state: TState) => TState, AState>
+  >(fake<WriteSpecialOp<<TState extends ObjectState>(state: TState) => TState, AState>>());
 
   // =-=-=
 
-  fake<WriteSpecialOp<<TState extends SuperState>(state: TState) => TState, CompositeAMug>>();
-
-  // =-=-=
-
-  type Write697 = WriteSpecialOp<() => AState, CompositeAMug>;
-
-  expectType<(() => void) & WriteSpecialOpMeta<() => AState, CompositeAMug>>(fake<Write697>());
-
-  expectType<Write697>(fake<WriteSpecialOp<WriteProc<() => AState>, CompositeAMug>>());
-
-  // =-=-=
-
-  expectType<(() => void) & WriteSpecialOpMeta<() => SuperState, CompositeAMug>>(
-    fake<WriteSpecialOp<() => SuperState, CompositeAMug>>(),
-  );
-
-  // =-=-=
-
-  fake<WriteSpecialOp<() => ObjectState, CompositeAMug>>();
-
-  // =-=-=
-
-  type Write4f8 = WriteSpecialOp<SetIt, CompositeAMug>;
+  type Write697 = WriteSpecialOp<() => AState, AState>;
 
   expectType<
-    ((patch: PossiblePatch<NoInfer<AState>>) => void) & WriteSpecialOpMeta<WriteProc, CompositeAMug>
+    (() => void) & ((state: unknown) => AState) & WriteSpecialOpMeta<() => AState, AState>
+  >(fake<Write697>());
+
+  expectType<Write697>(fake<WriteSpecialOp<WriteProc<() => AState>, AState>>());
+
+  // =-=-=
+
+  expectType<
+    (() => void) & ((state: unknown) => BiggerState) & WriteSpecialOpMeta<() => BiggerState, AState>
+  >(fake<WriteSpecialOp<() => BiggerState, AState>>());
+
+  // =-=-=
+
+  type Write4f8 = WriteSpecialOp<SetIt, AState>;
+
+  expectType<
+    ((patch: PossiblePatch<NoInfer<AState>>) => void) &
+      AssignPatch &
+      WriteSpecialOpMeta<SetIt, AState>
   >(fake<Write4f8>());
 
-  expectType<Write4f8>(fake<WriteSpecialOp<WriteProc, CompositeAMug>>());
-
-  expectType<Write4f8>(fake<WriteSpecialOp<AssignPatch, CompositeAMug>>());
+  expectType<Write4f8>(fake<WriteSpecialOp<AssignPatch, AState>>());
 });
 
-test('upon#w, pure, setIt, assignPatch', () => {
-  expectType<typeof uponCompositeAMug.w>(w);
+test('upon#w, setIt, assignPatch', () => {
+  expectType<typeof toolbelt.w>(w);
 
   // @ts-expect-error
   w(r());
@@ -508,84 +343,46 @@ test('upon#w, pure, setIt, assignPatch', () => {
     return state;
   });
 
-  expectType<WriteSpecialOp<(state: AState) => AState, CompositeAMug>>(write30d);
+  expectType<WriteSpecialOp<(state: AState) => AState, AState>>(write30d);
 
   expectType<typeof write30d>(w(flatW((state: AState) => state)));
 
   expectType<(state: AState) => AState>(pure(write30d));
 
   expectType<void>(write30d());
+  expectType<AState>(write30d(fake<AState>()));
 
   // @ts-expect-error
-  write30d(fake<any>());
-
-  // =-=-=
-
-  const write50d = aMugW((state) => {
-    expectType<AState>(state);
-    return state;
-  });
-
-  expectType<void>(write50d());
-
-  // =-=-=
-
-  const write113 = aMugLikeW((state) => {
-    expectType<AState>(state);
-    return state;
-  });
-
-  expectType<void>(write113());
-
-  // =-=-=
-
-  const write36c = possibleAMugW((state) => {
-    expectAssignable<AState>(state);
-    expectAssignable<typeof state>(fake<AState>());
-    return state;
-  });
-
-  expectType<void>(write36c());
-
-  // =-=-=
-
-  const writedd7 = possibleAMugLikeW((state) => {
-    expectAssignable<AState>(state);
-    expectAssignable<typeof state>(fake<AState>());
-    return state;
-  });
-
-  expectType<void>(writedd7());
-
-  // =-=-=
-
-  const write203 = dirtyAMugW((state) => {
-    expectType<AState>(state);
-    return state;
-  });
-
-  expectType<void>(write203());
+  write30d(fake<AState>(), fake<any>());
 
   // =-=-=
 
   const writebb8 = w((state, s: string) => state);
 
   writebb8(fake<string>());
+  writebb8(fake<AState>(), fake<string>());
 
   // @ts-expect-error
   writebb8();
+  // @ts-expect-error
+  writebb8(fake<AState>());
 
   // @ts-expect-error
   writebb8(fake<number>());
+  // @ts-expect-error
+  writebb8(fake<AState>(), fake<number>());
 
   // @ts-expect-error
   writebb8(fake<string>(), fake<any>());
+  // @ts-expect-error
+  writebb8(fake<AState>(), fake<string>(), fake<any>());
 
   // =-=-=
 
-  const writee27 = w((state) => fake<SuperState>());
+  const writee27 = w((state) => fake<BiggerState>());
 
   expectType<void>(writee27());
+  expectType<BiggerState>(writee27(fake<AState>()));
 
   // =-=-=
 
@@ -597,11 +394,12 @@ test('upon#w, pure, setIt, assignPatch', () => {
   const write8b5 = w((state: ObjectState) => fake<AState>());
 
   expectType<void>(write8b5());
+  expectType<AState>(write8b5(fake<AState>()));
 
   // =-=-=
 
   // @ts-expect-error
-  w((state: SuperState) => fake<AState>());
+  w((state: BiggerState) => fake<AState>());
 
   // =-=-=
 
@@ -617,54 +415,58 @@ test('upon#w, pure, setIt, assignPatch', () => {
 
   const write3f7 = w(<TState>(state: TState): TState => state);
 
-  expectType<WriteSpecialOp<<TState>(state: TState) => TState, CompositeAMug>>(write3f7);
+  expectType<WriteSpecialOp<<TState>(state: TState) => TState, AState>>(write3f7);
 
   expectType<typeof write3f7>(w(flatW(<TState>(state: TState): TState => state)));
 
-  expectType<<TState>(state: TState) => TState>(pure(write3f7));
-
   expectType<void>(write3f7());
+  expectType<AState>(write3f7(fake<AState>()));
 
   // @ts-expect-error
-  write3f7(fake<any>());
+  write3f7(fake<AState>(), fake<any>());
 
   // =-=-=
 
   const write519 = w(<TState extends AState>(state: TState): TState => state);
 
   expectType<void>(write519());
+  expectType<AState>(write519(fake<AState>()));
 
   // =-=-=
 
   const write4fd = w(<TState extends ObjectState>(state: TState): TState => state);
 
   expectType<void>(write4fd());
+  expectType<AState>(write4fd(fake<AState>()));
 
   // =-=-=
 
   // @ts-expect-error
-  w(<TState extends SuperState>(state: TState): TState => state);
+  w(<TState extends BiggerState>(state: TState): TState => state);
 
   // =-=-=
 
   const writed5e = w(() => fake<AState>());
 
-  expectType<WriteSpecialOp<() => AState, CompositeAMug>>(writed5e);
+  expectType<WriteSpecialOp<() => AState, AState>>(writed5e);
 
   expectType<typeof writed5e>(w(flatW(() => fake<AState>())));
 
-  expectType<() => AState>(pure(writed5e));
-
   expectType<void>(writed5e());
+  expectType<AState>(writed5e(fake<unknown>()));
 
   // @ts-expect-error
-  writed5e(fake<any>());
+  writed5e(fake<unknown>(), fake<any>());
 
   // =-=-=
 
-  const write6bb = w(() => fake<SuperState>());
+  const write6bb = w(() => fake<BiggerState>());
 
   expectType<void>(write6bb());
+  expectType<BiggerState>(write6bb(fake<unknown>()));
+
+  // @ts-expect-error
+  writed5e(fake<unknown>(), fake<any>());
 
   // =-=-=
 
@@ -675,24 +477,20 @@ test('upon#w, pure, setIt, assignPatch', () => {
 
   const write8db = w();
 
-  expectType<WriteSpecialOp<SetIt, CompositeAMug>>(write8db);
-
-  expectType<{
-    <TState>(state: TState, patch: PossiblePatch<NoInfer<TState>>): TState;
-    [_builtinId]: typeof _bidFnAssignPatch;
-  }>(pure(write8db));
-
-  expectType<typeof write8db>(w(assignPatch));
+  expectType<WriteSpecialOp<SetIt, AState>>(write8db);
 
   expectType<typeof write8db>(w(setIt));
+
+  expectType<typeof write8db>(w(assignPatch));
 
   const patch422 = { potentialMuggyObject: { o: { s: fake<string>() } } };
 
   expectType<void>(write8db(patch422));
+  expectType<AState>(write8db(fake<AState>(), patch422));
 
   // @ts-expect-error
   write8db();
 
   // @ts-expect-error
-  write8db(patch422, fake<any>());
+  write8db(fake<AState>(), patch422, fake<any>());
 });

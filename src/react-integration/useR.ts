@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   _mugLike,
   _readProc,
+  _state,
   AnyReadProc,
   AnyReadSpecialOp,
   areEqualMugLikes,
@@ -63,20 +64,22 @@ function unsubscribeFrom(mugLike: any, changeListener: () => void): void {
 }
 
 export function useR<
-  TReadSpecialOp extends AnyFunction & ReadSpecialOpMeta<AnyFunction & ReadProcMeta<() => any>>,
+  TReadSpecialOp extends AnyFunction &
+    ReadSpecialOpMeta<AnyFunction & ReadProcMeta<() => any>, any>,
 >(readSpecialOp: TReadSpecialOp): ReturnType<TReadSpecialOp>;
 export function useR<
   TReadSpecialOp extends AnyFunction &
     ReadSpecialOpMeta<
-      AnyFunction & ReadProcMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>
+      AnyFunction & ReadProcMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
+      any
     >,
 >(
   readSpecialOp: TReadSpecialOp,
-  ...readArgs: Parameters<TReadSpecialOp>
-): State<TReadSpecialOp[typeof _mugLike]>;
+  ...args: Post0Params<TReadSpecialOp[typeof _readProc]>
+): TReadSpecialOp[typeof _state];
 export function useR<TReadSpecialOp extends AnyReadSpecialOp>(
   readSpecialOp: TReadSpecialOp,
-  ...readArgs: Parameters<TReadSpecialOp>
+  ...args: Post0Params<TReadSpecialOp[typeof _readProc]>
 ): ReturnType<TReadSpecialOp>;
 export function useR<TReadProc extends AnyFunction & ReadProcMeta<() => any>>(
   readProc: TReadProc,
@@ -89,20 +92,19 @@ export function useR<
 >(readProc: TReadProc, mugLike: TMugLike, ...restArgs: Post0Params<TReadProc>): State<TMugLike>;
 export function useR<TReadProc extends AnyReadProc>(
   readProc: TReadProc,
-  ...readArgs: Parameters<TReadProc>
+  ...args: Parameters<TReadProc>
 ): ReturnType<TReadProc>;
 export function useR(
   read: {
     (...args: any): any;
     [_readProc]?: any;
+    [_state]?: any;
     [_mugLike]?: any;
   },
-  ...readArgs: any
+  ...args: any
 ): any {
   const readProc = read[_readProc] ?? read;
-  const [mugLike, restArgs] = read[_mugLike]
-    ? [read[_mugLike], readArgs]
-    : [readArgs[0], readArgs[_slice](1)];
+  const [mugLike, restArgs] = read[_mugLike] ? [read[_mugLike], args] : [args[0], args[_slice](1)];
 
   const readProcRef = useRef(readProc);
   const mugLikeRef = useRef(mugLike);

@@ -60,9 +60,9 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     },
   };
 
-  const uponA = upon(aMug);
+  const toolbelt = upon<AState>(aMug);
 
-  const [r, w] = uponA;
+  const [r, w] = toolbelt;
 
   const getA = r();
 
@@ -74,11 +74,11 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
 
   describe('1696308, checks the special-op toolbelt_s fields', () => {
     test('[verify] the "r" field equals the index-0 item in ref', () => {
-      expect(r).toBe(uponA.r);
+      expect(toolbelt.r).toBe(r);
     });
 
     test('[verify] the "w" field equals the index-1 item in ref', () => {
-      expect(w).toBe(uponA.w);
+      expect(toolbelt.w).toBe(w);
     });
   });
 
@@ -155,7 +155,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     test('[action]', () => {
       setA(writeSpecialOpParamPatch);
       setItParamMug = jest.mocked(setIt).mock.calls[0][0] as AMug;
-      setItParamPatch = jest.mocked(setIt).mock.calls[0][1] as PossiblePatch<AMug>;
+      setItParamPatch = jest.mocked(setIt).mock.calls[0][1] as PossiblePatch<AState>;
     });
 
     test('[verify] "setIt" is called 1 time', () => {
@@ -217,7 +217,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
 
 describe('0cedec5, special-ops in OOP, [cite] .:0ab2ffa', () => {
   class AMug {
-    _ = upon<Mug<AState>>(this);
+    _ = upon<AState>(this);
 
     [construction] = {
       s: 'asd',

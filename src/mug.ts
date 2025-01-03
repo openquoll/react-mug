@@ -396,31 +396,25 @@ export const ownKeysOfObjectLike = <T extends AnyObjectLike>(o: T): NumAsStr<key
     ? ([..._getOwnPropertyNames(o), ..._getOwnPropertySymbols(o)] as NumAsStr<keyof T>[])
     : [];
 
-export const _mugLike = Symbol();
-
-export const _readProc = Symbol();
-
-export const _writeProc = Symbol();
-
 export const _readFn = Symbol();
 
 export const _writeFn = Symbol();
 
-export type ReadProcMeta<TReadFn extends AnyFunction = AnyFunction> = {
+export type ReadProcMeta<TReadFn extends AnyFunction> = {
   [_readFn]: TReadFn;
 };
 
-export type AnyReadProc = AnyFunction & ReadProcMeta;
+export type AnyReadProc = AnyFunction & ReadProcMeta<AnyFunction>;
 
 export type NotReadProc = {
   [_readFn]?: never;
 };
 
-export type WriteProcMeta<TWriteFn extends AnyFunction = AnyFunction> = {
+export type WriteProcMeta<TWriteFn extends AnyFunction> = {
   [_writeFn]: TWriteFn;
 };
 
-export type AnyWriteProc = AnyFunction & WriteProcMeta;
+export type AnyWriteProc = AnyFunction & WriteProcMeta<AnyFunction>;
 
 export type NotWriteProc = {
   [_writeFn]?: never;
@@ -443,41 +437,47 @@ export const isWriteProc = (f: any): f is AnyWriteProc =>
 
 export const isProc = (f: any): f is AnyProc => isReadProc(f) || isWriteProc(f);
 
-export type ReadSpecialOpMetaOnReadProc<TReadProc extends AnyReadProc, TMugLike> = {
+export const _readProc = Symbol();
+
+export const _writeProc = Symbol();
+
+export const _state = Symbol();
+
+export const _mugLike = Symbol();
+
+export type ReadSpecialOpMetaOnReadProc<TReadProc extends AnyReadProc, TState> = {
   [_readProc]: TReadProc;
-  [_mugLike]: TMugLike;
+  [_state]: TState;
+  [_mugLike]: PossibleMugLike<TState>;
 };
 
-export type ReadSpecialOpMeta<
-  TRead extends AnyFunction = AnyReadProc,
-  TMugLike = any,
-> = TRead extends AnyReadProc
-  ? ReadSpecialOpMetaOnReadProc<TRead, TMugLike>
-  : ReadSpecialOpMeta<ReadProc<TRead>, TMugLike>;
+export type ReadSpecialOpMeta<TRead extends AnyFunction, TState> = TRead extends AnyReadProc
+  ? ReadSpecialOpMetaOnReadProc<TRead, TState>
+  : ReadSpecialOpMeta<ReadProc<TRead>, TState>;
 
-export type AnyReadSpecialOp = AnyFunction & ReadSpecialOpMeta;
+export type AnyReadSpecialOp = AnyFunction & ReadSpecialOpMeta<AnyReadProc, any>;
 
 export type NotReadSpecialOp = {
   [_readProc]?: never;
+  [_state]?: never;
   [_mugLike]?: never;
 };
 
-export type WriteSpecialOpMetaWriteProc<TWriteProc extends AnyWriteProc, TMugLike> = {
+export type WriteSpecialOpMetaWriteProc<TWriteProc extends AnyWriteProc, TState> = {
   [_writeProc]: TWriteProc;
-  [_mugLike]: TMugLike;
+  [_state]?: TState;
+  [_mugLike]: PossibleMugLike<TState>;
 };
 
-export type WriteSpecialOpMeta<
-  TWrite extends AnyFunction = AnyWriteProc,
-  TMugLike = any,
-> = TWrite extends AnyWriteProc
-  ? WriteSpecialOpMetaWriteProc<TWrite, TMugLike>
-  : WriteSpecialOpMeta<WriteProc<TWrite>, TMugLike>;
+export type WriteSpecialOpMeta<TWrite extends AnyFunction, TState> = TWrite extends AnyWriteProc
+  ? WriteSpecialOpMetaWriteProc<TWrite, TState>
+  : WriteSpecialOpMeta<WriteProc<TWrite>, TState>;
 
-export type AnyWriteSpecialOp = AnyFunction & WriteSpecialOpMeta;
+export type AnyWriteSpecialOp = AnyFunction & WriteSpecialOpMeta<AnyWriteProc, any>;
 
 export type NotWriteSpecialOp = {
   [_writeProc]?: never;
+  [_state]?: never;
   [_mugLike]?: never;
 };
 
@@ -486,19 +486,20 @@ export type AnySpecialOp = AnyReadSpecialOp | AnyWriteSpecialOp;
 export type NotSpecialOp = {
   [_readProc]?: never;
   [_writeProc]?: never;
+  [_state]?: never;
   [_mugLike]?: never;
 };
 
 export const isReadSpecialOp = (f: any): f is AnyReadSpecialOp =>
   isFunction(f) &&
-  f[_hasOwnProperty](_mugLike) &&
   f[_hasOwnProperty](_readProc) &&
+  f[_hasOwnProperty](_mugLike) &&
   isReadProc(f[_readProc]);
 
 export const isWriteSpecialOp = (f: any): f is AnyWriteSpecialOp =>
   isFunction(f) &&
-  f[_hasOwnProperty](_mugLike) &&
   f[_hasOwnProperty](_writeProc) &&
+  f[_hasOwnProperty](_mugLike) &&
   isWriteProc(f[_writeProc]);
 
 export const isSpecialOp = (f: any): f is AnySpecialOp => isReadSpecialOp(f) || isWriteSpecialOp(f);

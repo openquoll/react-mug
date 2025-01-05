@@ -6,6 +6,7 @@ const typescriptCompilerOptions = {
   declaration: false,
   module: 'ESNext',
   moduleResolution: 'Bundler',
+  outDir: __dirname + '/dist/',
 };
 
 /** @type {import('@rollup/plugin-terser').Options} */

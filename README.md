@@ -12,14 +12,14 @@ Possibly the optimal way to functionally manage states.
 
 ## <span id="cb032d8"></span>Functionalities
 
-⯌ Rapid creation from pure funcitons for straight callable state operations.<br/>
+⯌ Rapid creation from pure funcitons for directly callable state operations.<br/>
 ⯌ Zero-step integration with React.<br/>
 ⯌ Full leverage on ES modules for code organization.<br/>
 ⯌ State composition.<br/>
 ⯌ State segregation.<br/>
 ⯌ Async operations.<br/>
-⯌ Functional-style tests on state operations.<br/>
-⯌ Easy tests on actual state changes.</br>
+⯌ Functionally test state operations.<br/>
+⯌ Easily test actual state changes.</br>
 ⯌ Strong support for types.
 
 ## <span id="f746377"></span>Install

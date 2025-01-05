@@ -8,7 +8,7 @@ English &nbsp;•&nbsp; [中文](./README.zh-Hans.md)
 
 ## <span id="5b94f97"></span>Synopsis
 
-Perhaps the best way to functionally manage states.
+Possibly the optimal way to functionally manage states.
 
 ## <span id="cb032d8"></span>Functionalities
 

@@ -25,7 +25,7 @@
   "module": "./dist/react-mug.esm.min.js",
   "main": "./dist/react-mug.cjs.min.js",
   "types": "./dist/types/index.d.ts",
-  "description": "Perhaps the best way to functionally manage states.",
+  "description": "Possibly the optimal way to functionally manage states.",
   "keywords": [
     "react-mug",
     "react",

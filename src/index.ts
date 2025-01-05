@@ -21,7 +21,6 @@ export {
   isSpecialOp,
   isWriteProc,
   isWriteSpecialOp,
-  pure,
 } from './mug';
 export { ReadSpecialOp, SpecialOpToolbelt, WriteSpecialOp, upon } from './ops';
 export { useR } from './react-integration';

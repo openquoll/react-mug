@@ -126,3 +126,7 @@ export function assignPatch(state: any, patch: any): any {
 assignPatch[_builtinId] = _bidFnAssignPatch;
 
 export type AssignPatch = typeof assignPatch;
+
+export function doNothing() {}
+
+export type DoNothing = typeof doNothing;

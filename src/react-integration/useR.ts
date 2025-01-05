@@ -4,6 +4,7 @@ import {
   _mugLike,
   _readProc,
   _state,
+  AnyReadGeneralOp,
   AnyReadProc,
   AnyReadSpecialOp,
   areEqualMugLikes,
@@ -11,6 +12,8 @@ import {
   isMug,
   isPlainObject,
   ownKeysOfObjectLike,
+  PossibleMugLike,
+  ReadGeneralOpMeta,
   ReadProcMeta,
   ReadSpecialOpMeta,
   State,
@@ -75,12 +78,34 @@ export function useR<
     >,
 >(
   readSpecialOp: TReadSpecialOp,
-  ...args: Post0Params<TReadSpecialOp[typeof _readProc]>
+  ...readArgs: Post0Params<TReadSpecialOp[typeof _readProc]>
 ): TReadSpecialOp[typeof _state];
 export function useR<TReadSpecialOp extends AnyReadSpecialOp>(
   readSpecialOp: TReadSpecialOp,
-  ...args: Post0Params<TReadSpecialOp[typeof _readProc]>
+  ...readArgs: Post0Params<TReadSpecialOp[typeof _readProc]>
 ): ReturnType<TReadSpecialOp>;
+
+export function useR<
+  TReadGeneralOp extends AnyFunction &
+    ReadGeneralOpMeta<AnyFunction & ReadProcMeta<() => any>, any>,
+>(readGeneralOp: TReadGeneralOp, mugLike?: unknown): ReturnType<TReadGeneralOp>;
+export function useR<
+  TReadGeneralOp extends AnyFunction &
+    ReadGeneralOpMeta<
+      AnyFunction & ReadProcMeta<<TState extends never>(state: TState, ...restArgs: any) => TState>,
+      any
+    >,
+  TMugLike extends PossibleMugLike<TReadGeneralOp[typeof _state]>,
+>(
+  readGeneralOp: TReadGeneralOp,
+  mugLike: TMugLike,
+  ...restArgs: Post0Params<TReadGeneralOp>
+): State<TMugLike>;
+export function useR<TReadGeneralOp extends AnyReadGeneralOp>(
+  readGeneralOp: TReadGeneralOp,
+  ...readArgs: Parameters<TReadGeneralOp>
+): ReturnType<TReadGeneralOp>;
+
 export function useR<TReadProc extends AnyFunction & ReadProcMeta<() => any>>(
   readProc: TReadProc,
   mugLike?: unknown,
@@ -92,7 +117,7 @@ export function useR<
 >(readProc: TReadProc, mugLike: TMugLike, ...restArgs: Post0Params<TReadProc>): State<TMugLike>;
 export function useR<TReadProc extends AnyReadProc>(
   readProc: TReadProc,
-  ...args: Parameters<TReadProc>
+  ...readArgs: Parameters<TReadProc>
 ): ReturnType<TReadProc>;
 export function useR(
   read: {
@@ -101,10 +126,12 @@ export function useR(
     [_state]?: any;
     [_mugLike]?: any;
   },
-  ...args: any
+  ...readArgs: any
 ): any {
   const readProc = read[_readProc] ?? read;
-  const [mugLike, restArgs] = read[_mugLike] ? [read[_mugLike], args] : [args[0], args[_slice](1)];
+  const [mugLike, restArgs] = read[_mugLike]
+    ? [read[_mugLike], readArgs]
+    : [readArgs[0], readArgs[_slice](1)];
 
   const readProcRef = useRef(readProc);
   const mugLikeRef = useRef(mugLike);

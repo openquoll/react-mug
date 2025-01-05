@@ -1,22 +1,13 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
-import {
-  _bidFnAssignPatch,
-  _builtinId,
-  AssignPatch,
-  assignPatch,
-  passThrough,
-  PassThrough,
-  PossiblePatch,
-} from './builtin';
-import { getIt, GetIt, initial, r, ReadProc, SetIt, setIt, w, WriteProc } from './mechanism';
+import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from './builtin';
+import { GetIt, getIt, initial, r, ReadProc, SetIt, setIt, w, WriteProc } from './mechanism';
 import {
   Mug,
   MugLike,
   PossibleMug,
   PossibleMugLike,
-  pure,
   ReadProcMeta,
   State,
   WithAttachments,
@@ -120,7 +111,7 @@ test('ReadProc, GetIt, PassThrough', () => {
   expectType<GetIt>(fake<ReadProc<GetIt>>());
 });
 
-test('r, pure, getIt, passThrough', () => {
+test('r, getIt, passThrough', () => {
   // @ts-expect-error
   r(w((state: any) => state));
 
@@ -155,9 +146,6 @@ test('r, pure, getIt, passThrough', () => {
   // @ts-expect-error
   readbf7(fake<AState>(), fake<any>());
 
-  // @ts-expect-error
-  pure(readbf7);
-
   // =-=-=
 
   const readebe = r(<TState>(state: TState, s: string): TState => state);
@@ -178,7 +166,6 @@ test('r, pure, getIt, passThrough', () => {
   const read194 = r(<TState extends AState>(state: TState): TState => state);
 
   expectType<AState>(read194(fake<AState>()));
-
   expectType<BiggerState>(read194(fake<BiggerState>()));
 
   // @ts-expect-error
@@ -348,7 +335,7 @@ test('WriteProc, SetIt, AssignPatch', () => {
   expectType<SetIt>(fake<WriteProc<SetIt>>());
 });
 
-test('w, pure, setIt, assignPatch', () => {
+test('w, setIt, assignPatch', () => {
   // @ts-expect-error
   w(r((state: any) => state));
 
@@ -375,9 +362,6 @@ test('w, pure, setIt, assignPatch', () => {
 
   // @ts-expect-error
   write73d(fake<AState>(), fake<any>());
-
-  // @ts-expect-error
-  pure(write73d);
 
   // =-=-=
 
@@ -452,10 +436,6 @@ test('w, pure, setIt, assignPatch', () => {
   expectType<WriteProc<(state: AState) => BiggerState>>(write490);
 
   expectType<AState>(write490(fake<AState>()));
-  expectType<BiggerState>(write490(fake<BiggerState>()));
-
-  // @ts-expect-error
-  write490(fake<ObjectState>());
 
   // =-=-=
 

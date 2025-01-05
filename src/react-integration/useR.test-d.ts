@@ -1,9 +1,9 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import { r as flatR, w as flatW } from '../mechanism';
+import { r as procR, w as procW } from '../mechanism';
 import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';
-import { upon } from '../ops/special';
+import { onto, upon } from '../ops';
 import { useR } from './useR';
 
 interface ObjectState {
@@ -48,7 +48,267 @@ test('useR', () => {
 
   // =-=-=
 
-  const readf23 = flatR(<TState>(state: TState): TState => state);
+  const { r: specialOpR } = upon<AState>(fake<CompositeAMug>());
+
+  // =-=-=
+
+  const read4be = specialOpR((state) => fake<ObjectState>());
+
+  expectType<ObjectState>(useR(read4be));
+
+  // @ts-expect-error
+  useR(read4be, fake<any>());
+
+  // =-=-=
+
+  const read95a = specialOpR((state, s: string) => fake<ObjectState>());
+
+  expectType<ObjectState>(useR(read95a, fake<string>()));
+
+  // @ts-expect-error
+  useR(read95a);
+
+  // @ts-expect-error
+  useR(read95a, fake<number>());
+
+  // @ts-expect-error
+  useR(read95a, fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const read811 = specialOpR((state: ObjectState) => state);
+
+  expectType<ObjectState>(useR(read811));
+
+  // =-=-=
+
+  // @ts-expect-error
+  specialOpR((state: BiggerState) => fake<ObjectState>());
+
+  // =-=-=
+
+  // @ts-expect-error
+  specialOpR((state: { n: number }) => fake<ObjectState>());
+
+  // =-=-=
+
+  const read5ce = specialOpR(<TState>(state: TState) => state);
+
+  expectType<AState>(useR(read5ce));
+
+  // @ts-expect-error
+  useR(read5ce, fake<any>());
+
+  // =-=-=
+
+  const read229 = specialOpR(<TState>(state: TState, s: string) => state);
+
+  useR(read229, fake<string>());
+
+  // @ts-expect-error
+  useR(read229);
+
+  // @ts-expect-error
+  useR(read229, fake<number>());
+
+  // @ts-expect-error
+  useR(read229, fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const read012 = specialOpR(<TState extends AState>(state: TState): TState => state);
+
+  expectType<AState>(useR(read012));
+
+  // =-=-=
+
+  const read7d1 = specialOpR(<TState extends ObjectState>(state: TState): TState => state);
+
+  expectType<AState>(useR(read7d1));
+
+  // =-=-=
+
+  // @ts-expect-error
+  specialOpR(<TState extends BiggerState>(state: TState): TState => state);
+
+  // =-=-=
+
+  const readd37 = specialOpR(() => fake<ObjectState>());
+
+  expectType<ObjectState>(useR(readd37));
+
+  // @ts-expect-error
+  useR(readd37, fake<any>());
+
+  // =-=-=
+
+  const readde2 = specialOpR();
+
+  expectType<AState>(useR(readde2));
+
+  // @ts-expect-error
+  useR(readde2, fake<any>());
+
+  // =-=-=
+
+  const { r: generalOpR } = onto<AState>();
+
+  // =-=-=
+
+  const readde7 = generalOpR((state) => fake<ObjectState>());
+
+  expectType<ObjectState>(useR(readde7, fake<AState>()));
+  expectType<ObjectState>(useR(readde7, fake<AMug>()));
+  expectType<ObjectState>(useR(readde7, fake<CompositeAMug>()));
+  expectType<ObjectState>(useR(readde7, fake<AMugLike>()));
+  expectType<ObjectState>(useR(readde7, fake<PossibleAMug>()));
+  expectType<ObjectState>(useR(readde7, fake<PossibleAMugLike>()));
+  expectType<ObjectState>(useR(readde7, fake<DirtyAMug>()));
+  expectType<ObjectState>(useR(readde7, fake<BiggerState>()));
+
+  // @ts-expect-error
+  useR(readde7, fake<ObjectState>());
+
+  // @ts-expect-error
+  useR(readde7);
+
+  // @ts-expect-error
+  useR(readde7, fake<AState>(), fake<any>());
+
+  // =-=-=
+
+  const read43e = generalOpR((state, s: string) => fake<ObjectState>());
+
+  useR(read43e, fake<AState>(), fake<string>());
+
+  // @ts-expect-error
+  useR(read43e, fake<AState>());
+
+  // @ts-expect-error
+  useR(read43e, fake<AState>(), fake<number>());
+
+  // @ts-expect-error
+  useR(read43e, fake<AState>(), fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const read492 = generalOpR((state: ObjectState) => state);
+
+  expectType<ObjectState>(useR(read492, fake<AState>()));
+
+  // =-=-=
+
+  // @ts-expect-error
+  generalOpR((state: BiggerState) => fake<ObjectState>());
+
+  // =-=-=
+
+  // @ts-expect-error
+  generalOpR((state: { n: number }) => fake<ObjectState>());
+
+  // =-=-=
+
+  const readeb1 = generalOpR(<TState>(state: TState) => state);
+
+  expectType<AState>(useR(readeb1, fake<AState>()));
+  expectType<AState>(useR(readeb1, fake<AMug>()));
+  expectType<AState>(useR(readeb1, fake<CompositeAMug>()));
+  expectType<AState>(useR(readeb1, fake<AMugLike>()));
+
+  const redd = useR(readeb1, fake<PossibleAMug>());
+  expectAssignable<AState>(redd);
+  expectAssignable<typeof redd>(fake<AState>());
+
+  const r5af = useR(readeb1, fake<PossibleAMugLike>());
+  expectAssignable<AState>(r5af);
+  expectAssignable<typeof r5af>(fake<AState>());
+
+  expectType<AState>(useR(readeb1, fake<DirtyAMug>()));
+  expectType<BiggerState>(useR(readeb1, fake<BiggerState>()));
+
+  // @ts-expect-error
+  useR(readeb1, fake<ObjectState>());
+
+  // @ts-expect-error
+  useR(readeb1);
+
+  // @ts-expect-error
+  useR(readeb1, fake<AState>(), fake<any>());
+
+  // =-=-=
+
+  const reada24 = generalOpR(<TState>(state: TState, s: string) => state);
+
+  useR(reada24, fake<AState>(), fake<string>());
+
+  // @ts-expect-error
+  useR(reada24, fake<AState>());
+
+  // @ts-expect-error
+  useR(reada24, fake<AState>(), fake<number>());
+
+  // @ts-expect-error
+  useR(reada24, fake<AState>(), fake<string>(), fake<any>());
+
+  // =-=-=
+
+  const readb26 = generalOpR(<TState extends AState>(state: TState): TState => state);
+
+  expectType<AState>(useR(readb26, fake<AState>()));
+
+  // =-=-=
+
+  const readd63 = generalOpR(<TState extends ObjectState>(state: TState): TState => state);
+
+  expectType<AState>(useR(readd63, fake<AState>()));
+
+  // =-=-=
+
+  // @ts-expect-error
+  generalOpR(<TState extends BiggerState>(state: TState): TState => state);
+
+  // =-=-=
+
+  const read6ea = generalOpR(() => fake<ObjectState>());
+
+  expectType<ObjectState>(useR(read6ea));
+  expectType<ObjectState>(useR(read6ea, fake<unknown>()));
+
+  // @ts-expect-error
+  useR(read6ea, fake<unknown>(), fake<any>());
+
+  // =-=-=
+
+  const readad2 = generalOpR();
+
+  expectType<AState>(useR(readad2, fake<AState>()));
+  expectType<AState>(useR(readad2, fake<AMug>()));
+  expectType<AState>(useR(readad2, fake<CompositeAMug>()));
+  expectType<AState>(useR(readad2, fake<AMugLike>()));
+
+  const r538 = useR(readad2, fake<PossibleAMug>());
+  expectAssignable<AState>(r538);
+  expectAssignable<typeof r538>(fake<AState>());
+
+  const rf21 = useR(readad2, fake<PossibleAMugLike>());
+  expectAssignable<AState>(rf21);
+  expectAssignable<typeof rf21>(fake<AState>());
+
+  expectType<AState>(useR(readad2, fake<DirtyAMug>()));
+  expectType<BiggerState>(useR(readad2, fake<BiggerState>()));
+
+  // @ts-expect-error
+  useR(readad2, fake<ObjectState>());
+
+  // @ts-expect-error
+  useR(readad2);
+
+  // @ts-expect-error
+  useR(readad2, fake<AState>(), fake<any>());
+
+  // =-=-=
+
+  const readf23 = procR(<TState>(state: TState): TState => state);
 
   expectType<AState>(useR(readf23, fake<AState>()));
   expectType<AState>(useR(readf23, fake<AMug>()));
@@ -75,7 +335,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const read35a = flatR(<TState>(state: TState, s: string): TState => state);
+  const read35a = procR(<TState>(state: TState, s: string): TState => state);
 
   useR(read35a, fake<AState>(), fake<string>());
 
@@ -90,7 +350,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const read69c = flatR(<TState extends AState>(state: TState): TState => state);
+  const read69c = procR(<TState extends AState>(state: TState): TState => state);
 
   expectType<AState>(useR(read69c, fake<AState>()));
 
@@ -101,7 +361,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const read198 = flatR((state: AState) => fake<ObjectState>());
+  const read198 = procR((state: AState) => fake<ObjectState>());
 
   expectType<ObjectState>(useR(read198, fake<AState>()));
   expectType<ObjectState>(useR(read198, fake<AMug>()));
@@ -123,7 +383,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const readdbb = flatR((state: AState, s: string) => fake<ObjectState>());
+  const readdbb = procR((state: AState, s: string) => fake<ObjectState>());
 
   useR(readdbb, fake<AState>(), fake<string>());
 
@@ -138,7 +398,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const read81f = flatR(() => fake<AState>());
+  const read81f = procR(() => fake<AState>());
 
   expectType<AState>(useR(read81f));
   expectType<AState>(useR(read81f, fake<unknown>()));
@@ -148,119 +408,16 @@ test('useR', () => {
 
   // =-=-=
 
-  const { r } = upon<AState>(fake<CompositeAMug>());
+  const { w } = upon(fake<CompositeAMug>());
 
   // =-=-=
 
-  const read4be = r((state) => fake<ObjectState>());
-
-  expectType<ObjectState>(useR(read4be));
-
-  // @ts-expect-error
-  useR(read4be, fake<any>());
-
-  // =-=-=
-
-  const read95a = r((state, s: string) => fake<ObjectState>());
-
-  expectType<ObjectState>(useR(read95a, fake<string>()));
-
-  // @ts-expect-error
-  useR(read95a);
-
-  // @ts-expect-error
-  useR(read95a, fake<number>());
-
-  // @ts-expect-error
-  useR(read95a, fake<string>(), fake<any>());
-
-  // =-=-=
-
-  const read811 = r((state: ObjectState) => state);
-
-  expectType<ObjectState>(useR(read811));
-
-  // =-=-=
-
-  // @ts-expect-error
-  r((state: BiggerState) => fake<ObjectState>());
-
-  // =-=-=
-
-  // @ts-expect-error
-  r((state: { n: number }) => fake<ObjectState>());
-
-  // =-=-=
-
-  const read5ce = r(<TState>(state: TState) => state);
-
-  expectType<AState>(useR(read5ce));
-
-  // @ts-expect-error
-  useR(read5ce, fake<any>());
-
-  // =-=-=
-
-  const read229 = r(<TState>(state: TState, s: string) => state);
-
-  useR(read229, fake<string>());
-
-  // @ts-expect-error
-  useR(read229);
-
-  // @ts-expect-error
-  useR(read229, fake<number>());
-
-  // @ts-expect-error
-  useR(read229, fake<string>(), fake<any>());
-
-  // =-=-=
-
-  const read012 = r(<TState extends AState>(state: TState): TState => state);
-
-  expectType<AState>(useR(read012));
-
-  // =-=-=
-
-  const read7d1 = r(<TState extends ObjectState>(state: TState): TState => state);
-
-  expectType<AState>(useR(read7d1));
-
-  // =-=-=
-
-  // @ts-expect-error
-  r(<TState extends BiggerState>(state: TState): TState => state);
-
-  // =-=-=
-
-  const readd37 = r(() => fake<ObjectState>());
-
-  expectType<ObjectState>(useR(readd37));
-
-  // @ts-expect-error
-  useR(readd37, fake<any>());
-
-  // =-=-=
-
-  const readde2 = r();
-
-  expectType<AState>(useR(readde2));
-
-  // @ts-expect-error
-  useR(readde2, fake<any>());
-
-  // =-=-=
-
-  const write23e = flatW();
+  const write23e = procW();
 
   write23e(fake<any>(), fake<any>());
 
   // @ts-expect-error
   useR(write23e, fake<any>(), fake<any>());
-
-  // =-=-=
-
-  const { w } = upon(fake<CompositeAMug>());
 
   // =-=-=
 

@@ -1,4 +1,4 @@
-import { construction, getIt, Mug, PossiblePatch, pure, setIt, upon } from '../src';
+import { construction, getIt, Mug, PossiblePatch, setIt, upon } from '../src';
 
 jest.mock('../src/mechanism', () => {
   const m = jest.requireActual('../src/mechanism');
@@ -142,12 +142,6 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('6813464, calls "pure" with the custom read special-op', () => {
-    test('[action, verify] the return equals the custom read fn in ref', () => {
-      expect(pure(customReadSpecialOp)).toBe(customReadFn);
-    });
-  });
-
   describe('976ac2c, writes by the default write special-op', () => {
     const writeSpecialOpParamPatch: PossiblePatch<AMug> = { s: '716' };
     let setItParamMug: AMug, setItParamPatch: PossiblePatch<AMug>;
@@ -205,12 +199,6 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     test('[verify] the contextual mug_s after-write got state equals the write fn return in ref and value', () => {
       expect(gotAStateAfter).toBe(writeFnReturn);
       expect(gotAStateAfter).toStrictEqual(writeFnReturn);
-    });
-  });
-
-  describe('a0dda55, calls "pure" with the custom write special-op', () => {
-    test('[action, verify] the return equals the custom write fn in ref', () => {
-      expect(pure(customWriteSpecialOp)).toBe(customWriteFn);
     });
   });
 });
@@ -303,12 +291,6 @@ describe('0cedec5, special-ops in OOP, [cite] .:0ab2ffa', () => {
     });
   });
 
-  describe('91c6286, calls "pure" with the custom read special-op', () => {
-    test('[action, verify] the field equals the custom read fn in ref', () => {
-      expect(pure(aMug.customReadSpecialOp)).toBe(customReadFn);
-    });
-  });
-
   describe('a590ccd, writes by the default write special-op', () => {
     const writeSpecialOpParamPatch: PossiblePatch<AMug> = { s: '716' };
     let setItParamMug: AMug, setItParamPatch: PossiblePatch<AMug>;
@@ -366,12 +348,6 @@ describe('0cedec5, special-ops in OOP, [cite] .:0ab2ffa', () => {
     test('[verify] the mug instance_s after-write got state equals the write fn return in ref and value', () => {
       expect(gotAStateAfter).toBe(writeFnReturn);
       expect(gotAStateAfter).toStrictEqual(writeFnReturn);
-    });
-  });
-
-  describe('15f3fb1, calls "pure" with the custom write special-op', () => {
-    test('[action, verify] the field equals the custom write fn in ref', () => {
-      expect(pure(aMug.customWriteSpecialOp)).toBe(customWriteFn);
     });
   });
 });

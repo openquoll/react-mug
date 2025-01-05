@@ -1,9 +1,9 @@
 import { AssignPatch, PossiblePatch } from '../builtin/fns';
 import {
-  r as flatR,
-  w as flatW,
   GetIt,
   getIt,
+  r as procR,
+  w as procW,
   ReadProc,
   SetIt,
   setIt,
@@ -13,12 +13,13 @@ import {
   _mugLike,
   _readFn,
   _readProc,
+  _special,
   _writeFn,
   _writeProc,
   AnyReadProc,
   AnyWriteProc,
+  NotOp,
   NotProc,
-  NotSpecialOp,
   PossibleMugLike,
   ReadProcMeta,
   ReadSpecialOpMeta,
@@ -64,7 +65,7 @@ export type R<TState> = {
     readProc: TReadProc,
   ): ReadSpecialOp<TReadProc, TState>;
 
-  <TReadFn extends ((state: TState, ...restArgs: any) => any) & NotProc & NotSpecialOp>(
+  <TReadFn extends ((state: TState, ...restArgs: any) => any) & NotProc & NotOp>(
     readFn: TReadFn,
   ): ReadSpecialOp<TReadFn, TState>;
 };
@@ -101,7 +102,7 @@ export type W<TState> = {
     writeProc: TWriteProc,
   ): WriteSpecialOp<TWriteProc, TState>;
 
-  <TWriteFn extends ((state: TState, ...restArgs: any) => TState) & NotProc & NotSpecialOp>(
+  <TWriteFn extends ((state: TState, ...restArgs: any) => TState) & NotProc & NotOp>(
     writeFn: TWriteFn,
   ): WriteSpecialOp<TWriteFn, TState>;
 };
@@ -113,7 +114,7 @@ export type SpecialOpToolbelt<TState> = SpecialOpToolbeltFormat<R<TState>, W<TSt
 export function upon<TState>(mugLike: PossibleMugLike<NoInfer<TState>>): SpecialOpToolbelt<TState>;
 export function upon(mugLike: any): any {
   function r(read: (mugLike: any, ...restArgs: any) => any = getIt) {
-    const readProc = flatR(read);
+    const readProc = procR(read);
     const readFn = readProc[_readFn];
     const readSpecialOp = (...args: [any, ...any]) => {
       if (args.length < readFn.length) {
@@ -123,12 +124,13 @@ export function upon(mugLike: any): any {
       }
     };
     readSpecialOp[_readProc] = readProc;
+    readSpecialOp[_special] = _special;
     readSpecialOp[_mugLike] = mugLike;
     return readSpecialOp;
   }
 
   function w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
-    const writeProc = flatW(write);
+    const writeProc = procW(write);
     const writeFn = writeProc[_writeFn];
     const writeSpecialOp = (...args: [any, ...any]) => {
       if (args.length < writeFn.length) {
@@ -138,6 +140,7 @@ export function upon(mugLike: any): any {
       }
     };
     writeSpecialOp[_writeProc] = writeProc;
+    writeSpecialOp[_special] = _special;
     writeSpecialOp[_mugLike] = mugLike;
     return writeSpecialOp;
   }

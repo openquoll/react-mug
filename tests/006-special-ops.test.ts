@@ -64,11 +64,11 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
 
   const [r, w] = toolbelt;
 
-  const getA = r();
+  const defaultReadSpecialOp = r();
 
   const customReadSpecialOp = r(customReadFn);
 
-  const setA = w();
+  const defaultWriteSpecialOp = w();
 
   const customWriteSpecialOp = w(customWriteFn);
 
@@ -87,7 +87,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     let getItParamMug: AMug, getItReturn: AState;
 
     test('[action]', () => {
-      readSpecialOpReturn = getA();
+      readSpecialOpReturn = defaultReadSpecialOp();
       getItParamMug = jest.mocked(getIt).mock.calls[0][0] as AMug;
       getItReturn = jest.mocked(getIt).mock.results[0].value;
     });
@@ -147,7 +147,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     let setItParamMug: AMug, setItParamPatch: PossiblePatch<AMug>;
 
     test('[action]', () => {
-      setA(writeSpecialOpParamPatch);
+      defaultWriteSpecialOp(writeSpecialOpParamPatch);
       setItParamMug = jest.mocked(setIt).mock.calls[0][0] as AMug;
       setItParamPatch = jest.mocked(setIt).mock.calls[0][1] as PossiblePatch<AState>;
     });

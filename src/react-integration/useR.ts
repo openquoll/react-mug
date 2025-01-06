@@ -186,6 +186,10 @@ export function useR(
     }
   }, [mugLike, ...restArgs]);
 
+  useMemo(() => {
+    subscribeTo(mugLike, changeListener);
+  }, [mugLike]);
+
   useEffect(() => {
     subscribeTo(mugLike, changeListener);
     return () => {

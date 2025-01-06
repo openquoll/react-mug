@@ -1,4 +1,4 @@
-import { CleanMug, construction } from './mug';
+import { construction } from './mug';
 import {
   _forEach,
   _get,
@@ -11,17 +11,14 @@ import {
   _WeakMap,
 } from './shortcuts';
 
-export type RawState<TMugLike> =
-  TMugLike extends CleanMug<infer TConstruction> ? TConstruction : TMugLike;
-
 class RawStateStore {
   private _rawStatesByMug = new _WeakMap<any, any>();
-  private _changeListenerSetsByMug = new _WeakMap<any, ((state: any) => void)[]>();
+  private _changeListenerListsByMug = new _WeakMap<any, ((state: any) => void)[]>();
 
   public _setRawState(mug: any, rawState: any): void {
     this._rawStatesByMug[_set](mug, rawState);
 
-    const changeListeners = this._changeListenerSetsByMug[_get](mug);
+    const changeListeners = this._changeListenerListsByMug[_get](mug);
     if (!changeListeners) {
       return;
     }
@@ -36,10 +33,10 @@ class RawStateStore {
   }
 
   public _addChangeListener(mug: any, listener: (state: any) => void): void {
-    if (!this._changeListenerSetsByMug[_has](mug)) {
-      this._changeListenerSetsByMug[_set](mug, []);
+    if (!this._changeListenerListsByMug[_has](mug)) {
+      this._changeListenerListsByMug[_set](mug, []);
     }
-    const changeListeners = this._changeListenerSetsByMug[_get](mug)!;
+    const changeListeners = this._changeListenerListsByMug[_get](mug)!;
     if (changeListeners[_includes](listener)) {
       return;
     }
@@ -47,7 +44,7 @@ class RawStateStore {
   }
 
   public _removeChangeListener(mug: any, listener: (state: any) => void): void {
-    const changeListeners = this._changeListenerSetsByMug[_get](mug);
+    const changeListeners = this._changeListenerListsByMug[_get](mug);
     if (!changeListeners) {
       return;
     }

@@ -124,9 +124,10 @@ test('ReadGeneralOp, GetIt, PassThrough', () => {
 
   type Readfda = ReadGeneralOp<() => ObjectState, AState>;
 
-  expectType<((state?: unknown) => ObjectState) & ReadGeneralOpMeta<() => ObjectState, AState>>(
-    fake<Readfda>(),
-  );
+  expectType<
+    ((state?: PossibleMugLike<AState>) => ObjectState) &
+      ReadGeneralOpMeta<() => ObjectState, AState>
+  >(fake<Readfda>());
 
   expectType<Readfda>(fake<ReadGeneralOp<ReadProc<() => ObjectState>, AState>>());
 
@@ -269,10 +270,17 @@ test('upon#r, getIt, passThrough', () => {
 
   expectType<typeof read8fc>(r(procR(() => fake<ObjectState>())));
 
-  expectType<ObjectState>(read8fc(fake<unknown>()));
+  expectType<ObjectState>(read8fc(fake<AState>()));
+  expectType<ObjectState>(read8fc(fake<AMug>()));
+  expectType<ObjectState>(read8fc(fake<CompositeAMug>()));
+  expectType<ObjectState>(read8fc(fake<AMugLike>()));
+  expectType<ObjectState>(read8fc(fake<PossibleAMug>()));
+  expectType<ObjectState>(read8fc(fake<PossibleAMugLike>()));
+  expectType<ObjectState>(read8fc(fake<DirtyAMug>()));
+  expectType<ObjectState>(read8fc(fake<BiggerState>()));
 
   // @ts-expect-error
-  read8fc(fake<unknown>(), fake<any>());
+  read8fc(fake<AState>(), fake<any>());
 
   // =-=-=
 

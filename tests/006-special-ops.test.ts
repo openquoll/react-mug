@@ -1,12 +1,37 @@
-import { construction, getIt, Mug, PossiblePatch, setIt, upon } from '../src';
+import {
+  assignPatch,
+  construction,
+  getIt,
+  Mug,
+  passThrough,
+  PossiblePatch,
+  setIt,
+  upon,
+} from '../src';
 
 jest.mock('../src/mechanism', () => {
   const m = jest.requireActual('../src/mechanism');
   const { getIt, setIt } = m;
-  jest.spyOn(m, 'r');
-  jest.spyOn(m, 'w');
   Object.assign(jest.spyOn(m, 'getIt'), getIt);
   Object.assign(jest.spyOn(m, 'setIt'), setIt);
+  return m;
+});
+
+jest.mock('../src/builtin/fns', () => {
+  const m = jest.requireActual('../src/builtin/fns');
+  const { passThrough, assignPatch } = m;
+
+  jest.spyOn(m, 'passThrough');
+  Object.assign(m.passThrough, passThrough);
+  Object.defineProperty(m.passThrough, 'length', {
+    value: passThrough.length,
+  });
+
+  jest.spyOn(m, 'assignPatch');
+  Object.assign(m.assignPatch, assignPatch);
+  Object.defineProperty(m.assignPatch, 'length', {
+    value: assignPatch.length,
+  });
   return m;
 });
 
@@ -82,7 +107,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('a0ba1e5, reads by the default read special-op', () => {
+  describe('a0ba1e5, reads by the default read special-op in imperative mode', () => {
     let readSpecialOpReturn: AState;
     let getItParamMug: AMug, getItReturn: AState;
 
@@ -107,7 +132,49 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('640f3ad, reads by the custom read special-op', () => {
+  describe('2f3db67, read by the default read special-op in functional mode', () => {
+    const readSpecialOpParamState: AState = {
+      s: 'asd',
+      o: {
+        s: 'asd',
+      },
+      potentialMuggyObject: {
+        s: 'asd',
+        o: {
+          s: 'asd',
+        },
+      },
+    };
+    let readSpecialOpReturn: AState;
+    let passThroughParamState: AState;
+    let passThroughReturn: AState;
+
+    test('[action]', () => {
+      readSpecialOpReturn = defaultReadSpecialOp(readSpecialOpParamState);
+      passThroughParamState = jest.mocked(passThrough).mock.calls[0][0] as AState;
+      passThroughReturn = jest.mocked(passThrough).mock.results[0].value as AState;
+    });
+
+    test('[verify] "getIt" is not called', () => {
+      expect(getIt).not.toHaveBeenCalled();
+    });
+
+    test('[verify] "passThrough" is called 1 time', () => {
+      expect(passThrough).toHaveBeenCalledTimes(1);
+    });
+
+    test('[verify] "passThrough" param state equals the read special-op param state in ref and value', () => {
+      expect(passThroughParamState).toBe(readSpecialOpParamState);
+      expect(passThroughParamState).toStrictEqual(readSpecialOpParamState);
+    });
+
+    test('[verify] the read special-op return equals "passThrough" return in ref and value', () => {
+      expect(readSpecialOpReturn).toBe(passThroughReturn);
+      expect(readSpecialOpReturn).toStrictEqual(passThroughReturn);
+    });
+  });
+
+  describe('640f3ad, reads by the custom read special-op in imperative mode', () => {
     const readSpecialOpParamExtra: Pick<ObjectState, 'o'> = { o: { s: '3cd' } };
     let readSpecialOpReturn: Pick<ObjectState, 'o'>;
     let gotAState: AState;
@@ -142,7 +209,52 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('976ac2c, writes by the default write special-op', () => {
+  describe('ac023b6, read by the custom read special-op in functional mode', () => {
+    const readSpecialOpParamState: AState = {
+      s: 'sdf',
+      o: {
+        s: 'sdf',
+      },
+      potentialMuggyObject: {
+        s: 'sdf',
+        o: {
+          s: 'sdf',
+        },
+      },
+    };
+    const readSpecialOpParamExtra: Pick<ObjectState, 'o'> = { o: { s: '3cd' } };
+    let readSpecialOpReturn: Pick<ObjectState, 'o'>;
+    let readFnParamState: AState, readFnParamExtra: Pick<ObjectState, 'o'>;
+    let readFnReturn: Pick<ObjectState, 'o'>;
+
+    test('[action]', () => {
+      readSpecialOpReturn = customReadSpecialOp(readSpecialOpParamState, readSpecialOpParamExtra);
+      readFnParamState = customReadFn.mock.calls[0][0];
+      readFnParamExtra = customReadFn.mock.calls[0][1];
+      readFnReturn = customReadFn.mock.results[0].value;
+    });
+
+    test('[verify] the read fn is called 1 time', () => {
+      expect(customReadFn).toHaveBeenCalledTimes(1);
+    });
+
+    test('[verify] the read fn param state equals the read special-op param state in ref and value', () => {
+      expect(readFnParamState).toBe(readSpecialOpParamState);
+      expect(readFnParamState).toStrictEqual(readSpecialOpParamState);
+    });
+
+    test('[verify] the read fn param extra equals the read special-op param extra in ref and value', () => {
+      expect(readFnParamExtra).toBe(readSpecialOpParamExtra);
+      expect(readFnParamExtra).toStrictEqual(readSpecialOpParamExtra);
+    });
+
+    test('[verify] the read special-op return equals the read fn return in ref and value', () => {
+      expect(readSpecialOpReturn).toBe(readFnReturn);
+      expect(readSpecialOpReturn).toStrictEqual(readFnReturn);
+    });
+  });
+
+  describe('976ac2c, writes by the default write special-op in imperative mode', () => {
     const writeSpecialOpParamPatch: PossiblePatch<AMug> = { s: '716' };
     let setItParamMug: AMug, setItParamPatch: PossiblePatch<AMug>;
 
@@ -167,7 +279,59 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     });
   });
 
-  describe('4653a7e, writes by the custom write special-op', () => {
+  describe('89f5b15, writes by the default write special-op in functional mode', () => {
+    const writeSpecialOpParamState: AState = {
+      s: 'sdf',
+      o: {
+        s: 'sdf',
+      },
+      potentialMuggyObject: {
+        s: 'sdf',
+        o: {
+          s: 'sdf',
+        },
+      },
+    };
+    const writeSpecialOpParamPatch: PossiblePatch<AState> = { s: '501' };
+    let writeSpecialOpReturn: AState;
+    let assignPatchParamState: AState, assignPatchParamPatch: PossiblePatch<AState>;
+    let assignPatchReturn: AState;
+
+    test('[action]', () => {
+      writeSpecialOpReturn = defaultWriteSpecialOp(
+        writeSpecialOpParamState,
+        writeSpecialOpParamPatch,
+      );
+      assignPatchParamState = jest.mocked(assignPatch).mock.calls[0][0] as AState;
+      assignPatchParamPatch = jest.mocked(assignPatch).mock.calls[0][1] as PossiblePatch<AState>;
+      assignPatchReturn = jest.mocked(assignPatch).mock.results[0].value;
+    });
+
+    test('[verify] "setIt" is not called', () => {
+      expect(setIt).not.toHaveBeenCalled();
+    });
+
+    test('[verify] "assignPatch" is called 1 time', () => {
+      expect(assignPatch).toHaveBeenCalledTimes(1);
+    });
+
+    test('[verify] "assignPatch" param state equals the write special-op param state in ref and value', () => {
+      expect(assignPatchParamState).toBe(writeSpecialOpParamState);
+      expect(assignPatchParamState).toStrictEqual(writeSpecialOpParamState);
+    });
+
+    test('[verify] "assignPatch" param patch equals the write special-op param patch in ref and value', () => {
+      expect(assignPatchParamPatch).toBe(writeSpecialOpParamPatch);
+      expect(assignPatchParamPatch).toStrictEqual(writeSpecialOpParamPatch);
+    });
+
+    test('[verify] the write special-op return equals "assignPatch" return in ref and value', () => {
+      expect(writeSpecialOpReturn).toBe(assignPatchReturn);
+      expect(writeSpecialOpReturn).toStrictEqual(assignPatchReturn);
+    });
+  });
+
+  describe('4653a7e, writes by the custom write special-op in imperative mode', () => {
     const writeSpecialOpParamS = '420';
     let gotAStateBefore: AState, gotAStateAfter: AState;
     let writeFnParamState: AState, writeFnParamS: string, writeFnReturn: AState;
@@ -199,6 +363,59 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
     test('[verify] the contextual mug_s after-write got state equals the write fn return in ref and value', () => {
       expect(gotAStateAfter).toBe(writeFnReturn);
       expect(gotAStateAfter).toStrictEqual(writeFnReturn);
+    });
+
+    describe('7b3a110, writes by the custom write special-op in imperative mode', () => {
+      const writeSpecialOpParamState: AState = {
+        s: 'sdf',
+        o: {
+          s: 'sdf',
+        },
+        potentialMuggyObject: {
+          s: 'sdf',
+          o: {
+            s: 'sdf',
+          },
+        },
+      };
+      const writeSpecialOpParamS = 'df7';
+      let writeSpecialOpReturn: AState;
+      let writeFnParamState: AState, writeFnParamS: string, writeFnReturn: AState;
+      let gotAStateBefore: AState, gotAStateAfter: AState;
+
+      test('[action]', () => {
+        gotAStateBefore = getIt(aMug);
+
+        writeSpecialOpReturn = customWriteSpecialOp(writeSpecialOpParamState, writeSpecialOpParamS);
+        writeFnParamState = customWriteFn.mock.calls[0][0];
+        writeFnParamS = customWriteFn.mock.calls[0][1];
+        writeFnReturn = customWriteFn.mock.results[0].value;
+
+        gotAStateAfter = getIt(aMug);
+      });
+
+      test('[verify] the write fn is called 1 time', () => {
+        expect(customWriteFn).toHaveBeenCalledTimes(1);
+      });
+
+      test('[verify] the write fn param state equals the write special-op param state in ref and value', () => {
+        expect(writeFnParamState).toBe(writeSpecialOpParamState);
+        expect(writeFnParamState).toStrictEqual(writeSpecialOpParamState);
+      });
+
+      test('[verify] the write fn param string equals the write special-op param string in value', () => {
+        expect(writeFnParamS).toBe(writeSpecialOpParamS);
+      });
+
+      test('[verify] the write special-op return equals the write fn return in ref and value', () => {
+        expect(writeSpecialOpReturn).toBe(writeFnReturn);
+        expect(writeSpecialOpReturn).toStrictEqual(writeFnReturn);
+      });
+
+      test('[verify] the contextual mug_s got state stays unchanged in ref and value', () => {
+        expect(gotAStateAfter).toBe(gotAStateBefore);
+        expect(gotAStateAfter).toStrictEqual(gotAStateBefore);
+      });
     });
   });
 });

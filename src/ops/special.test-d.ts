@@ -67,7 +67,7 @@ test('ReadSpecialOp, GetIt, PassThrough', () => {
 
   expectType<
     (() => AState) &
-      (<TState>(state: TState) => TState) &
+      (<TState extends AState>(state: TState) => TState) &
       ReadSpecialOpMeta<<TState>(state: TState) => TState, AState>
   >(fake<Read68a>());
 
@@ -85,7 +85,7 @@ test('ReadSpecialOp, GetIt, PassThrough', () => {
 
   expectType<
     (() => AState) &
-      (<TState extends ObjectState>(state: TState) => TState) &
+      (<TState extends AState>(state: TState) => TState) &
       ReadSpecialOpMeta<<TState extends ObjectState>(state: TState) => TState, AState>
   >(fake<ReadSpecialOp<<TState extends ObjectState>(state: TState) => TState, AState>>());
 
@@ -95,7 +95,7 @@ test('ReadSpecialOp, GetIt, PassThrough', () => {
 
   expectType<
     (() => ObjectState) &
-      ((state: unknown) => ObjectState) &
+      ((state: AState) => ObjectState) &
       ReadSpecialOpMeta<() => ObjectState, AState>
   >(fake<Readc14>());
 
@@ -105,7 +105,11 @@ test('ReadSpecialOp, GetIt, PassThrough', () => {
 
   type Read43e = ReadSpecialOp<GetIt, AState>;
 
-  expectType<(() => AState) & PassThrough & ReadSpecialOpMeta<GetIt, AState>>(fake<Read43e>());
+  expectType<
+    (() => AState) &
+      (<TState extends AState>(state: TState) => TState) &
+      ReadSpecialOpMeta<GetIt, AState>
+  >(fake<Read43e>());
 
   expectType<Read43e>(fake<ReadSpecialOp<PassThrough, AState>>());
 });
@@ -132,6 +136,10 @@ test('upon#r, getIt, passThrough', () => {
 
   expectType<ObjectState>(readc7e());
   expectType<ObjectState>(readc7e(fake<AState>()));
+  expectType<ObjectState>(readc7e(fake<BiggerState>()));
+
+  // @ts-expect-error
+  readc7e(fake<ObjectState>());
 
   // @ts-expect-error
   readc7e(fake<AState>(), fake<any>());
@@ -164,6 +172,8 @@ test('upon#r, getIt, passThrough', () => {
 
   expectType<ObjectState>(read6a9());
   expectType<ObjectState>(read6a9(fake<AState>()));
+  expectType<ObjectState>(read6a9(fake<BiggerState>()));
+  expectType<ObjectState>(read6a9(fake<ObjectState>()));
 
   // =-=-=
 
@@ -185,6 +195,10 @@ test('upon#r, getIt, passThrough', () => {
 
   expectType<AState>(reade33());
   expectType<AState>(reade33(fake<AState>()));
+  expectType<BiggerState>(reade33(fake<BiggerState>()));
+
+  // @ts-expect-error
+  reade33(fake<ObjectState>());
 
   // @ts-expect-error
   reade33(fake<AState>(), fake<any>());
@@ -202,6 +216,10 @@ test('upon#r, getIt, passThrough', () => {
 
   expectType<AState>(read45f());
   expectType<AState>(read45f(fake<AState>()));
+  expectType<BiggerState>(read45f(fake<BiggerState>()));
+
+  // @ts-expect-error
+  read45f(fake<ObjectState>());
 
   // =-=-=
 
@@ -217,10 +235,14 @@ test('upon#r, getIt, passThrough', () => {
   expectType<typeof readfeb>(r(procR(() => fake<ObjectState>())));
 
   expectType<ObjectState>(readfeb());
-  expectType<ObjectState>(readfeb(fake<unknown>()));
+  expectType<ObjectState>(readfeb(fake<AState>()));
+  expectType<ObjectState>(readfeb(fake<BiggerState>()));
 
   // @ts-expect-error
-  readfeb(fake<unknown>(), fake<any>());
+  readfeb(fake<ObjectState>());
+
+  // @ts-expect-error
+  readfeb(fake<AState>(), fake<any>());
 
   // =-=-=
 
@@ -234,6 +256,10 @@ test('upon#r, getIt, passThrough', () => {
 
   expectType<AState>(read776());
   expectType<AState>(read776(fake<AState>()));
+  expectType<BiggerState>(read776(fake<BiggerState>()));
+
+  // @ts-expect-error
+  read776(fake<ObjectState>());
 
   // @ts-expect-error
   read776(fake<AState>(), fake<any>());
@@ -280,7 +306,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
 
   expectType<
     (() => void) &
-      (<TState>(state: TState) => TState) &
+      (<TState extends AState>(state: TState) => TState) &
       WriteSpecialOpMeta<<TState>(state: TState) => TState, AState>
   >(fake<Write42b>());
 
@@ -300,7 +326,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
 
   expectType<
     (() => void) &
-      (<TState extends ObjectState>(state: TState) => TState) &
+      (<TState extends AState>(state: TState) => TState) &
       WriteSpecialOpMeta<<TState extends ObjectState>(state: TState) => TState, AState>
   >(fake<WriteSpecialOp<<TState extends ObjectState>(state: TState) => TState, AState>>());
 
@@ -308,16 +334,16 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
 
   type Write697 = WriteSpecialOp<() => AState, AState>;
 
-  expectType<
-    (() => void) & ((state: unknown) => AState) & WriteSpecialOpMeta<() => AState, AState>
-  >(fake<Write697>());
+  expectType<(() => void) & ((state: AState) => AState) & WriteSpecialOpMeta<() => AState, AState>>(
+    fake<Write697>(),
+  );
 
   expectType<Write697>(fake<WriteSpecialOp<WriteProc<() => AState>, AState>>());
 
   // =-=-=
 
   expectType<
-    (() => void) & ((state: unknown) => BiggerState) & WriteSpecialOpMeta<() => BiggerState, AState>
+    (() => void) & ((state: AState) => BiggerState) & WriteSpecialOpMeta<() => BiggerState, AState>
   >(fake<WriteSpecialOp<() => BiggerState, AState>>());
 
   // =-=-=
@@ -326,7 +352,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
 
   expectType<
     ((patch: PossiblePatch<NoInfer<AState>>) => void) &
-      AssignPatch &
+      (<TState extends AState>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState) &
       WriteSpecialOpMeta<SetIt, AState>
   >(fake<Write4f8>());
 
@@ -355,6 +381,10 @@ test('upon#w, setIt, assignPatch', () => {
 
   expectType<void>(write30d());
   expectType<AState>(write30d(fake<AState>()));
+  expectType<AState>(write30d(fake<BiggerState>()));
+
+  // @ts-expect-error
+  write30d(fake<ObjectState>());
 
   // @ts-expect-error
   write30d(fake<AState>(), fake<any>());
@@ -399,6 +429,8 @@ test('upon#w, setIt, assignPatch', () => {
 
   expectType<void>(write8b5());
   expectType<AState>(write8b5(fake<AState>()));
+  expectType<AState>(write8b5(fake<BiggerState>()));
+  expectType<AState>(write8b5(fake<ObjectState>()));
 
   // =-=-=
 
@@ -425,6 +457,9 @@ test('upon#w, setIt, assignPatch', () => {
 
   expectType<void>(write3f7());
   expectType<AState>(write3f7(fake<AState>()));
+  expectType<BiggerState>(write3f7(fake<BiggerState>()));
+  // @ts-expect-error
+  write3f7(fake<ObjectState>());
 
   // @ts-expect-error
   write3f7(fake<AState>(), fake<any>());
@@ -442,6 +477,10 @@ test('upon#w, setIt, assignPatch', () => {
 
   expectType<void>(write4fd());
   expectType<AState>(write4fd(fake<AState>()));
+  expectType<BiggerState>(write4fd(fake<BiggerState>()));
+
+  // @ts-expect-error
+  write4fd(fake<ObjectState>());
 
   // =-=-=
 
@@ -457,20 +496,24 @@ test('upon#w, setIt, assignPatch', () => {
   expectType<typeof writed5e>(w(procW(() => fake<AState>())));
 
   expectType<void>(writed5e());
-  expectType<AState>(writed5e(fake<unknown>()));
+  expectType<AState>(writed5e(fake<AState>()));
+  expectType<AState>(writed5e(fake<BiggerState>()));
 
   // @ts-expect-error
-  writed5e(fake<unknown>(), fake<any>());
+  writed5e(fake<ObjectState>());
+
+  // @ts-expect-error
+  writed5e(fake<AState>(), fake<any>());
 
   // =-=-=
 
   const write6bb = w(() => fake<BiggerState>());
 
   expectType<void>(write6bb());
-  expectType<BiggerState>(write6bb(fake<unknown>()));
+  expectType<BiggerState>(write6bb(fake<AState>()));
 
   // @ts-expect-error
-  writed5e(fake<unknown>(), fake<any>());
+  writed5e(fake<AState>(), fake<any>());
 
   // =-=-=
 
@@ -491,6 +534,10 @@ test('upon#w, setIt, assignPatch', () => {
 
   expectType<void>(write8db(patch422));
   expectType<AState>(write8db(fake<AState>(), patch422));
+  expectType<BiggerState>(write8db(fake<BiggerState>(), patch422));
+
+  // @ts-expect-error
+  write8db(fake<ObjectState>(), patch422);
 
   // @ts-expect-error
   write8db();

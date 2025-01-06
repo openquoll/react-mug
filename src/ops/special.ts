@@ -32,14 +32,17 @@ export type ReadSpecialOpOnEmptyParamReadProc<
   TReadProc extends AnyReadProc,
   TState,
 > = (() => ReturnType<TReadProc>) &
-  ((state: unknown) => ReturnType<TReadProc[typeof _readFn]>) &
+  ((state: TState) => ReturnType<TReadProc[typeof _readFn]>) &
   ReadSpecialOpMeta<TReadProc, TState>;
 
-export type ReadSpecialOpOnSimpleGenericReadProc<TReadProc extends AnyReadProc, TState> = ((
+export type ReadSpecialOpOnSimpleGenericReadProc<TReadProc extends AnyReadProc, TState0> = ((
   ...args: Post0Params<TReadProc>
-) => TState) &
-  TReadProc[typeof _readFn] &
-  ReadSpecialOpMeta<TReadProc, TState>;
+) => TState0) &
+  (<TState extends TState0>(
+    state: TState,
+    ...restArgs: Post0Params<TReadProc[typeof _readFn]>
+  ) => TState) &
+  ReadSpecialOpMeta<TReadProc, TState0>;
 
 export type ReadSpecialOpOnTypicalReadProc<TReadProc extends AnyReadProc, TState> = ((
   ...args: Post0Params<TReadProc>
@@ -74,25 +77,39 @@ export type WriteSpecialOpOnEmptyParamWriteProc<
   TWriteProc extends AnyWriteProc,
   TState,
 > = (() => void) &
-  ((state: unknown) => ReturnType<TWriteProc[typeof _writeFn]>) &
+  ((state: TState) => ReturnType<TWriteProc[typeof _writeFn]>) &
   WriteSpecialOpMeta<TWriteProc, TState>;
 
-export type WriteSpecialOpOnSetIt<TState> = ((patch: PossiblePatch<NoInfer<TState>>) => void) &
-  AssignPatch &
-  WriteSpecialOpMeta<SetIt, TState>;
+export type WriteSpecialOpOnSetIt<TState0> = ((patch: PossiblePatch<NoInfer<TState0>>) => void) &
+  (<TState extends TState0>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState) &
+  WriteSpecialOpMeta<SetIt, TState0>;
 
-export type WriteSpecialOpOnTypicalWriteProc<TWriteProc extends AnyWriteProc, TState> = ((
+export type WriteSpecialOpOnSimpleGenericWriteProc<TWriteProc extends AnyWriteProc, TState0> = ((
+  ...args: Post0Params<TWriteProc>
+) => void) &
+  (<TState extends TState0>(
+    state: TState,
+    ...restArgs: Post0Params<TWriteProc[typeof _writeFn]>
+  ) => TState) &
+  WriteSpecialOpMeta<TWriteProc, TState0>;
+
+export type WriteSpecialOpOnTypicalWriteProc<TWriteProc extends AnyWriteProc, TState0> = ((
   ...args: Post0Params<TWriteProc>
 ) => void) &
   TWriteProc[typeof _writeFn] &
-  WriteSpecialOpMeta<TWriteProc, TState>;
+  WriteSpecialOpMeta<TWriteProc, TState0>;
 
 export type WriteSpecialOp<TWrite extends AnyFunction, TState> = TWrite extends AnyWriteProc
   ? TWrite[typeof _writeFn] extends () => any
     ? WriteSpecialOpOnEmptyParamWriteProc<TWrite, TState>
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteSpecialOpOnSetIt<TState>
-      : WriteSpecialOpOnTypicalWriteProc<TWrite, TState>
+      : TWrite[typeof _writeFn] extends <TState extends never>(
+            state: TState,
+            ...restArgs: any
+          ) => TState
+        ? WriteSpecialOpOnSimpleGenericWriteProc<TWrite, TState>
+        : WriteSpecialOpOnTypicalWriteProc<TWrite, TState>
   : WriteSpecialOp<WriteProc<TWrite>, TState>;
 
 export type W<TState> = {

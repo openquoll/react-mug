@@ -3,8 +3,6 @@ import { construction, getIt, Mug, onto, PossiblePatch, setIt } from '../src';
 jest.mock('../src/mechanism', () => {
   const m = jest.requireActual('../src/mechanism');
   const { getIt, setIt } = m;
-  jest.spyOn(m, 'r');
-  jest.spyOn(m, 'w');
   Object.assign(jest.spyOn(m, 'getIt'), getIt);
   Object.assign(jest.spyOn(m, 'setIt'), setIt);
   return m;
@@ -41,8 +39,6 @@ const customWriteFn = jest.fn((state: AState, s: string): AState => {
     },
   };
 });
-
-const customExec = jest.fn();
 
 describe('451202d, general-ops straightforwardly, [cite] 006', () => {
   type AMug = Mug<AState>;
@@ -205,6 +201,14 @@ describe('451202d, general-ops straightforwardly, [cite] 006', () => {
     test('[verify] the contextual mug_s after-write got state equals the write fn return in ref and value', () => {
       expect(gotAStateAfter).toBe(writeFnReturn);
       expect(gotAStateAfter).toStrictEqual(writeFnReturn);
+    });
+  });
+
+  describe('74f4af2, creates an exec op', () => {
+    test('[action, verify] the return equals the param in ref', () => {
+      const param = async () => {};
+      const ret = x(param);
+      expect(ret).toBe(param);
     });
   });
 });

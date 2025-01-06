@@ -29,7 +29,7 @@ import {
 import { AnyFunction, Post0Params } from '../type-utils';
 
 export type ReadGeneralOpOnEmptyParamReadProc<TReadProc extends AnyReadProc, TState> = ((
-  mugLike?: unknown,
+  mugLike?: PossibleMugLike<TState>,
 ) => ReturnType<TReadProc>) &
   ReadGeneralOpMeta<TReadProc, TState>;
 
@@ -114,7 +114,9 @@ export type W<TState> = {
 export type X<TState> = {
   (): DoNothing;
 
-  <TExec extends (mugLike: PossibleMugLike<TState>, ...restArgs: any) => any>(exec: TExec): TExec;
+  <TExecOp extends (mugLike: PossibleMugLike<TState>, ...restArgs: any) => any>(
+    execOp: TExecOp,
+  ): TExecOp;
 };
 
 export type GeneralOpToolbeltFormat<TR, TW, TX> = [r: TR, w: TW, x: TX] & { r: TR; w: TW; x: TX };
@@ -139,8 +141,8 @@ export function onto(): any {
     return writeGeneralOp;
   }
 
-  function x(exec: AnyFunction = doNothing) {
-    return exec;
+  function x(execOp: AnyFunction = doNothing) {
+    return execOp;
   }
 
   const toolbelt: any = [r, w, x];

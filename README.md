@@ -2,17 +2,17 @@
 
 ![Logo of Mug](https://github.com/user-attachments/assets/f47bc69e-fc3f-4465-96af-9aaff65c79ae)
 
-[Synopsis](#5b94f97) &nbsp;•&nbsp; [Functionalities](#cb032d8) &nbsp;•&nbsp; [Install](#f746377) &nbsp;•&nbsp; [Usage](#e4d5a54) &nbsp;•&nbsp; [License](#d4b3b37)
+[Synopsis](#5b94f97) &nbsp;•&nbsp; [Functionalities](#cb032d8) &nbsp;•&nbsp; [Install](#f746377) &nbsp;•&nbsp; [Usage](#e4d5a54) &nbsp;•&nbsp; [Guide](#00bfdb1) &nbsp;•&nbsp; [License](#d4b3b37)
 
 English &nbsp;•&nbsp; [中文](./README.zh-Hans.md)
 
 ## <span id="5b94f97"></span>Synopsis
 
-Possibly the optimal way to functionally manage states.
+Possibly the smoothest way to functionally manage states.
 
 ## <span id="cb032d8"></span>Functionalities
 
-✦ Rapid creation from pure funcitons for directly callable state operations.<br/>
+✦ Directly callable state operations created rapidly from pure funcitons.<br/>
 ✦ Zero-step integration with React.<br/>
 ✦ Full leverage on ES modules for code organization.<br/>
 ✦ State composition.<br/>
@@ -30,50 +30,49 @@ npm i react-mug
 
 ## <span id="e4d5a54"></span>Usage
 
-```tsx
-// CounterMug.ts
+Create a state and the operations:
+
+```ts
+// CountMug.ts
 import { construction, upon } from 'react-mug';
 
-export interface CounterState {
-  value: number;
-}
-
-const { r, w } = upon<CounterState>({
-  [construction]: {
-    value: 0,
-  },
+const { r, w } = upon<number>({
+  [construction]: 0,
 });
 
-export const getValue = r((state) => state.value);
+export const get = r();
 
-export const increase = w((state, delta: number) => ({ ...state, value: state.value + delta }));
+export const increase = w((n, delta: number) => n + delta);
 ```
+
+Use them straight:
 
 ```tsx
 // CounterDisplay.tsx
 import { useR } from 'react-mug';
 
-import { getValue } from './CounterMug';
+import { get } from './CountMug';
 
 export function CounterDisplay() {
-  const value = useR(getValue);
-  return <div>Value: {value}</div>;
+  const count = useR(get);
+  return <>The count is {count}.</>;
 }
 ```
 
 ```tsx
 // CounterControl.tsx
-import { increase } from './CounterMug';
+import { increase } from './CountMug';
 
 export function CounterControl() {
-  return (
-    <div>
-      <button onClick={() => increase(1)}>Increase by 1</button>
-      <button onClick={() => increase(5)}>Increase by 5</button>
-    </div>
-  );
+  return <button onClick={() => increase(1)}>Increase by 1</button>;
 }
 ```
+
+Enjoy the smoothness.
+
+## <span id="00bfdb1"></span>Guide
+
+[TODO](./docs/guide/TODO.md)
 
 ## <span id="d4b3b37"></span>License
 

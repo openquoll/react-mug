@@ -2,13 +2,13 @@
 
 ![Logo of Mug](https://github.com/user-attachments/assets/f47bc69e-fc3f-4465-96af-9aaff65c79ae)
 
-[概要](#f595ead) &nbsp;•&nbsp; [功能](#dea3322) &nbsp;•&nbsp; [安装](#cf6afd0) &nbsp;•&nbsp; [用法](#9f9b12f) &nbsp;•&nbsp; [许可](#1036c9f)
+[概要](#f595ead) &nbsp;•&nbsp; [功能](#dea3322) &nbsp;•&nbsp; [安装](#cf6afd0) &nbsp;•&nbsp; [用法](#9f9b12f) &nbsp;•&nbsp; [指南](#be6352c) &nbsp;•&nbsp; [许可](#1036c9f)
 
 中文 &nbsp;•&nbsp; [English](./README.md)
 
 ## <span id="f595ead"></span>概要
 
-可能是最好用的函数式状态库。
+可能是最丝滑的函数式状态库。
 
 ## <span id="dea3322"></span>功能
 
@@ -30,50 +30,49 @@ npm i react-mug
 
 ## <span id="9f9b12f"></span>用法
 
-```tsx
-// CounterMug.ts
+创建状态及其操作：
+
+```ts
+// CountMug.ts
 import { construction, upon } from 'react-mug';
 
-export interface CounterState {
-  value: number;
-}
-
-const { r, w } = upon<CounterState>({
-  [construction]: {
-    value: 0,
-  },
+const { r, w } = upon<number>({
+  [construction]: 0,
 });
 
-export const getValue = r((state) => state.value);
+export const get = r();
 
-export const increase = w((state, delta: number) => ({ ...state, value: state.value + delta }));
+export const increase = w((n, delta: number) => n + delta);
 ```
+
+然后直接使用：
 
 ```tsx
 // CounterDisplay.tsx
 import { useR } from 'react-mug';
 
-import { getValue } from './CounterMug';
+import { get } from './CountMug';
 
 export function CounterDisplay() {
-  const value = useR(getValue);
-  return <div>Value: {value}</div>;
+  const count = useR(get);
+  return <>The count is {count}.</>;
 }
 ```
 
 ```tsx
 // CounterControl.tsx
-import { increase } from './CounterMug';
+import { increase } from './CountMug';
 
 export function CounterControl() {
-  return (
-    <div>
-      <button onClick={() => increase(1)}>Increase by 1</button>
-      <button onClick={() => increase(5)}>Increase by 5</button>
-    </div>
-  );
+  return <button onClick={() => increase(1)}>Increase by 1</button>;
 }
 ```
+
+即可纵享丝滑。
+
+## <span id="be6352c"></span>指南
+
+[TODO](./docs/guide/TODO.zh-Hans.md)
 
 ## <span id="1036c9f"></span>许可
 

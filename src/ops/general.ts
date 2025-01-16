@@ -1,4 +1,4 @@
-import { AssignPatch, DoNothing, doNothing, PossiblePatch } from '../builtin';
+import { AssignPatch, PossiblePatch } from '../builtin';
 import {
   GetIt,
   getIt,
@@ -17,6 +17,7 @@ import {
   _writeProc,
   AnyReadProc,
   AnyWriteProc,
+  Generalness,
   NotOp,
   NotProc,
   PossibleMugLike,
@@ -111,13 +112,11 @@ export type W<TState> = {
   ): WriteGeneralOp<TWriteFn, TState>;
 };
 
-export type X<TState> = {
-  (): DoNothing;
-
-  <TExecOp extends (mugLike: PossibleMugLike<TState>, ...restArgs: any) => any>(
-    execOp: TExecOp,
-  ): TExecOp;
-};
+export type X<TState> = <
+  TExec extends ((mugLike: PossibleMugLike<TState>, ...restArgs: any) => any) & NotProc & NotOp,
+>(
+  exec: TExec,
+) => TExec & Generalness<TState>;
 
 export type GeneralOpToolbeltFormat<TR, TW, TX> = [r: TR, w: TW, x: TX] & { r: TR; w: TW; x: TX };
 
@@ -141,8 +140,10 @@ export function onto(): any {
     return writeGeneralOp;
   }
 
-  function x(execOp: AnyFunction = doNothing) {
-    return execOp;
+  function x(exec: AnyFunction) {
+    const execWG = (...args: any) => exec(...args);
+    execWG[_general] = _general;
+    return execWG;
   }
 
   const toolbelt: any = [r, w, x];

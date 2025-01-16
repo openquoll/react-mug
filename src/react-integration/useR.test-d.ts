@@ -151,11 +151,11 @@ test('useR', () => {
 
   // =-=-=
 
-  const { r: generalOpR } = onto<AState>();
+  const { r: generalR } = onto<AState>();
 
   // =-=-=
 
-  const readde7 = generalOpR((state) => fake<ObjectState>());
+  const readde7 = generalR((state) => fake<ObjectState>());
 
   expectType<ObjectState>(useR(readde7, fake<AState>()));
   expectType<ObjectState>(useR(readde7, fake<AMug>()));
@@ -177,7 +177,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const read43e = generalOpR((state, s: string) => fake<ObjectState>());
+  const read43e = generalR((state, s: string) => fake<ObjectState>());
 
   useR(read43e, fake<AState>(), fake<string>());
 
@@ -192,23 +192,23 @@ test('useR', () => {
 
   // =-=-=
 
-  const read492 = generalOpR((state: ObjectState) => state);
+  const read492 = generalR((state: ObjectState) => state);
 
   expectType<ObjectState>(useR(read492, fake<AState>()));
 
   // =-=-=
 
   // @ts-expect-error
-  generalOpR((state: BiggerState) => fake<ObjectState>());
+  generalR((state: BiggerState) => fake<ObjectState>());
 
   // =-=-=
 
   // @ts-expect-error
-  generalOpR((state: { n: number }) => fake<ObjectState>());
+  generalR((state: { n: number }) => fake<ObjectState>());
 
   // =-=-=
 
-  const readeb1 = generalOpR(<TState>(state: TState) => state);
+  const readeb1 = generalR(<TState>(state: TState) => state);
 
   expectType<AState>(useR(readeb1, fake<AState>()));
   expectType<AState>(useR(readeb1, fake<AMug>()));
@@ -237,7 +237,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const reada24 = generalOpR(<TState>(state: TState, s: string) => state);
+  const reada24 = generalR(<TState>(state: TState, s: string) => state);
 
   useR(reada24, fake<AState>(), fake<string>());
 
@@ -252,24 +252,24 @@ test('useR', () => {
 
   // =-=-=
 
-  const readb26 = generalOpR(<TState extends AState>(state: TState): TState => state);
+  const readb26 = generalR(<TState extends AState>(state: TState): TState => state);
 
   expectType<AState>(useR(readb26, fake<AState>()));
 
   // =-=-=
 
-  const readd63 = generalOpR(<TState extends ObjectState>(state: TState): TState => state);
+  const readd63 = generalR(<TState extends ObjectState>(state: TState): TState => state);
 
   expectType<AState>(useR(readd63, fake<AState>()));
 
   // =-=-=
 
   // @ts-expect-error
-  generalOpR(<TState extends BiggerState>(state: TState): TState => state);
+  generalR(<TState extends BiggerState>(state: TState): TState => state);
 
   // =-=-=
 
-  const read6ea = generalOpR(() => fake<ObjectState>());
+  const read6ea = generalR(() => fake<ObjectState>());
 
   expectType<ObjectState>(useR(read6ea));
   expectType<ObjectState>(useR(read6ea, fake<unknown>()));
@@ -279,7 +279,7 @@ test('useR', () => {
 
   // =-=-=
 
-  const readad2 = generalOpR();
+  const readad2 = generalR();
 
   expectType<AState>(useR(readad2, fake<AState>()));
   expectType<AState>(useR(readad2, fake<AMug>()));

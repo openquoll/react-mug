@@ -200,7 +200,8 @@ export const attach = <TMug extends AnyMug, TAttachments extends AnyObjectLike>(
   attachments: TAttachments,
 ): WithAttachments<TMug, TAttachments> => _assign(mug, attachments);
 
-export const isObjectLike = (o: any): boolean => typeof o === _object && o !== null;
+export const isObjectLike = (o: any): boolean =>
+  isFunction(o) || (typeof o === _object && o !== null);
 
 export const isPlainObject = (o: any): boolean =>
   isObjectLike(o) && [_Object, _undefined][_includes](o[_constructor]);
@@ -449,10 +450,20 @@ export const _mugLike = Symbol();
 
 export const _general = Symbol();
 
+export type Specialness<TState> = {
+  [_state]: TState;
+  [_special]: typeof _special;
+};
+
+export type Generalness<TState> = {
+  [_state]: TState;
+  [_general]: typeof _general;
+};
+
 export type ReadSpecialOpMetaOnReadProc<TReadProc extends AnyReadProc, TState> = {
   [_readProc]: TReadProc;
   [_state]: TState;
-  [_special]: typeof _general;
+  [_special]: typeof _special;
   [_mugLike]: PossibleMugLike<TState>;
 };
 
@@ -480,15 +491,10 @@ export type ReadGeneralOpMeta<TRead extends AnyFunction, TState> = TRead extends
 
 export type AnyReadGeneralOp = AnyFunction & ReadGeneralOpMeta<AnyReadProc, any>;
 
-export type NotReadGeneralOp = {
-  [_readProc]?: never;
-  [_general]?: never;
-};
-
 export type WriteSpecialOpMetaWriteProc<TWriteProc extends AnyWriteProc, TState> = {
   [_writeProc]: TWriteProc;
   [_state]: TState;
-  [_special]: typeof _general;
+  [_special]: typeof _special;
   [_mugLike]: PossibleMugLike<TState>;
 };
 
@@ -516,34 +522,20 @@ export type WriteGeneralOpMeta<TWrite extends AnyFunction, TState> = TWrite exte
 
 export type AnyWriteGeneralOp = AnyFunction & WriteGeneralOpMeta<AnyWriteProc, any>;
 
-export type NotWriteGeneralOp = {
-  [_writeProc]?: never;
-  [_general]?: never;
-};
-
 export type AnySpecialOp = AnyReadSpecialOp | AnyWriteSpecialOp;
 
 export type AnyGeneralOp = AnyReadGeneralOp | AnyWriteGeneralOp;
 
 export type AnyOp = AnySpecialOp | AnyGeneralOp;
 
-export type NotSpecialOp = {
-  [_readProc]?: never;
-  [_writeProc]?: never;
-  [_special]?: never;
-  [_mugLike]?: never;
-};
-
-export type NotGeneralOp = {
-  [_readProc]?: never;
-  [_writeProc]?: never;
-  [_general]?: never;
-};
-
 export type NotOp = {
   [_readProc]?: never;
   [_writeProc]?: never;
 };
+
+export const hasSpecialness = (o: any): boolean => isObjectLike(o) && o[_hasOwnProperty](_special);
+
+export const hasGeneralness = (o: any): boolean => isObjectLike(o) && o[_hasOwnProperty](_general);
 
 export const isReadSpecialOp = (f: any): f is AnyReadSpecialOp =>
   isFunction(f) &&
@@ -571,7 +563,7 @@ export const isWriteGeneralOp = (f: any): f is AnyWriteGeneralOp =>
   isFunction(f) &&
   f[_hasOwnProperty](_writeProc) &&
   f[_hasOwnProperty](_general) &&
-  isReadProc(f[_writeProc]);
+  isWriteProc(f[_writeProc]);
 
 export const isGeneralOp = (f: any): f is AnyGeneralOp => isReadGeneralOp(f) || isWriteGeneralOp(f);
 

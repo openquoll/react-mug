@@ -1,5 +1,4 @@
 import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from './builtin/fns';
-import { _builtinId } from './builtin/ids';
 import {
   _readFn,
   _writeFn,
@@ -16,8 +15,8 @@ import {
   isState,
   isWriteProc,
   MugError,
+  NotOp,
   NotProc,
-  NotSpecialOp,
   ownKeysOfObjectLike,
   PossibleMugLike,
   ReadProcMeta,
@@ -37,8 +36,8 @@ import {
   _isArray,
   _map,
   _reduce,
-  _set,
   _Set,
+  _set,
   _WeakMap,
 } from './shortcuts';
 import { AnyFunction, Param0, Post0Params } from './type-utils';
@@ -287,7 +286,7 @@ export type GetIt = ReadProc<PassThrough>;
 
 export function r(): GetIt;
 export function r<TReadProc extends AnyReadProc>(readProc: TReadProc): ReadProc<TReadProc>;
-export function r<TReadFn extends AnyFunction & NotProc & NotSpecialOp>(
+export function r<TReadFn extends AnyFunction & NotProc & NotOp>(
   readFn: TReadFn,
 ): ReadProc<TReadFn>;
 export function r(read: AnyFunction = passThrough): AnyFunction {
@@ -349,7 +348,7 @@ export type SetIt = WriteProc<AssignPatch>;
 export function w(): SetIt;
 export function w<TWriteProc extends AnyWriteProc>(writeProc: TWriteProc): WriteProc<TWriteProc>;
 export function w<
-  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotProc & NotSpecialOp,
+  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotProc & NotOp,
 >(writeFn: TWriteFn): WriteProc<TWriteFn>;
 export function w(write: AnyFunction = assignPatch): AnyFunction {
   if (isWriteProc(write)) {

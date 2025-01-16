@@ -1,14 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import {
-  AssignPatch,
-  assignPatch,
-  DoNothing,
-  PassThrough,
-  passThrough,
-  PossiblePatch,
-} from '../builtin';
+import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from '../builtin';
 import {
   GetIt,
   getIt,
@@ -20,6 +13,7 @@ import {
   WriteProc,
 } from '../mechanism';
 import {
+  Generalness,
   Mug,
   MugLike,
   PossibleMug,
@@ -614,56 +608,44 @@ test('upon#x', async () => {
 
   // =-=-=
 
+  // @ts-expect-error
+  x(r());
+
+  // @ts-expect-error
+  x(w());
+
+  // @ts-expect-error
+  x(procR());
+
+  // @ts-expect-error
+  x(procW());
+
+  // =-=-=
+
   const exec73b = x(async (mugLike) => {
     expectType<PossibleMugLike<AState>>(mugLike);
     return fake<ObjectState>();
   });
 
-  expectType<(mugLike: PossibleMugLike<AState>) => Promise<ObjectState>>(exec73b);
-
-  // =-=-=
-
-  expectType<(mugLike: PossibleMugLike<AState>, s: string) => Promise<ObjectState>>(
-    x(async (mugLike, s: string) => fake<ObjectState>()),
+  expectType<((mugLike: PossibleMugLike<AState>) => Promise<ObjectState>) & Generalness<AState>>(
+    exec73b,
   );
 
   // =-=-=
 
-  expectType<(mugLike: PossibleMugLike<AState>) => ObjectState>(
+  expectType<
+    ((mugLike: PossibleMugLike<AState>, s: string) => Promise<ObjectState>) & Generalness<AState>
+  >(x(async (mugLike, s: string) => fake<ObjectState>()));
+
+  // =-=-=
+
+  expectType<((mugLike: PossibleMugLike<AState>) => ObjectState) & Generalness<AState>>(
     x((mugLike) => fake<ObjectState>()),
   );
 
   // =-=-=
 
-  expectType<(mugLike: PossibleMugLike<AState>, s: string) => ObjectState>(
+  expectType<((mugLike: PossibleMugLike<AState>, s: string) => ObjectState) & Generalness<AState>>(
     x((mugLike, s: string) => fake<ObjectState>()),
   );
-
-  // =-=-=
-
-  expectType<DoNothing>(x());
-
-  // =-=-=
-
-  const readd36 = r();
-
-  expectType<typeof readd36>(x(readd36));
-
-  // =-=-=
-
-  const write6a8 = w();
-
-  expectType<typeof write6a8>(x(write6a8));
-
-  // =-=-=
-
-  const readbe9 = procR();
-
-  expectType<typeof readbe9>(x(readbe9));
-
-  // =-=-=
-
-  const write74f = procW();
-
-  expectType<typeof write74f>(x(write74f));
 });

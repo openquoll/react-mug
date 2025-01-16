@@ -16,17 +16,26 @@ import {
   _special,
   _writeFn,
   _writeProc,
+  AnyReadGeneralOp,
   AnyReadProc,
+  AnyWriteGeneralOp,
   AnyWriteProc,
+  emptyCloneOfPlainObject,
+  Generalness,
+  hasGeneralness,
+  isFunction,
+  isReadGeneralOp,
+  isWriteGeneralOp,
   NotOp,
   NotProc,
+  ownKeysOfObjectLike,
   PossibleMugLike,
   ReadProcMeta,
   ReadSpecialOpMeta,
   WriteProcMeta,
   WriteSpecialOpMeta,
 } from '../mug';
-import { AnyFunction, Post0Params } from '../type-utils';
+import { AnyFunction, AnyObjectLike, Post0Params } from '../type-utils';
 
 export type ReadSpecialOpOnEmptyParamReadProc<
   TReadProc extends AnyReadProc,
@@ -47,7 +56,10 @@ export type ReadSpecialOpOnSimpleGenericReadProc<TReadProc extends AnyReadProc, 
 export type ReadSpecialOpOnTypicalReadProc<TReadProc extends AnyReadProc, TState> = ((
   ...args: Post0Params<TReadProc>
 ) => ReturnType<TReadProc>) &
-  TReadProc[typeof _readFn] &
+  ((
+    state: TState,
+    ...restArgs: Post0Params<TReadProc[typeof _readFn]>
+  ) => ReturnType<TReadProc[typeof _readFn]>) &
   ReadSpecialOpMeta<TReadProc, TState>;
 
 export type ReadSpecialOp<TRead extends AnyFunction, TState> = TRead extends AnyReadProc
@@ -75,16 +87,16 @@ export type R<TState> = {
 
 export type WriteSpecialOpOnEmptyParamWriteProc<
   TWriteProc extends AnyWriteProc,
-  TState,
+  TState0,
 > = (() => void) &
-  ((state: TState) => ReturnType<TWriteProc[typeof _writeFn]>) &
-  WriteSpecialOpMeta<TWriteProc, TState>;
+  (<TState extends TState0>(state: TState) => TState) &
+  WriteSpecialOpMeta<TWriteProc, TState0>;
 
 export type WriteSpecialOpOnSetIt<TState0> = ((patch: PossiblePatch<NoInfer<TState0>>) => void) &
   (<TState extends TState0>(state: TState, patch: PossiblePatch<NoInfer<TState>>) => TState) &
   WriteSpecialOpMeta<SetIt, TState0>;
 
-export type WriteSpecialOpOnSimpleGenericWriteProc<TWriteProc extends AnyWriteProc, TState0> = ((
+export type WriteSpecialOpOnTypicalWriteProc<TWriteProc extends AnyWriteProc, TState0> = ((
   ...args: Post0Params<TWriteProc>
 ) => void) &
   (<TState extends TState0>(
@@ -93,23 +105,12 @@ export type WriteSpecialOpOnSimpleGenericWriteProc<TWriteProc extends AnyWritePr
   ) => TState) &
   WriteSpecialOpMeta<TWriteProc, TState0>;
 
-export type WriteSpecialOpOnTypicalWriteProc<TWriteProc extends AnyWriteProc, TState0> = ((
-  ...args: Post0Params<TWriteProc>
-) => void) &
-  TWriteProc[typeof _writeFn] &
-  WriteSpecialOpMeta<TWriteProc, TState0>;
-
 export type WriteSpecialOp<TWrite extends AnyFunction, TState> = TWrite extends AnyWriteProc
   ? TWrite[typeof _writeFn] extends () => any
     ? WriteSpecialOpOnEmptyParamWriteProc<TWrite, TState>
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteSpecialOpOnSetIt<TState>
-      : TWrite[typeof _writeFn] extends <TState extends never>(
-            state: TState,
-            ...restArgs: any
-          ) => TState
-        ? WriteSpecialOpOnSimpleGenericWriteProc<TWrite, TState>
-        : WriteSpecialOpOnTypicalWriteProc<TWrite, TState>
+      : WriteSpecialOpOnTypicalWriteProc<TWrite, TState>
   : WriteSpecialOp<WriteProc<TWrite>, TState>;
 
 export type W<TState> = {
@@ -124,15 +125,46 @@ export type W<TState> = {
   ): WriteSpecialOp<TWriteFn, TState>;
 };
 
-export type SpecialOpToolbeltFormat<TR, TW> = [r: TR, w: TW] & { r: TR; w: TW };
+export type SpecialSliceItemOnExec<TItem extends AnyFunction> = (
+  ...args: Post0Params<TItem>
+) => ReturnType<TItem>;
 
-export type SpecialOpToolbelt<TState> = SpecialOpToolbeltFormat<R<TState>, W<TState>>;
+export type SpecialSliceItem<TItem, TState> =
+  TItem extends Generalness<any>
+    ? TItem extends AnyReadGeneralOp
+      ? ReadSpecialOp<TItem[typeof _readProc], TState>
+      : TItem extends AnyWriteGeneralOp
+        ? WriteSpecialOp<TItem[typeof _writeProc], TState>
+        : TItem extends AnyFunction
+          ? SpecialSliceItemOnExec<TItem>
+          : TItem
+    : TItem;
+
+export type SpecialSlice<TGeneralModule extends AnyObjectLike, TState> = {
+  [TK in keyof TGeneralModule]: SpecialSliceItem<TGeneralModule[TK], TState>;
+};
+
+export type GMItemConstraint<TItem, TState> =
+  TItem extends Generalness<infer TGeneralState>
+    ? TState extends TGeneralState
+      ? TItem
+      : never
+    : TItem;
+
+export type S<TState> = <TGM extends { [TK in keyof TGM]: GMItemConstraint<TGM[TK], TState> }>(
+  GeneralModule: TGM,
+) => SpecialSlice<TGM, TState>;
+
+export type SpecialOpToolbeltFormat<TR, TW, TS> = [r: TR, w: TW, s: TS] & { r: TR; w: TW; s: TS };
+
+export type SpecialOpToolbelt<TState> = SpecialOpToolbeltFormat<R<TState>, W<TState>, S<TState>>;
 
 export function upon<TState>(mugLike: PossibleMugLike<NoInfer<TState>>): SpecialOpToolbelt<TState>;
 export function upon(mugLike: any): any {
   function r(read: (mugLike: any, ...restArgs: any) => any = getIt) {
     const readProc = procR(read);
     const readFn = readProc[_readFn];
+
     const readSpecialOp = (...args: [any, ...any]) => {
       if (args.length < readFn.length) {
         return readProc(mugLike, ...args);
@@ -140,6 +172,7 @@ export function upon(mugLike: any): any {
         return readFn(...args);
       }
     };
+
     readSpecialOp[_readProc] = readProc;
     readSpecialOp[_special] = _special;
     readSpecialOp[_mugLike] = mugLike;
@@ -149,6 +182,7 @@ export function upon(mugLike: any): any {
   function w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
     const writeProc = procW(write);
     const writeFn = writeProc[_writeFn];
+
     const writeSpecialOp = (...args: [any, ...any]) => {
       if (args.length < writeFn.length) {
         writeProc(mugLike, ...args);
@@ -156,14 +190,41 @@ export function upon(mugLike: any): any {
         return writeFn(...args);
       }
     };
+
     writeSpecialOp[_writeProc] = writeProc;
     writeSpecialOp[_special] = _special;
     writeSpecialOp[_mugLike] = mugLike;
     return writeSpecialOp;
   }
 
-  const toolbelt: any = [r, w];
+  function s(generalModule: any) {
+    return ownKeysOfObjectLike(generalModule).reduce((specialSlice, k) => {
+      const item = generalModule[k];
+
+      if (hasGeneralness(item)) {
+        if (isReadGeneralOp(item)) {
+          specialSlice[k] = r(item[_readProc]);
+          return specialSlice;
+        }
+
+        if (isWriteGeneralOp(item)) {
+          specialSlice[k] = w(item[_writeProc]);
+          return specialSlice;
+        }
+
+        if (isFunction(item)) {
+          specialSlice[k] = (...args: any) => item(mugLike, ...args);
+          return specialSlice;
+        }
+      }
+
+      return specialSlice;
+    }, emptyCloneOfPlainObject(generalModule));
+  }
+
+  const toolbelt: any = [r, w, s];
   toolbelt.r = r;
   toolbelt.w = w;
+  toolbelt.s = s;
   return toolbelt;
 }

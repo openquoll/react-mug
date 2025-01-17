@@ -18,6 +18,7 @@ import {
   _null,
   _object,
   _Object,
+  _ObjectPrototype,
   _reduce,
   _setPrototypeOf,
   _true,
@@ -209,7 +210,8 @@ export const isPlainObject = (o: any): boolean =>
 export const isClassDefinedObject = (o: any): boolean =>
   isObjectLike(o) && !_isArray(o) && ![_Object, _undefined][_includes](o[_constructor]);
 
-export const isMug = (o: any): o is AnyMug => isObjectLike(o) && o[_hasOwnProperty](construction);
+export const isMug = (o: any): o is AnyMug =>
+  isObjectLike(o) && _ObjectPrototype[_hasOwnProperty].call(o, construction);
 
 export function isState(o: any): boolean {
   if (isMug(o)) {
@@ -238,8 +240,8 @@ export function areEqualMugLikes(a: any, b: any): boolean {
 
   if (isPlainObject(a) && isPlainObject(b)) {
     return ownKeysOfObjectLike(_assign({}, a, b))[_reduce]((result, key) => {
-      const keyInA = a[_hasOwnProperty](key);
-      const keyInB = b[_hasOwnProperty](key);
+      const keyInA = _ObjectPrototype[_hasOwnProperty].call(a, key);
+      const keyInB = _ObjectPrototype[_hasOwnProperty].call(b, key);
 
       if (!keyInA || !keyInB) {
         return _false;
@@ -256,8 +258,8 @@ export function areEqualMugLikes(a: any, b: any): boolean {
 
     let result = _true;
     for (let i = 0, n = a[_length]; i < n; i++) {
-      const indexInA = a[_hasOwnProperty](i);
-      const indexInB = b[_hasOwnProperty](i);
+      const indexInA = _ObjectPrototype[_hasOwnProperty].call(a, i);
+      const indexInB = _ObjectPrototype[_hasOwnProperty].call(b, i);
 
       if (!indexInA && !indexInB) {
         continue;
@@ -290,8 +292,8 @@ export function assignConservatively(mugLike: any, input: any): any {
     let allFieldsFromMugLike = _true;
     let allFieldsFromInput = _true;
     ownKeysOfObjectLike(_assign({}, mugLike, input))[_forEach]((key) => {
-      const keyInMugLike = mugLike[_hasOwnProperty](key);
-      const keyInInput = input[_hasOwnProperty](key);
+      const keyInMugLike = _ObjectPrototype[_hasOwnProperty].call(mugLike, key);
+      const keyInInput = _ObjectPrototype[_hasOwnProperty].call(input, key);
 
       if (keyInMugLike && !keyInInput) {
         allFieldsFromMugLike = _false;
@@ -336,8 +338,8 @@ export function assignConservatively(mugLike: any, input: any): any {
     let allItemsFromMugLike = mugLike[_length] === result[_length];
     let allItemsFromInput = _true;
     for (let i = 0, n = result[_length]; i < n; i++) {
-      const indexInMugLike = mugLike[_hasOwnProperty](i);
-      const indexInInput = input[_hasOwnProperty](i);
+      const indexInMugLike = _ObjectPrototype[_hasOwnProperty].call(mugLike, i);
+      const indexInInput = _ObjectPrototype[_hasOwnProperty].call(input, i);
 
       if (!indexInMugLike && !indexInInput) {
         continue;
@@ -533,9 +535,11 @@ export type NotOp = {
   [_writeProc]?: never;
 };
 
-export const hasSpecialness = (o: any): boolean => isObjectLike(o) && o[_hasOwnProperty](_special);
+export const hasSpecialness = (o: any): boolean =>
+  isObjectLike(o) && _ObjectPrototype[_hasOwnProperty].call(o, _special);
 
-export const hasGeneralness = (o: any): boolean => isObjectLike(o) && o[_hasOwnProperty](_general);
+export const hasGeneralness = (o: any): boolean =>
+  isObjectLike(o) && _ObjectPrototype[_hasOwnProperty].call(o, _general);
 
 export const isReadSpecialOp = (f: any): f is AnyReadSpecialOp =>
   isFunction(f) &&

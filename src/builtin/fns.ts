@@ -7,7 +7,15 @@ import {
   shallowCloneOfPlainObject,
   State,
 } from '../mug';
-import { _constructor, _hasOwnProperty, _is, _isArray, _length, _reduce } from '../shortcuts';
+import {
+  _constructor,
+  _hasOwnProperty,
+  _is,
+  _isArray,
+  _length,
+  _ObjectPrototype,
+  _reduce,
+} from '../shortcuts';
 import {
   AnyFunction,
   AnyObjectLike,
@@ -73,7 +81,7 @@ export function assignPatch(state: any, patch: any): any {
 
   if (isPlainObject(state) && isPlainObject(patch)) {
     return ownKeysOfObjectLike(patch)[_reduce]((result, patchKey) => {
-      const patchKeyInState = state[_hasOwnProperty](patchKey);
+      const patchKeyInState = _ObjectPrototype[_hasOwnProperty].call(state, patchKey);
 
       if (!patchKeyInState) {
         result[patchKey] = patch[patchKey];

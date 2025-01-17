@@ -218,6 +218,7 @@ export function upon(mugLike: any): any {
         }
       }
 
+      specialSlice[k] = item;
       return specialSlice;
     }, emptyCloneOfPlainObject(generalModule));
   }

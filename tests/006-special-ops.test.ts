@@ -75,6 +75,12 @@ const customExec = jest.fn(
   }),
 );
 
+const customNullProtoObjectField: Pick<ObjectState, 'o'> = Object.assign(Object.create(null), {
+  o: {
+    s: 'asd',
+  },
+});
+
 describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
   type AMug = Mug<AState>;
 
@@ -107,13 +113,16 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
 
   const [generalR, generalW, x] = onto<AState>();
 
-  const specialSlice = s({
+  const GeneralModule = {
     defaultReadOp: generalR(),
     customReadOp: generalR(customReadFn),
     defaultWriteOp: generalW(),
     customWriteOp: generalW(customWriteFn),
     customExec: x(customExec),
-  });
+    customNullProtoObjectField,
+  };
+
+  const specialSlice = s(GeneralModule);
 
   describe('1696308, checks the special-op toolbelt_s fields', () => {
     test('[verify] the "r" field equals the index-0 item in ref', () => {
@@ -782,23 +791,30 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004', () => {
       execReturn = customExec.mock.results[0].value;
     });
 
-    test('[verify] the exec is called 1 time', () => {
+    test('[verify] the original exec is called 1 time', () => {
       expect(customExec).toHaveBeenCalledTimes(1);
     });
 
-    test('[verify] the exec param mug equals the contextual mug in ref and value', () => {
+    test('[verify] the original exec param mug equals the contextual mug in ref and value', () => {
       expect(execParamMug).toBe(aMug);
       expect(execParamMug).toStrictEqual(aMug);
     });
 
-    test('[verify] the exec param extra equals the special-slice exec param extra in ref and value', () => {
+    test('[verify] the original exec param extra equals the special-slice exec param extra in ref and value', () => {
       expect(execParamExtra).toBe(specialSliceExecParamExtra);
       expect(execParamExtra).toStrictEqual(specialSliceExecParamExtra);
     });
 
-    test('[verify] the special-slice exec return equals the exec return in ref and value', () => {
+    test('[verify] the special-slice exec return equals the original exec return in ref and value', () => {
       expect(specialSliceExecReturn).toBe(execReturn);
       expect(specialSliceExecReturn).toStrictEqual(execReturn);
+    });
+  });
+
+  describe('c22a20d, checks the custom null-proto object special-slice field', () => {
+    test('[action, verify] the special-slice field equals the original field in ref and value', () => {
+      expect(specialSlice.customNullProtoObjectField).toBe(customNullProtoObjectField);
+      expect(specialSlice.customNullProtoObjectField).toStrictEqual(customNullProtoObjectField);
     });
   });
 });

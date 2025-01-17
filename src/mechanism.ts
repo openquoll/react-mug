@@ -35,6 +35,7 @@ import {
   _is,
   _isArray,
   _map,
+  _ObjectPrototype,
   _reduce,
   _Set,
   _set,
@@ -225,7 +226,7 @@ class MugLikeWriteTask {
     if (isPlainObject(mugLike) && isPlainObject(input)) {
       this._writingMugLikes[_add](mugLike);
       ownKeysOfObjectLike(mugLike)[_forEach]((mugLikeKey) => {
-        const mugLikeKeyInInput = input[_hasOwnProperty](mugLikeKey);
+        const mugLikeKeyInInput = _ObjectPrototype[_hasOwnProperty].call(input, mugLikeKey);
         if (!mugLikeKeyInInput) {
           return;
         }

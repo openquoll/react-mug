@@ -7,6 +7,7 @@ export const _object = 'object';
 export const _function = 'function';
 
 export const _constructor = 'constructor';
+export const _prototype = 'prototype';
 
 export const _Object = Object;
 export const {
@@ -17,6 +18,7 @@ export const {
   getOwnPropertySymbols: _getOwnPropertySymbols,
   setPrototypeOf: _setPrototypeOf,
 } = _Object;
+export const _ObjectPrototype = _Object[_prototype];
 export const _hasOwnProperty = 'hasOwnProperty';
 
 export const _Array = Array;

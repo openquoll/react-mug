@@ -409,19 +409,11 @@ export type ReadProcMeta<TReadFn extends AnyFunction> = {
 
 export type AnyReadProc = AnyFunction & ReadProcMeta<AnyFunction>;
 
-export type NotReadProc = {
-  [_readFn]?: never;
-};
-
 export type WriteProcMeta<TWriteFn extends AnyFunction> = {
   [_writeFn]: TWriteFn;
 };
 
 export type AnyWriteProc = AnyFunction & WriteProcMeta<AnyFunction>;
-
-export type NotWriteProc = {
-  [_writeFn]?: never;
-};
 
 export type AnyProc = AnyReadProc | AnyWriteProc;
 
@@ -475,12 +467,6 @@ export type ReadSpecialOpMeta<TRead extends AnyFunction, TState> = TRead extends
 
 export type AnyReadSpecialOp = AnyFunction & ReadSpecialOpMeta<AnyReadProc, any>;
 
-export type NotReadSpecialOp = {
-  [_readProc]?: never;
-  [_special]?: never;
-  [_mugLike]?: never;
-};
-
 export type ReadGeneralOpMetaOnReadProc<TReadProc extends AnyReadProc, TState> = {
   [_readProc]: TReadProc;
   [_state]: TState;
@@ -506,12 +492,6 @@ export type WriteSpecialOpMeta<TWrite extends AnyFunction, TState> = TWrite exte
 
 export type AnyWriteSpecialOp = AnyFunction & WriteSpecialOpMeta<AnyWriteProc, any>;
 
-export type NotWriteSpecialOp = {
-  [_writeProc]?: never;
-  [_special]?: never;
-  [_mugLike]?: never;
-};
-
 export type WriteGeneralOpMetaWriteProc<TWriteProc extends AnyWriteProc, TState> = {
   [_writeProc]: TWriteProc;
   [_state]: TState;
@@ -528,7 +508,11 @@ export type AnySpecialOp = AnyReadSpecialOp | AnyWriteSpecialOp;
 
 export type AnyGeneralOp = AnyReadGeneralOp | AnyWriteGeneralOp;
 
-export type AnyOp = AnySpecialOp | AnyGeneralOp;
+export type AnyReadOp = AnyReadSpecialOp | AnyReadGeneralOp;
+
+export type AnyWriteOp = AnyWriteSpecialOp | AnyWriteGeneralOp;
+
+export type AnyOp = AnyReadSpecialOp | AnyWriteSpecialOp | AnyReadGeneralOp | AnyWriteGeneralOp;
 
 export type NotOp = {
   [_readProc]?: never;
@@ -555,8 +539,6 @@ export const isWriteSpecialOp = (f: any): f is AnyWriteSpecialOp =>
   f[_hasOwnProperty](_mugLike) &&
   isWriteProc(f[_writeProc]);
 
-export const isSpecialOp = (f: any): f is AnySpecialOp => isReadSpecialOp(f) || isWriteSpecialOp(f);
-
 export const isReadGeneralOp = (f: any): f is AnyReadGeneralOp =>
   isFunction(f) &&
   f[_hasOwnProperty](_readProc) &&
@@ -569,6 +551,13 @@ export const isWriteGeneralOp = (f: any): f is AnyWriteGeneralOp =>
   f[_hasOwnProperty](_general) &&
   isWriteProc(f[_writeProc]);
 
+export const isSpecialOp = (f: any): f is AnySpecialOp => isReadSpecialOp(f) || isWriteSpecialOp(f);
+
 export const isGeneralOp = (f: any): f is AnyGeneralOp => isReadGeneralOp(f) || isWriteGeneralOp(f);
 
-export const isOp = (f: any): f is AnyOp => isSpecialOp(f) || isGeneralOp(f);
+export const isReadOp = (f: any): f is AnyReadOp => isReadSpecialOp(f) || isReadGeneralOp(f);
+
+export const isWriteOp = (f: any): f is AnyWriteOp => isWriteSpecialOp(f) || isWriteGeneralOp(f);
+
+export const isOp = (f: any): f is AnyOp =>
+  isReadSpecialOp(f) || isWriteSpecialOp(f) || isReadGeneralOp(f) || isWriteGeneralOp(f);

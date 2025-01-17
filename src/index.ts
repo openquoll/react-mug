@@ -15,12 +15,8 @@ export {
   attach,
   construction,
   isMug,
+  isOp,
   isProc,
-  isReadProc,
-  isReadSpecialOp,
-  isSpecialOp,
-  isWriteProc,
-  isWriteSpecialOp,
 } from './mug';
 export {
   GeneralOpToolbelt,

@@ -100,7 +100,7 @@ const { r, w, s } = upon<CounterState>(counterMug);
 export const { isQuerying, startQuerying, endQuerying } = s(QueryableModule);
 
 export const getValue = r((state) => {
-  // 调用可查询状态
+  // 调用可查询操作
   if (isQuerying(state)) {
     return;
   }
@@ -112,11 +112,11 @@ export const increase = w((state, delta: number) => ({ ...state, value: state.va
 export const set = w();
 
 export const queryValue = async () => {
-  // 调用可查询状态
+  // 调用可查询操作
   startQuerying();
   const value = await RestfulApi.counter.value.get();
   set({ value });
-  // 调用可查询状态
+  // 调用可查询操作
   endQuerying();
 };
 ```

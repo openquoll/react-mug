@@ -1,6 +1,6 @@
 # 指南 / 对大状态切片
 
-[核心内容](#bfc7f69) &nbsp;•&nbsp; 异步操作
+[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步操作](#5b70f21) &nbsp;•&nbsp; [操作测试](#a8658c7)
 
 中文 &nbsp;•&nbsp; [English](./eb8ec2b.md)
 
@@ -163,7 +163,7 @@ export const queryText = async () => {
 
 让状态有序地拆分开来。
 
-## 异步操作
+## <span id="5b70f21"></span>异步操作
 
 此外，以普通的异步函数结合 `x`，即可定义通用的异步操作：
 
@@ -211,7 +211,7 @@ export const queryValueFastWithRetry = async () => {
 };
 ```
 
-## 操作测试
+## <span id="a8658c7"></span>操作测试
 
 以及，以测试纯函数的方式，即可测试通用操作：
 

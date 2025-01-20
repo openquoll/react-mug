@@ -55,7 +55,7 @@ import { get } from './CountMug';
 
 export function CounterDisplay() {
   const count = useR(get);
-  return <>The count is {count}.</>;
+  return <strong>The count is {count}.</strong>;
 }
 ```
 

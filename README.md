@@ -19,7 +19,7 @@ Possibly the optimal way to functionally manage states.
 ✦ State slicing.<br/>
 ✦ Async operations.<br/>
 ✦ Functionally test state operations.<br/>
-✦ Easily test states' actual values.</br>
+✦ Easily test actual state values.</br>
 ✦ Strong support for types.
 
 ## <span id="f746377"></span>Install

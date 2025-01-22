@@ -1,8 +1,6 @@
 # 指南 / 目录
 
-中文 &nbsp;•&nbsp; [English](./README.md)
-
----
+中文 &nbsp;•&nbsp; [English](./README.md)。
 
 [管理单个状态](./57934f5.zh-Hans.md)，<br/>
 [组合多个状态](./7f95611.zh-Hans.md)，<br/>

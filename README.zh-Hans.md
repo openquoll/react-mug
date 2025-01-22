@@ -2,9 +2,9 @@
 
 ![Logo of Mug](https://github.com/user-attachments/assets/f47bc69e-fc3f-4465-96af-9aaff65c79ae)
 
-[概要](#f595ead) &nbsp;•&nbsp; [功能](#dea3322) &nbsp;•&nbsp; [安装](#cf6afd0) &nbsp;•&nbsp; [用法](#9f9b12f) &nbsp;•&nbsp; [指南](#be6352c) &nbsp;•&nbsp; [APIs](#629f340) &nbsp;•&nbsp; [许可](#1036c9f)
+[概要](#f595ead) &nbsp;•&nbsp; [功能](#dea3322) &nbsp;•&nbsp; [安装](#cf6afd0) &nbsp;•&nbsp; [用法](#9f9b12f) &nbsp;•&nbsp; [指南](#be6352c) &nbsp;•&nbsp; [APIs](#629f340) &nbsp;•&nbsp; [许可](#1036c9f)。
 
-中文 &nbsp;•&nbsp; [English](./README.md)
+中文 &nbsp;•&nbsp; [English](./README.md)。
 
 ## <span id="f595ead"></span>概要
 

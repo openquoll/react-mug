@@ -1,8 +1,10 @@
 # 指南 / 对大状态切片
 
-[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步通用操作](#5b70f21) &nbsp;•&nbsp; [通用操作复用](#3139a8c) &nbsp;•&nbsp; [默认通用操作](#78208bb) &nbsp;•&nbsp; [通用操作测试](#a8658c7) &nbsp;•&nbsp; [异步通用操作测试](#d83d546)
+[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步通用操作](#5b70f21) &nbsp;•&nbsp; [通用操作复用](#3139a8c) &nbsp;•&nbsp; [默认通用操作](#78208bb) &nbsp;•&nbsp; [通用操作测试](#a8658c7) &nbsp;•&nbsp; [异步通用操作测试](#d83d546)。
 
-中文 &nbsp;•&nbsp; [English](./eb8ec2b.md)
+[返回目录](./README.zh-Hans.md)。
+
+中文 &nbsp;•&nbsp; [English](./eb8ec2b.md)。
 
 ## <span id="bfc7f69"></span>核心内容
 
@@ -320,4 +322,4 @@ describe('retry', () => {
 
 ---
 
-[返回指南 / 目录](./README.zh-Hans.md)。
+[返回目录](./README.zh-Hans.md)。

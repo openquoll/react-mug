@@ -2,9 +2,9 @@
 
 ![Logo of Mug](https://github.com/user-attachments/assets/f47bc69e-fc3f-4465-96af-9aaff65c79ae)
 
-[Synopsis](#5b94f97) &nbsp;•&nbsp; [Functionalities](#cb032d8) &nbsp;•&nbsp; [Install](#f746377) &nbsp;•&nbsp; [Usage](#e4d5a54) &nbsp;•&nbsp; [Guide](#00bfdb1) &nbsp;•&nbsp; [APIs](#bf85749) &nbsp;•&nbsp; [License](#d4b3b37)
+[Synopsis](#5b94f97) &nbsp;•&nbsp; [Functionalities](#cb032d8) &nbsp;•&nbsp; [Install](#f746377) &nbsp;•&nbsp; [Usage](#e4d5a54) &nbsp;•&nbsp; [Guide](#00bfdb1) &nbsp;•&nbsp; [APIs](#bf85749) &nbsp;•&nbsp; [License](#d4b3b37).
 
-English &nbsp;•&nbsp; [中文](./README.zh-Hans.md)
+English &nbsp;•&nbsp; [中文](./README.zh-Hans.md).
 
 ## <span id="5b94f97"></span>Synopsis
 

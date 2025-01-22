@@ -6,7 +6,7 @@ English &nbsp;•&nbsp; [中文](./eb8ec2b.zh-Hans.md)
 
 ## <span id="256ed49"></span>Key Content
 
-The bigger a state, the more traits there are. Some traits may reapear in different states. General traits are worth separating. Thus, React Mug provides state slicing.
+The bigger a state, the more traits there are. Some traits may reappear in different states. General traits are worth separating. Thus, React Mug provides state slicing.
 
 For example, regarding a counter state as follows:
 
@@ -165,7 +165,7 @@ States are divided in an orderly manner.
 
 ## <span id="18fab2d"></span>Async General Ops
 
-Besides, within plain async functions, specifying compatible mugs as the first param utilizing `x` and calling general ops with the mug param define async general ops:
+In addition, with plain async functions, specifying the first param as compatible mugs utilizing `x`, then calling general ops with the mug param defines async general ops:
 
 ```ts
 // QueryableMug.ts

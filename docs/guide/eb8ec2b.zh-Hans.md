@@ -165,7 +165,7 @@ export const queryText = async () => {
 
 ## <span id="5b70f21"></span>异步通用操作
 
-此外，以普通的异步函数，借助 `x` 把兼容的 Mug 定义为首参，随后将 Mug 传入通用操作调用，即可定义异步通用操作：
+此外，以普通的异步函数，借助 `x` 把兼容的 Mug 声明为首参，随后将 Mug 传入通用操作调用，即可定义异步通用操作：
 
 ```ts
 // QueryableMug.ts
@@ -182,7 +182,7 @@ export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) 
   }
 
   startQuerying(mug);
-  let error: Error;
+  let error: unknown;
   for (let i = 0; i < times; i++) {
     try {
       await act();
@@ -252,7 +252,7 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
   }
 
   set(mug, { querying: true });
-  let error: Error;
+  let error: unknown;
   for (let i = 0; i < times; i++) {
     try {
       await act();

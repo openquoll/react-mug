@@ -48,22 +48,22 @@ export const increase = w((n, delta: number) => n + delta);
 Use them straight:
 
 ```tsx
-// CounterDisplay.tsx
+// CountDisplay.tsx
 import { useR } from 'react-mug';
 
 import { get } from './CountMug';
 
-export function CounterDisplay() {
+export function CountDisplay() {
   const count = useR(get);
   return <strong>The count is {count}.</strong>;
 }
 ```
 
 ```tsx
-// CounterControl.tsx
+// CountControl.tsx
 import { increase } from './CountMug';
 
-export function CounterControl() {
+export function CountControl() {
   return <button onClick={() => increase(1)}>Increase by 1</button>;
 }
 ```

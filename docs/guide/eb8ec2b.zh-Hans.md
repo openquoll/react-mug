@@ -1,12 +1,12 @@
 # 指南 / 对大状态切片
 
-[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步操作](#5b70f21) &nbsp;•&nbsp; [操作测试](#a8658c7)
+[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步通用操作](#5b70f21) &nbsp;•&nbsp; [通用操作复用](#3139a8c) &nbsp;•&nbsp; [默认通用操作](#78208bb) &nbsp;•&nbsp; [通用操作测试](#a8658c7) &nbsp;•&nbsp; [异步通用操作测试](#d83d546)
 
 中文 &nbsp;•&nbsp; [English](./eb8ec2b.md)
 
 ## <span id="bfc7f69"></span>核心内容
 
-状态体量越大越难维护，状态之间还会展现共性，通用特质须要单拎出来，为此 React Mug 提供了状态切片。
+状态越大包含的特质越多，有的特征还会在不同状态反复出现，通用的特征值得单拎出来，为此 React Mug 提供了状态切片。
 
 例如，对于下面的计数器状态：
 
@@ -121,7 +121,7 @@ export const queryValue = async () => {
 };
 ```
 
-这样代码结构清晰，并且方便随时复用：
+这样代码结构更加清晰，并且方便复用：
 
 ```ts
 // BriefingMug.ts
@@ -163,9 +163,9 @@ export const queryText = async () => {
 
 让状态有序地拆分开来。
 
-## <span id="5b70f21"></span>异步操作
+## <span id="5b70f21"></span>异步通用操作
 
-此外，以普通的异步函数结合 `x`，即可定义通用的异步操作：
+此外，以普通的异步函数，借助 `x` 把兼容的 Mug 定义为首参，随后将 Mug 传入通用操作调用，即可定义异步通用操作：
 
 ```ts
 // QueryableMug.ts
@@ -177,7 +177,12 @@ const { r, w, x } = onto<QueryableState>();
 ...
 
 export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) => {
+  if (isQuerying(mug)) {
+    return;
+  }
+
   startQuerying(mug);
+  let error: Error;
   for (let i = 0; i < times; i++) {
     try {
       await act();
@@ -185,13 +190,16 @@ export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) 
     } catch (e) {
       const noMore = i === times - 1;
       if (noMore) {
-        throw e;
+        error = e;
       }
     }
   }
   endQuerying(mug);
-});
 
+  if (error) {
+    throw error;
+  }
+});
 ```
 
 ```ts
@@ -211,9 +219,62 @@ export const queryValueFastWithRetry = async () => {
 };
 ```
 
-## <span id="a8658c7"></span>操作测试
+## <span id="3139a8c"></span>通用操作复用
 
-以及，以测试纯函数的方式，即可测试通用操作：
+把状态一并传入通用操作，即可调用其纯函数形式，完成在操作内复用：
+
+```ts
+// QueryableMug.ts
+
+...
+
+export const toggleQueryingElaborately = w((state) =>
+  isQuerying(state) ? endQuerying(state) : startQuerying(state),
+);
+```
+
+## <span id="78208bb"></span>默认通用操作
+
+无参调用 `r`、`w`，可以得到 “读取全量状态”、“合并写入状态” 的通用操作：
+
+```ts
+// QueryableMug.ts
+
+...
+
+export const get = r();
+
+export const set = w();
+
+export const retryAlternatively = x(async (mug, act: () => Promise<void>, times: number = 3) => {
+  if (get(mug).querying) {
+    return;
+  }
+
+  set(mug, { querying: true });
+  let error: Error;
+  for (let i = 0; i < times; i++) {
+    try {
+      await act();
+      break;
+    } catch (e) {
+      const noMore = i === times - 1;
+      if (noMore) {
+        error = e;
+      }
+    }
+  }
+  set(mug, { querying: false });
+
+  if (error) {
+    throw error;
+  }
+});
+```
+
+## <span id="a8658c7"></span>通用操作测试
+
+以测试纯函数的方式，即可测试通用操作：
 
 ```ts
 // QueryableMug.test.ts
@@ -222,6 +283,37 @@ import { startQuerying } from './QueryableMug';
 describe('startQuerying', () => {
   test('sets querying to true', () => {
     expect(startQuerying({ querying: false })).toStrictEqual({ querying: true });
+  });
+});
+```
+
+## <span id="a8658c7"></span>异步通用操作测试
+
+以及，以 Mug 为支点，即可测试异步通用操作：
+
+```ts
+// QueryableMug.test.ts
+import { getIt, Mug, resetIt, setIt } from 'react-mug';
+
+import { QueryableState, retry } from './QueryableMug';
+
+describe('retry', () => {
+  const mug: Mug<QueryableState> = {
+    [construction]: {
+      querying: false,
+    },
+  };
+
+  afterEach(() => resetIt(mug));
+
+  test('act not called and state not changed if querying is true', async () => {
+    const act = jest.fn();
+    setIt(mug, { querying: true });
+
+    await retry(act);
+
+    expect(act).not.toHaveBeenCalled();
+    expect(getIt(mug)).toStrictEqual({ querying: true });
   });
 });
 ```

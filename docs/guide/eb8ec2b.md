@@ -157,7 +157,7 @@ export const set = w();
 
 export const queryText = async () => {
   startQuerying();
-  const text = RestfulApi.briefing.text.get();
+  const text = await RestfulApi.briefing.text.get();
   set({ text });
   endQuerying();
 };
@@ -202,6 +202,8 @@ export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) 
     throw error;
   }
 });
+
+...
 ```
 
 ```ts
@@ -233,6 +235,8 @@ Passing states into general ops all at once activates functional mode, which ena
 export const toggleQueryingElaborately = w((state) =>
   isQuerying(state) ? endQuerying(state) : startQuerying(state),
 );
+
+...
 ```
 
 ## <span id="f8f326d"></span>Default General Ops
@@ -272,6 +276,8 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
     throw error;
   }
 });
+
+...
 ```
 
 ## <span id="0535cd6"></span>General Op Testing
@@ -297,7 +303,9 @@ Also, mugs as fulcrums boost testing async general ops:
 // QueryableMug.test.ts
 import { getIt, Mug, resetIt, setIt } from 'react-mug';
 
-import { QueryableState, retry } from './QueryableMug';
+import { ..., QueryableState, retry } from './QueryableMug';
+
+...
 
 describe('retry', () => {
   const mug: Mug<QueryableState> = {
@@ -312,7 +320,7 @@ describe('retry', () => {
     const act = jest.fn();
     setIt(mug, { querying: true });
 
-    await retry(act);
+    await retry(mug, act);
 
     expect(act).not.toHaveBeenCalled();
     expect(getIt(mug)).toStrictEqual({ querying: true });

@@ -164,9 +164,10 @@ export function upon(mugLike: any): any {
   function r(read: (mugLike: any, ...restArgs: any) => any = getIt) {
     const readProc = procR(read);
     const readFn = readProc[_readFn];
+    const thresholdLen = Math.max(1, readFn.length);
 
     const readSpecialOp = (...args: [any, ...any]) => {
-      if (args.length < readFn.length) {
+      if (args.length < thresholdLen) {
         return readProc(mugLike, ...args);
       } else {
         return readFn(...args);
@@ -182,9 +183,10 @@ export function upon(mugLike: any): any {
   function w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
     const writeProc = procW(write);
     const writeFn = writeProc[_writeFn];
+    const thresholdLen = Math.max(1, writeFn.length);
 
     const writeSpecialOp = (...args: [any, ...any]) => {
-      if (args.length < writeFn.length) {
+      if (args.length < thresholdLen) {
         writeProc(mugLike, ...args);
       } else {
         return writeFn(...args);

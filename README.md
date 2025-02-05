@@ -42,7 +42,7 @@ const { r, w } = upon<number>({
 
 export const get = r();
 
-export const increase = w((n, delta: number) => n + delta);
+export const increase = w((count, delta: number) => count + delta);
 ```
 
 Use them straight:

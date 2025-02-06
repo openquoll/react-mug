@@ -225,7 +225,7 @@ export const queryValueFastWithRetry = async () => {
 
 ## <span id="1c5618e"></span>General Op Reuse
 
-Passing states into general ops all at once activates functional mode, which enables in-op reuse:
+Passing states into general ops all at once activates functional mode for in-op reuse:
 
 ```ts
 // QueryableMug.ts

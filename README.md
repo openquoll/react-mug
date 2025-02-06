@@ -16,7 +16,7 @@ Possibly the optimal way to functionally manage states.
 ✦ Zero-step integration with React.<br/>
 ✦ Full leverage on ES Modules for code organization.<br/>
 ✦ State composition.<br/>
-✦ State slicing.<br/>
+✦ Trait segregation.<br/>
 ✦ Async operations.<br/>
 ✦ Functionally test state operations.<br/>
 ✦ Easily test actual state values.</br>
@@ -74,7 +74,7 @@ Enjoy the smoothness.
 
 [Manage One State](./docs/guide/57934f5.md).<br/>
 [Compose Multiple States](./docs/guide/7f95611.md).<br/>
-[Slice a Big State](./docs/guide/eb8ec2b.md).
+[Segregate General Traits](./docs/guide/eb8ec2b.md).
 
 ## <span id="bf85749"></span>APIs
 

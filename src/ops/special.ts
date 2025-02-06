@@ -125,23 +125,23 @@ export type W<TState> = {
   ): WriteSpecialOp<TWriteFn, TState>;
 };
 
-export type SpecialSliceItemOnExec<TItem extends AnyFunction> = (
+export type SpecialTraitItemOnExec<TItem extends AnyFunction> = (
   ...args: Post0Params<TItem>
 ) => ReturnType<TItem>;
 
-export type SpecialSliceItem<TItem, TState> =
+export type SpecialTraitItem<TItem, TState> =
   TItem extends Generalness<any>
     ? TItem extends AnyReadGeneralOp
       ? ReadSpecialOp<TItem[typeof _readProc], TState>
       : TItem extends AnyWriteGeneralOp
         ? WriteSpecialOp<TItem[typeof _writeProc], TState>
         : TItem extends AnyFunction
-          ? SpecialSliceItemOnExec<TItem>
+          ? SpecialTraitItemOnExec<TItem>
           : TItem
     : TItem;
 
-export type SpecialSlice<TGeneralModule extends AnyObjectLike, TState> = {
-  [TK in keyof TGeneralModule]: SpecialSliceItem<TGeneralModule[TK], TState>;
+export type SpecialTrait<TGeneralModule extends AnyObjectLike, TState> = {
+  [TK in keyof TGeneralModule]: SpecialTraitItem<TGeneralModule[TK], TState>;
 };
 
 export type GMItemConstraint<TItem, TState> =
@@ -153,7 +153,7 @@ export type GMItemConstraint<TItem, TState> =
 
 export type S<TState> = <TGM extends { [TK in keyof TGM]: GMItemConstraint<TGM[TK], TState> }>(
   GeneralModule: TGM,
-) => SpecialSlice<TGM, TState>;
+) => SpecialTrait<TGM, TState>;
 
 export type SpecialOpToolbeltFormat<TR, TW, TS> = [r: TR, w: TW, s: TS] & { r: TR; w: TW; s: TS };
 
@@ -200,28 +200,28 @@ export function upon(mugLike: any): any {
   }
 
   function s(generalModule: any) {
-    return ownKeysOfObjectLike(generalModule).reduce((specialSlice, k) => {
+    return ownKeysOfObjectLike(generalModule).reduce((specialTrait, k) => {
       const item = generalModule[k];
 
       if (hasGeneralness(item)) {
         if (isReadGeneralOp(item)) {
-          specialSlice[k] = r(item[_readProc]);
-          return specialSlice;
+          specialTrait[k] = r(item[_readProc]);
+          return specialTrait;
         }
 
         if (isWriteGeneralOp(item)) {
-          specialSlice[k] = w(item[_writeProc]);
-          return specialSlice;
+          specialTrait[k] = w(item[_writeProc]);
+          return specialTrait;
         }
 
         if (isFunction(item)) {
-          specialSlice[k] = (...args: any) => item(mugLike, ...args);
-          return specialSlice;
+          specialTrait[k] = (...args: any) => item(mugLike, ...args);
+          return specialTrait;
         }
       }
 
-      specialSlice[k] = item;
-      return specialSlice;
+      specialTrait[k] = item;
+      return specialTrait;
     }, emptyCloneOfPlainObject(generalModule));
   }
 

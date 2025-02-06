@@ -1,4 +1,4 @@
-# Guide / Slice a Big State
+# Guide / Segregate General Traits
 
 [Key Content](#256ed49) &nbsp;•&nbsp; [Async General Ops](#18fab2d) &nbsp;•&nbsp; [General Op Reuse](#1c5618e) &nbsp;•&nbsp; [Default General Ops](#f8f326d) &nbsp;•&nbsp; [General Op Testing](#0535cd6) &nbsp;•&nbsp; [Async General Op Testing](#ae966ca).
 
@@ -8,7 +8,7 @@ English &nbsp;•&nbsp; [中文](./eb8ec2b.zh-Hans.md).
 
 ## <span id="256ed49"></span>Key Content
 
-The bigger a state, the more traits there are. Some traits may reappear in different states. General traits are worth separating. Thus, React Mug provides state slicing.
+The bigger a state, the more traits there are. Some traits can reappear in different states. General traits are worth setting apart. Thus, React Mug provides trait segregation.
 
 For example, regarding a counter state as follows:
 
@@ -55,7 +55,7 @@ export const queryValue = async () => {
 };
 ```
 
-By slicing, the "queryable" trait gets extracted into a general state:
+By segregation, the "queryable" trait gets extracted as a general state:
 
 ```ts
 // QueryableMug.ts
@@ -76,7 +76,7 @@ export const endQuerying = w((state) => ({ ...state, querying: false }));
 export * as QueryableModule from './QueryableMug';
 ```
 
-Then, it gets plugged back in the counter state:
+It, then, gets plugged back into the counter state:
 
 ```ts
 // CounterMug.ts

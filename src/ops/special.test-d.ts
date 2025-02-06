@@ -14,7 +14,7 @@ import {
 } from '../mechanism';
 import { Generalness, Mug, PossibleMugLike, ReadSpecialOpMeta, WriteSpecialOpMeta } from '../mug';
 import { onto, ReadGeneralOp, WriteGeneralOp } from './general';
-import { ReadSpecialOp, SpecialSlice, upon, WriteSpecialOp } from './special';
+import { ReadSpecialOp, SpecialTrait, upon, WriteSpecialOp } from './special';
 
 interface ObjectState {
   s: string;
@@ -597,8 +597,8 @@ test('upon#w, setIt, assignPatch', () => {
   write8db(fake<AState>(), patch422, fake<any>());
 });
 
-test('SpecialSlice', () => {
-  type SSb54 = SpecialSlice<
+test('SpecialTrait', () => {
+  type SSb54 = SpecialTrait<
     {
       read316: ReadGeneralOp<(state: ObjectState) => string, ObjectState>;
       read03d: ReadGeneralOp<<TState>(state: TState) => TState, ObjectState>;

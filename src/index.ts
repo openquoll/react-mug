@@ -37,7 +37,7 @@ export {
   ReadGeneralOp,
   ReadSpecialOp,
   SpecialOpToolbelt,
-  SpecialSlice,
+  SpecialTrait,
   WriteGeneralOp,
   WriteSpecialOp,
   onto,

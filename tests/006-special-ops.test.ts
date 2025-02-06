@@ -149,7 +149,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     customNullProtoObjectField,
   };
 
-  const specialSlice = s(GeneralModule);
+  const specialTrait = s(GeneralModule);
 
   describe('1696308, checks the special-op toolbelt_s fields', () => {
     test('[verify] the "r" field equals the index-0 item in ref', () => {
@@ -636,12 +636,12 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('dddb2f7, reads by the default read special-slice op in imperative mode', () => {
+  describe('dddb2f7, reads by the default read special-trait op in imperative mode', () => {
     let readOpReturn: AState;
     let getItParamMug: AMug, getItReturn: AState;
 
     test('[action]', () => {
-      readOpReturn = specialSlice.defaultReadOp();
+      readOpReturn = specialTrait.defaultReadOp();
       getItParamMug = jest.mocked(getIt).mock.calls[0][0] as AMug;
       getItReturn = jest.mocked(getIt).mock.results[0].value;
     });
@@ -661,7 +661,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('9418420, reads by the default read special-slice op in functional mode', () => {
+  describe('9418420, reads by the default read special-trait op in functional mode', () => {
     const readOpParamState: AState = {
       s: 'asd',
       o: {
@@ -679,7 +679,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     let passThroughReturn: AState;
 
     test('[action]', () => {
-      readOpReturn = specialSlice.defaultReadOp(readOpParamState);
+      readOpReturn = specialTrait.defaultReadOp(readOpParamState);
       passThroughParamState = jest.mocked(passThrough).mock.calls[0][0] as AState;
       passThroughReturn = jest.mocked(passThrough).mock.results[0].value as AState;
     });
@@ -703,7 +703,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('021ef7c, reads by the custom read special-slice op in imperative mode', () => {
+  describe('021ef7c, reads by the custom read special-trait op in imperative mode', () => {
     const readOpParamExtra: Pick<ObjectState, 'o'> = { o: { s: '168' } };
     let readOpReturn: Pick<ObjectState, 'o'>;
     let gotAState: AState;
@@ -712,7 +712,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
 
     test('[action]', () => {
       gotAState = getIt(aMug);
-      readOpReturn = specialSlice.customReadOp(readOpParamExtra);
+      readOpReturn = specialTrait.customReadOp(readOpParamExtra);
       readFnParamState = customReadFn.mock.calls[0][0];
       readFnParamExtra = customReadFn.mock.calls[0][1];
       readFnReturn = customReadFn.mock.results[0].value;
@@ -738,7 +738,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('8f5a2c1, reads by the custom read special-slice op in functional mode', () => {
+  describe('8f5a2c1, reads by the custom read special-trait op in functional mode', () => {
     const readOpParamState: AState = {
       s: 'sdf',
       o: {
@@ -757,7 +757,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     let readFnReturn: Pick<ObjectState, 'o'>;
 
     test('[action]', () => {
-      readOpReturn = specialSlice.customReadOp(readOpParamState, readOpParamExtra);
+      readOpReturn = specialTrait.customReadOp(readOpParamState, readOpParamExtra);
       readFnParamState = customReadFn.mock.calls[0][0];
       readFnParamExtra = customReadFn.mock.calls[0][1];
       readFnReturn = customReadFn.mock.results[0].value;
@@ -783,12 +783,12 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('d31947a, writes by the default write special-slice op in imperative mode', () => {
+  describe('d31947a, writes by the default write special-trait op in imperative mode', () => {
     const writeOpParamPatch: PossiblePatch<AMug> = { s: '09a' };
     let setItParamMug: AMug, setItParamPatch: PossiblePatch<AMug>;
 
     test('[action]', () => {
-      specialSlice.defaultWriteOp(writeOpParamPatch);
+      specialTrait.defaultWriteOp(writeOpParamPatch);
       setItParamMug = jest.mocked(setIt).mock.calls[0][0] as AMug;
       setItParamPatch = jest.mocked(setIt).mock.calls[0][1] as PossiblePatch<AState>;
     });
@@ -808,7 +808,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('5f63c1e, writes by the default write special-slice op in functional mode', () => {
+  describe('5f63c1e, writes by the default write special-trait op in functional mode', () => {
     const writeOpParamState: AState = {
       s: 'sdf',
       o: {
@@ -830,7 +830,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     test('[action]', () => {
       gotAStateBefore = getIt(aMug);
 
-      writeOpReturn = specialSlice.defaultWriteOp(writeOpParamState, writeOpParamPatch);
+      writeOpReturn = specialTrait.defaultWriteOp(writeOpParamState, writeOpParamPatch);
       assignPatchParamState = jest.mocked(assignPatch).mock.calls[0][0] as AState;
       assignPatchParamPatch = jest.mocked(assignPatch).mock.calls[0][1] as PossiblePatch<AState>;
       assignPatchReturn = jest.mocked(assignPatch).mock.results[0].value;
@@ -867,7 +867,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('74c677d, writes by the custom write special-slice op in imperative mode', () => {
+  describe('74c677d, writes by the custom write special-trait op in imperative mode', () => {
     const writeOpParamS = '9f7';
     let gotAStateBefore: AState, gotAStateAfter: AState;
     let writeFnParamState: AState, writeFnParamS: string, writeFnReturn: AState;
@@ -875,7 +875,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     test('[action]', () => {
       gotAStateBefore = getIt(aMug);
 
-      specialSlice.customWriteOp(writeOpParamS);
+      specialTrait.customWriteOp(writeOpParamS);
       writeFnParamState = customWriteFn.mock.calls[0][0];
       writeFnParamS = customWriteFn.mock.calls[0][1];
       writeFnReturn = customWriteFn.mock.results[0].value;
@@ -907,7 +907,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('f3b06d1, writes by the custom write special-slice op in functional mode', () => {
+  describe('f3b06d1, writes by the custom write special-trait op in functional mode', () => {
     const writeOpParamState: AState = {
       s: '210',
       o: {
@@ -928,7 +928,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     test('[action]', () => {
       gotAStateBefore = getIt(aMug);
 
-      writeOpReturn = specialSlice.customWriteOp(writeOpParamState, writeOpParamS);
+      writeOpReturn = specialTrait.customWriteOp(writeOpParamState, writeOpParamS);
       writeFnParamState = customWriteFn.mock.calls[0][0];
       writeFnParamS = customWriteFn.mock.calls[0][1];
       writeFnReturn = customWriteFn.mock.results[0].value;
@@ -960,15 +960,15 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe('9471df9, executes by the custom special-slice exec', () => {
-    const specialSliceExecParamExtra: Pick<ObjectState, 'o'> = { o: { s: '05a' } };
-    let specialSliceExecReturn: Pick<ObjectState, 'o'>;
+  describe('9471df9, executes by the custom special-trait exec', () => {
+    const specialTraitExecParamExtra: Pick<ObjectState, 'o'> = { o: { s: '05a' } };
+    let specialTraitExecReturn: Pick<ObjectState, 'o'>;
 
     let execParamMug: PossibleMugLike<AState>, execParamExtra: Pick<ObjectState, 'o'>;
     let execReturn: Pick<ObjectState, 'o'>;
 
     test('[action]', () => {
-      specialSliceExecReturn = specialSlice.customExec(specialSliceExecParamExtra);
+      specialTraitExecReturn = specialTrait.customExec(specialTraitExecParamExtra);
 
       execParamMug = customExec.mock.calls[0][0];
       execParamExtra = customExec.mock.calls[0][1];
@@ -984,21 +984,21 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
       expect(execParamMug).toStrictEqual(aMug);
     });
 
-    test('[verify] the original exec param extra equals the special-slice exec param extra in ref and value', () => {
-      expect(execParamExtra).toBe(specialSliceExecParamExtra);
-      expect(execParamExtra).toStrictEqual(specialSliceExecParamExtra);
+    test('[verify] the original exec param extra equals the special-trait exec param extra in ref and value', () => {
+      expect(execParamExtra).toBe(specialTraitExecParamExtra);
+      expect(execParamExtra).toStrictEqual(specialTraitExecParamExtra);
     });
 
-    test('[verify] the special-slice exec return equals the original exec return in ref and value', () => {
-      expect(specialSliceExecReturn).toBe(execReturn);
-      expect(specialSliceExecReturn).toStrictEqual(execReturn);
+    test('[verify] the special-trait exec return equals the original exec return in ref and value', () => {
+      expect(specialTraitExecReturn).toBe(execReturn);
+      expect(specialTraitExecReturn).toStrictEqual(execReturn);
     });
   });
 
-  describe('c22a20d, checks the custom null-proto object special-slice field', () => {
-    test('[action, verify] the special-slice field equals the original field in ref and value', () => {
-      expect(specialSlice.customNullProtoObjectField).toBe(customNullProtoObjectField);
-      expect(specialSlice.customNullProtoObjectField).toStrictEqual(customNullProtoObjectField);
+  describe('c22a20d, checks the custom null-proto object special-trait field', () => {
+    test('[action, verify] the special-trait field equals the original field in ref and value', () => {
+      expect(specialTrait.customNullProtoObjectField).toBe(customNullProtoObjectField);
+      expect(specialTrait.customNullProtoObjectField).toStrictEqual(customNullProtoObjectField);
     });
   });
 });

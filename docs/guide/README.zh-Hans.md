@@ -4,7 +4,7 @@
 
 [管理单个状态](./57934f5.zh-Hans.md)，<br/>
 [组合多个状态](./7f95611.zh-Hans.md)，<br/>
-[分隔通用特性](./eb8ec2b.zh-Hans.md)。
+[分隔通用特质](./eb8ec2b.zh-Hans.md)。
 
 ---
 

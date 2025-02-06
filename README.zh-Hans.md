@@ -16,7 +16,7 @@
 ✦ 零步骤与 React 集成，<br/>
 ✦ 善用 ES Modules 标准组织代码，<br/>
 ✦ 状态组合，<br/>
-✦ 特性分隔，<br/>
+✦ 特质分隔，<br/>
 ✦ 异步操作，<br/>
 ✦ 函数式地测试状态操作，<br/>
 ✦ 轻松测试状态的实际值，<br/>
@@ -74,7 +74,7 @@ export function CountControl() {
 
 [管理单个状态](./docs/guide/57934f5.zh-Hans.md)，<br/>
 [组合多个状态](./docs/guide/7f95611.zh-Hans.md)，<br/>
-[分隔通用特性](./docs/guide/eb8ec2b.zh-Hans.md)。
+[分隔通用特质](./docs/guide/eb8ec2b.zh-Hans.md)。
 
 ## <span id="629f340"></span>APIs
 

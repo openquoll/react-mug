@@ -15,10 +15,10 @@ Possibly the optimal way to functionally manage states.
 ✦ Rapid creation of directly callable state operations from pure functions.<br/>
 ✦ Zero-step integration with React.<br/>
 ✦ Full leverage on ES Modules for code organization.<br/>
-✦ Funtionally reusing state operations.<br/>
 ✦ State composition.<br/>
 ✦ Trait segregation.<br/>
 ✦ Async operations.<br/>
+✦ Functionally reusing state operations.<br/>
 ✦ Functionally testing state operations.<br/>
 ✦ Easily testing actual state values.</br>
 ✦ Strong support for types.

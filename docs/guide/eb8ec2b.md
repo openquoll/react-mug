@@ -73,7 +73,7 @@ export const startQuerying = w((state) => ({ ...state, querying: true }));
 
 export const endQuerying = w((state) => ({ ...state, querying: false }));
 
-export * as QueryableModule from './QueryableMug';
+export * as QueryableOps from './QueryableMug';
 ```
 
 It, then, gets plugged back into the counter state:
@@ -82,7 +82,7 @@ It, then, gets plugged back into the counter state:
 // CounterMug.ts
 import { construction, upon } from 'react-mug';
 
-import { QueryableModule, QueryableState } from './QueryableMug';
+import { QueryableOps, QueryableState } from './QueryableMug';
 
 // Plug in queryable state
 export interface CounterState extends QueryableState {
@@ -99,7 +99,7 @@ export const counterMug = {
 const { r, w, s } = upon<CounterState>(counterMug);
 
 // Plug in queryable state
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableModule);
+export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
 
 export const getValue = r((state) => {
   // Call queryable ops
@@ -129,7 +129,7 @@ As such, a clearer code structure is achieved, and reuse becomes convenient:
 // BriefingMug.ts
 import { construction, upon } from 'react-mug';
 
-import { QueryableModule, QueryableState } from './QueryableMug';
+import { QueryableOps, QueryableState } from './QueryableMug';
 
 export interface BriefingState extends QueryableState {
   text: string;
@@ -144,7 +144,7 @@ export const briefingMug = {
 
 const { r, w, s } = upon<BriefingState>(briefingMug);
 
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableModule);
+export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
 
 export const getText = r((state) => {
   if (isQuerying(state)) {
@@ -211,7 +211,7 @@ export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) 
 
 ...
 
-export const { ..., retry } = s(QueryableModule);
+export const { ..., retry } = s(QueryableOps);
 
 ...
 

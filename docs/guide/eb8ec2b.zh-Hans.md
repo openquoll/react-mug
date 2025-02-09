@@ -73,7 +73,7 @@ export const startQuerying = w((state) => ({ ...state, querying: true }));
 
 export const endQuerying = w((state) => ({ ...state, querying: false }));
 
-export * as QueryableModule from './QueryableMug';
+export * as QueryableOps from './QueryableMug';
 ```
 
 然后接入回计数器状态：
@@ -82,7 +82,7 @@ export * as QueryableModule from './QueryableMug';
 // CounterMug.ts
 import { construction, upon } from 'react-mug';
 
-import { QueryableModule, QueryableState } from './QueryableMug';
+import { QueryableOps, QueryableState } from './QueryableMug';
 
 // 接入可查询状态
 export interface CounterState extends QueryableState {
@@ -99,7 +99,7 @@ export const counterMug = {
 const { r, w, s } = upon<CounterState>(counterMug);
 
 // 接入可查询状态
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableModule);
+export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
 
 export const getValue = r((state) => {
   // 调用可查询操作
@@ -129,7 +129,7 @@ export const queryValue = async () => {
 // BriefingMug.ts
 import { construction, upon } from 'react-mug';
 
-import { QueryableModule, QueryableState } from './QueryableMug';
+import { QueryableOps, QueryableState } from './QueryableMug';
 
 export interface BriefingState extends QueryableState {
   text: string;
@@ -144,7 +144,7 @@ export const briefingMug = {
 
 const { r, w, s } = upon<BriefingState>(briefingMug);
 
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableModule);
+export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
 
 export const getText = r((state) => {
   if (isQuerying(state)) {
@@ -211,7 +211,7 @@ export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) 
 
 ...
 
-export const { ..., retry } = s(QueryableModule);
+export const { ..., retry } = s(QueryableOps);
 
 ...
 

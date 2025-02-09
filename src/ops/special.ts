@@ -203,17 +203,17 @@ export function upon(mugLike: any): any {
     return ownKeysOfObjectLike(generalModule).reduce((specialTrait, k) => {
       const item = generalModule[k];
 
+      if (isReadGeneralOp(item)) {
+        specialTrait[k] = r(item[_readProc]);
+        return specialTrait;
+      }
+
+      if (isWriteGeneralOp(item)) {
+        specialTrait[k] = w(item[_writeProc]);
+        return specialTrait;
+      }
+
       if (hasGeneralness(item)) {
-        if (isReadGeneralOp(item)) {
-          specialTrait[k] = r(item[_readProc]);
-          return specialTrait;
-        }
-
-        if (isWriteGeneralOp(item)) {
-          specialTrait[k] = w(item[_writeProc]);
-          return specialTrait;
-        }
-
         if (isFunction(item)) {
           specialTrait[k] = (...args: any) => item(mugLike, ...args);
           return specialTrait;

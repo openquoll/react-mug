@@ -24,7 +24,7 @@ import {
   _true,
   _undefined,
 } from './shortcuts';
-import { AnyFunction, AnyObjectLike, Conserve, EmptyItem, NumAsStr } from './type-utils';
+import { AnyFunction, AnyObject, Conserve, EmptyItem, NumAsStr } from './type-utils';
 
 /**
  * A mug is a holder of states. Imagine mug cups containing states as liquid
@@ -70,10 +70,10 @@ export type CleanMug<TConstruction> = { [construction]: TConstruction };
 
 export type AnyMug = CleanMug<any>;
 
-export type WithAttachments<TMug extends AnyMug, TAttachments extends AnyObjectLike> = TMug &
+export type WithAttachments<TMug extends AnyMug, TAttachments extends AnyObject> = TMug &
   TAttachments;
 
-export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObjectLike> =
+export type PossibleMugLikeOnObjectLike<TMugLike extends AnyObject> =
   | CleanMug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
   | { [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> };
 
@@ -89,11 +89,11 @@ export type PossibleMugLike<TMugLike> = TMugLike extends AnyFunction
     ? AnyMug extends TMugLike
       ? PossibleMugLike<TConstruction>
       : TMugLike | PossibleMugLike<TConstruction>
-    : TMugLike extends AnyObjectLike
+    : TMugLike extends AnyObject
       ? PossibleMugLikeOnObjectLike<TMugLike>
       : PossibleMugLikeOnPrimitive<TMugLike>;
 
-export type PossibleMugOnObjectLike<TMugLike extends AnyObjectLike> = CleanMug<{
+export type PossibleMugOnObjectLike<TMugLike extends AnyObject> = CleanMug<{
   [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]>;
 }>;
 
@@ -108,11 +108,11 @@ export type PossibleMug<TMugLike> = TMugLike extends AnyFunction
     ? AnyMug extends TMugLike
       ? PossibleMug<TConstruction>
       : TMugLike | PossibleMug<TConstruction>
-    : TMugLike extends AnyObjectLike
+    : TMugLike extends AnyObject
       ? PossibleMugOnObjectLike<TMugLike>
       : PossibleMugOnPrimitive<TMugLike>;
 
-export type NonEmptyPossibleMuggyOverrideOnObjectLike<TMugLike extends AnyObjectLike> =
+export type NonEmptyPossibleMuggyOverrideOnObjectLike<TMugLike extends AnyObject> =
   | CleanMug<{ [TK in keyof TMugLike]: PossibleMugLike<TMugLike[TK]> }>
   | { [TK in keyof TMugLike]?: NonEmptyPossibleMuggyOverride<TMugLike[TK]> };
 
@@ -122,15 +122,15 @@ export type NonEmptyPossibleMuggyOverride<TMugLike> = TMugLike extends AnyFuncti
   ? never
   : TMugLike extends AnyMug
     ? never
-    : TMugLike extends AnyObjectLike
+    : TMugLike extends AnyObject
       ? NonEmptyPossibleMuggyOverrideOnObjectLike<TMugLike>
       : NonEmptyPossibleMuggyOverrideOnPrimitive<TMugLike>;
 
 export type PossibleMuggyOverride<TMugLike> = EmptyItem | NonEmptyPossibleMuggyOverride<TMugLike>;
 
 export type MuggifyOnObjectLikeByObjectLike<
-  TMugLike extends AnyObjectLike,
-  TMuggyOverride extends AnyObjectLike,
+  TMugLike extends AnyObject,
+  TMuggyOverride extends AnyObject,
 > = {
   [TK in keyof TMugLike]: Muggify<TMugLike[TK], TMuggyOverride[TK]>;
 };
@@ -146,8 +146,8 @@ export type Muggify<
       ? TMugLike
       : TMuggyOverride extends AnyMug
         ? TMuggyOverride
-        : TMugLike extends AnyObjectLike
-          ? TMuggyOverride extends AnyObjectLike
+        : TMugLike extends AnyObject
+          ? TMuggyOverride extends AnyObject
             ? MuggifyOnObjectLikeByObjectLike<TMugLike, TMuggyOverride>
             : TMugLike
           : TMugLike;
@@ -168,7 +168,7 @@ export type MugLike<
   TMuggyOverride extends PossibleMuggyOverride<TMugLike> = EmptyItem,
 > = Muggify<TMugLike, TMuggyOverride>;
 
-export type StateOnObjectLike<TMugLike extends AnyObjectLike> = Conserve<
+export type StateOnObjectLike<TMugLike extends AnyObject> = Conserve<
   TMugLike,
   { [TK in keyof TMugLike]: Conserve<TMugLike[TK], State<TMugLike[TK]>> }
 >;
@@ -180,7 +180,7 @@ export type State<TMugLike> = TMugLike extends AnyFunction
   ? TMugLike
   : TMugLike extends CleanMug<infer TConstruction>
     ? Conserve<TConstruction, State<TConstruction>>
-    : TMugLike extends AnyObjectLike
+    : TMugLike extends AnyObject
       ? StateOnObjectLike<TMugLike>
       : TMugLike;
 
@@ -196,13 +196,12 @@ export class MugError extends _Error {
   }
 }
 
-export const attach = <TMug extends AnyMug, TAttachments extends AnyObjectLike>(
+export const attach = <TMug extends AnyMug, TAttachments extends AnyObject>(
   mug: TMug,
   attachments: TAttachments,
 ): WithAttachments<TMug, TAttachments> => _assign(mug, attachments);
 
-export const isObjectLike = (o: any): boolean =>
-  isFunction(o) || (typeof o === _object && o !== null);
+export const isObjectLike = (o: any): boolean => typeof o === _object && o !== null;
 
 export const isPlainObject = (o: any): boolean =>
   isObjectLike(o) && [_Object, _undefined][_includes](o[_constructor]);
@@ -394,7 +393,7 @@ export const shallowCloneOfPlainObject = (o: any): any =>
     return r;
   }, emptyCloneOfPlainObject(o));
 
-export const ownKeysOfObjectLike = <T extends AnyObjectLike>(o: T): NumAsStr<keyof T>[] =>
+export const ownKeysOfObjectLike = <T extends AnyObject>(o: T): NumAsStr<keyof T>[] =>
   isObjectLike(o)
     ? ([..._getOwnPropertyNames(o), ..._getOwnPropertySymbols(o)] as NumAsStr<keyof T>[])
     : [];
@@ -520,10 +519,10 @@ export type NotOp = {
 };
 
 export const hasSpecialness = (o: any): boolean =>
-  isObjectLike(o) && _ObjectPrototype[_hasOwnProperty].call(o, _special);
+  (isObjectLike(o) || isFunction(o)) && _ObjectPrototype[_hasOwnProperty].call(o, _special);
 
 export const hasGeneralness = (o: any): boolean =>
-  isObjectLike(o) && _ObjectPrototype[_hasOwnProperty].call(o, _general);
+  (isObjectLike(o) || isFunction(o)) && _ObjectPrototype[_hasOwnProperty].call(o, _general);
 
 export const isReadSpecialOp = (f: any): f is AnyReadSpecialOp =>
   isFunction(f) &&

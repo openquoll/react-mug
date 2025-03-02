@@ -35,7 +35,7 @@ import {
   WriteProcMeta,
   WriteSpecialOpMeta,
 } from '../mug';
-import { AnyFunction, AnyObjectLike, Post0Params } from '../type-utils';
+import { AnyFunction, AnyObject, Post0Params } from '../type-utils';
 
 export type ReadSpecialOpOnEmptyParamReadProc<
   TReadProc extends AnyReadProc,
@@ -140,7 +140,7 @@ export type SpecialTraitItem<TItem, TState> =
           : TItem
     : TItem;
 
-export type SpecialTrait<TGeneralModule extends AnyObjectLike, TState> = {
+export type SpecialTrait<TGeneralModule extends AnyObject, TState> = {
   [TK in keyof TGeneralModule]: SpecialTraitItem<TGeneralModule[TK], TState>;
 };
 

@@ -18,7 +18,7 @@ import {
 } from '../shortcuts';
 import {
   AnyFunction,
-  AnyObjectLike,
+  AnyObject,
   AnyReadonlyArray,
   AnyReadonlyTuple,
   EmptyItem,
@@ -51,7 +51,7 @@ export type PossiblePatchOnNonNullableOnReadonlyArray<TMugLike extends AnyReadon
   [TK in keyof TMugLike]: State<TMugLike[TK]>;
 };
 
-export type PossiblePatchOnNonNullableOnObjectLike<TMugLike extends AnyObjectLike> = {
+export type PossiblePatchOnNonNullableOnObjectLike<TMugLike extends AnyObject> = {
   [TK in keyof TMugLike]?: PossiblePatch<TMugLike[TK]>;
 };
 
@@ -63,7 +63,7 @@ export type PossiblePatchOnNonNullable<TMugLike> = TMugLike extends AnyFunction
       ? PossiblePatchOnNonNullableOnReadonlyTuple<TMugLike>
       : TMugLike extends AnyReadonlyArray
         ? PossiblePatchOnNonNullableOnReadonlyArray<TMugLike>
-        : TMugLike extends AnyObjectLike
+        : TMugLike extends AnyObject
           ? PossiblePatchOnNonNullableOnObjectLike<TMugLike>
           : TMugLike;
 

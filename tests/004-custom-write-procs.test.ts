@@ -322,12 +322,17 @@ describe('900ce35, writes by an object state custom write proc', () => {
         fnReturn = customWriteFn.mock.results[0].value;
       });
 
-      test('[verify] the proc return and its fields equal the fn return and its fields in ref and value', () => {
-        expect(procReturn).toBe(fnReturn);
-        ownKeysOfObjectLike(fnReturn).forEach((key) => {
-          expect(procReturn[key]).toBe(fnReturn[key]);
-        });
+      test('[verify] the proc return equals the fn return in value but not in ref', () => {
         expect(procReturn).toStrictEqual(fnReturn);
+        expect(procReturn).not.toBe(fnReturn);
+      });
+
+      test('[verify] the proc return and its fields equal the input state and its fields in ref and value', () => {
+        expect(procReturn).toBe(aState);
+        ownKeysOfObjectLike(aState).forEach((key) => {
+          expect(procReturn[key]).toBe(aState[key]);
+        });
+        expect(procReturn).toStrictEqual(aState);
       });
     });
 

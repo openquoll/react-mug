@@ -306,13 +306,13 @@ test('WriteProc, SetIt, AssignPatch', () => {
   // =-=-=
 
   expectType<
-    (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike, s: string) => TMugLike) &
-      WriteProcMeta<(state: AState, s: string) => BiggerState>
-  >(fake<WriteProc<(state: AState, s: string) => BiggerState>>());
+    (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
+      WriteProcMeta<(state: AState) => BiggerState>
+  >(fake<WriteProc<(state: AState) => BiggerState>>());
 
   // =-=-=
 
-  fake<WriteProc<(state: AState, s: string) => ObjectState>>();
+  fake<WriteProc<(state: AState) => ObjectState>>();
 
   // =-=-=
 

@@ -12,9 +12,9 @@ interface ObjectState {
   };
 }
 
-test('PossiblePatch', () => {
-  type Func = (...args: boolean[]) => boolean;
+type Func = (...args: boolean[]) => boolean;
 
+test('PossiblePatch', () => {
   interface AMugLike extends ObjectState {
     f: Func;
     no?: ObjectState;

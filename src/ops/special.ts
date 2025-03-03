@@ -35,7 +35,7 @@ import {
   WriteProcMeta,
   WriteSpecialOpMeta,
 } from '../mug';
-import { AnyFunction, AnyObject, Post0Params } from '../type-utils';
+import { AnyFunction, AnyObject, Post0Params, SimplePatch } from '../type-utils';
 
 export type ReadSpecialOpOnEmptyParamReadProc<
   TReadProc extends AnyReadProc,
@@ -120,7 +120,19 @@ export type W<TState> = {
     writeProc: TWriteProc,
   ): WriteSpecialOp<TWriteProc, TState>;
 
-  <TWriteFn extends ((state: TState, ...restArgs: any) => TState) & NotProc & NotOp>(
+  <
+    TWriteFn extends {
+      (state: TState, ...restArgs: any): SimplePatch<TState>;
+
+      // NotProc
+      [_readFn]?: never;
+      [_writeFn]?: never;
+
+      // NotOp
+      [_readProc]?: never;
+      [_writeProc]?: never;
+    },
+  >(
     writeFn: TWriteFn,
   ): WriteSpecialOp<TWriteFn, TState>;
 };

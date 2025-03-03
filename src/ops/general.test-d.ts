@@ -91,6 +91,10 @@ test('ReadGeneralOp, GetIt, PassThrough', () => {
 
   // =-=-=
 
+  fake<ReadGeneralOp<(state: BiggerState) => ObjectState, AState>>();
+
+  // =-=-=
+
   type Read0e0 = ReadGeneralOp<<TState>(state: TState) => TState, AState>;
 
   expectType<
@@ -113,6 +117,10 @@ test('ReadGeneralOp, GetIt, PassThrough', () => {
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => State<TMugLike>) &
       ReadGeneralOpMeta<<TState extends ObjectState>(state: TState) => TState, AState>
   >(fake<ReadGeneralOp<<TState extends ObjectState>(state: TState) => TState, AState>>());
+
+  // =-=-=
+
+  fake<ReadGeneralOp<<TState extends BiggerState>(state: TState) => TState, AState>>();
 
   // =-=-=
 
@@ -340,8 +348,22 @@ test('WriteGeneralOp, SetIt, AssignPatch', () => {
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
+      WriteGeneralOpMeta<(state: AState) => ObjectState, AState>
+  >(fake<WriteGeneralOp<(state: AState) => ObjectState, AState>>());
+
+  // =-=-=
+
+  expectType<
+    (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
       WriteGeneralOpMeta<(state: ObjectState) => AState, AState>
   >(fake<WriteGeneralOp<(state: ObjectState) => AState, AState>>());
+
+  // =-=-=
+
+  expectType<
+    (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
+      WriteGeneralOpMeta<(state: ObjectState) => ObjectState, AState>
+  >(fake<WriteGeneralOp<(state: ObjectState) => ObjectState, AState>>());
 
   // =-=-=
 
@@ -387,6 +409,13 @@ test('WriteGeneralOp, SetIt, AssignPatch', () => {
     (<TMugLike extends PossibleMugLike<AState>>(mugLike?: TMugLike) => TMugLike) &
       WriteGeneralOpMeta<() => BiggerState, AState>
   >(fake<WriteGeneralOp<() => BiggerState, AState>>());
+
+  // =-=-=
+
+  expectType<
+    (<TMugLike extends PossibleMugLike<AState>>(mugLike?: TMugLike) => TMugLike) &
+      WriteGeneralOpMeta<() => ObjectState, AState>
+  >(fake<WriteGeneralOp<() => ObjectState, AState>>());
 
   // =-=-=
 
@@ -464,14 +493,21 @@ test('upon#w, setIt, assignPatch', () => {
 
   // =-=-=
 
-  // @ts-expect-error
-  w((state) => fake<ObjectState>());
+  const write322 = w((state) => fake<ObjectState>());
+
+  expectType<AState>(write322(fake<AState>()));
 
   // =-=-=
 
   const write826 = w((state: ObjectState) => fake<AState>());
 
   expectType<AState>(write826(fake<AState>()));
+
+  // =-=-=
+
+  const write8fc = w((state: ObjectState) => fake<ObjectState>());
+
+  expectType<AState>(write8fc(fake<AState>()));
 
   // =-=-=
 
@@ -563,8 +599,9 @@ test('upon#w, setIt, assignPatch', () => {
 
   // =-=-=
 
-  // @ts-expect-error
-  w(() => fake<ObjectState>());
+  const write59c = w(() => fake<ObjectState>());
+
+  expectType<AState>(write59c(fake<AState>()));
 
   // =-=-=
 

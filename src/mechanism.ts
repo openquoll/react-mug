@@ -41,7 +41,7 @@ import {
   _set,
   _WeakMap,
 } from './shortcuts';
-import { AnyFunction, Param0, Post0Params, SimplePatch } from './type-utils';
+import { AnyFunction, Param0, Post0Params } from './type-utils';
 
 const errMsgOf_circular_referenced_mug_found = 'Circular-referenced mug found.';
 
@@ -359,21 +359,27 @@ export function w(write: AnyFunction = assignPatch): AnyFunction {
   const writeProc = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.
     if (isState(mugLike)) {
-      const patch = write(mugLike, ...restArgs);
-      return assignConservatively(mugLike, patch);
+      const newState = write(mugLike, ...restArgs);
+
+      // When the new state is a state, use it as it is.
+      if (isState(newState)) {
+        return newState;
+      }
+
+      return assignConservatively(mugLike, newState);
     }
 
     const rTask = new MugLikeCurrentStateReadTask();
-    const state = rTask._run(mugLike);
+    const oldState = rTask._run(mugLike);
     rTask._clear();
 
-    const patch = write(state, ...restArgs);
+    const newState = write(oldState, ...restArgs);
 
     const wTask = new MugLikeWriteTask();
-    wTask._run(mugLike, patch);
+    wTask._run(mugLike, newState);
     wTask._clear();
 
-    return assignConservatively(mugLike, patch);
+    return assignConservatively(mugLike, newState);
   };
 
   writeProc[_writeFn] = write;

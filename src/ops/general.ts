@@ -27,7 +27,7 @@ import {
   WriteGeneralOpMeta,
   WriteProcMeta,
 } from '../mug';
-import { AnyFunction, Post0Params } from '../type-utils';
+import { AnyFunction, Post0Params, SimplePatch } from '../type-utils';
 
 export type ReadGeneralOpOnEmptyParamReadProc<TReadProc extends AnyReadProc, TState> = ((
   mugLike?: PossibleMugLike<TState>,
@@ -107,7 +107,19 @@ export type W<TState> = {
     writeProc: TWriteProc,
   ): WriteGeneralOp<TWriteProc, TState>;
 
-  <TWriteFn extends ((state: TState, ...restArgs: any) => TState) & NotProc & NotOp>(
+  <
+    TWriteFn extends {
+      (state: TState, ...restArgs: any): SimplePatch<TState>;
+
+      // NotProc
+      [_readFn]?: never;
+      [_writeFn]?: never;
+
+      // NotOp
+      [_readProc]?: never;
+      [_writeProc]?: never;
+    },
+  >(
     writeFn: TWriteFn,
   ): WriteGeneralOp<TWriteFn, TState>;
 };

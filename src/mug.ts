@@ -287,7 +287,7 @@ export function assignConservatively(mugLike: any, input: any): any {
   }
 
   if (isPlainObject(mugLike) && isPlainObject(input)) {
-    const result = emptyCloneOfPlainObject(mugLike);
+    const result = emptyCloneOfPlainObject(input);
     let allFieldsFromMugLike = _true;
     let allFieldsFromInput = _true;
     ownKeysOfObjectLike(_assign({}, mugLike, input))[_forEach]((key) => {
@@ -296,14 +296,17 @@ export function assignConservatively(mugLike: any, input: any): any {
 
       if (keyInMugLike && !keyInInput) {
         allFieldsFromMugLike = _false;
+        // Field gets deleted
         return;
       }
 
       if (!keyInMugLike && keyInInput) {
         if (isMug(input[key])) {
           allFieldsFromInput = _false;
+          // Field stays empty.
           return;
         }
+
         allFieldsFromMugLike = _false;
         result[key] = input[key];
         return;
@@ -341,19 +344,23 @@ export function assignConservatively(mugLike: any, input: any): any {
       const indexInInput = _ObjectPrototype[_hasOwnProperty].call(input, i);
 
       if (!indexInMugLike && !indexInInput) {
+        // Item stays empty
         continue;
       }
 
       if (indexInMugLike && !indexInInput) {
         allItemsFromMugLike = _false;
+        // Item gets deleted
         continue;
       }
 
       if (!indexInMugLike && indexInInput) {
         if (isMug(input[i])) {
           allItemsFromInput = _false;
+          // Item stays empty
           continue;
         }
+
         allItemsFromMugLike = _false;
         result[i] = input[i];
         continue;

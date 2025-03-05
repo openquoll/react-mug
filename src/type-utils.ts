@@ -36,6 +36,10 @@ export type Post0Params<TFn extends AnyFunction> = TFn extends (
 
 export type Conserve<TA, TB> = TA extends TB ? (TB extends TA ? TA : TB) : TB;
 
+export type LatterIfChild<TA, TB> = TB extends TA ? TB : TA;
+
+export type LatterIfParent<TA, TB> = TA extends TB ? TB : TA;
+
 export type NumAsStrOnNumber<T extends number> = `${T}`;
 
 export type NumAsStr<T> = T extends number ? NumAsStrOnNumber<T> : T;

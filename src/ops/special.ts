@@ -113,7 +113,7 @@ export type WriteSpecialOp<TWrite extends AnyFunction, TState> = TWrite extends 
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteSpecialOpOnSetIt<TState>
       : WriteSpecialOpOnTypicalWriteProc<TWrite, TState>
-  : WriteSpecialOp<WriteProc<TWrite>, TState>;
+  : WriteSpecialOp<WriteProc<SimpleMerge.MiddleW<TWrite, TState>>, TState>;
 
 export type W<TState> = {
   (): WriteSpecialOp<SetIt, TState>;
@@ -121,7 +121,11 @@ export type W<TState> = {
   <TWriteProc extends AnyFunction & WriteProcMeta<(state: TState, ...restArgs: any) => TState>>(
     writeProc: TWriteProc,
   ): WriteSpecialOp<TWriteProc, TState>;
-} & SimpleMerge.SpecialW<TState>;
+
+  <TWriteFn extends SimpleMerge.WriteFnConstraint<TState>>(
+    writeFn: TWriteFn,
+  ): WriteSpecialOp<TWriteFn, TState>;
+};
 
 export type SpecialTraitItemOnExec<TItem extends AnyFunction> = (
   ...args: Post0Params<TItem>
@@ -179,7 +183,7 @@ export function upon(mugLike: any): any {
   }
 
   function w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
-    const writeProc: AnyWriteProc = isWriteProc(write) ? write : procW(SimpleMerge.wrapW(write));
+    const writeProc: AnyWriteProc = isWriteProc(write) ? write : procW(SimpleMerge.middleW(write));
     const writeFn = writeProc[_writeFn];
     const thresholdLen = Math.max(1, writeFn.length);
 

@@ -44,4 +44,4 @@ export {
   upon,
 } from './ops';
 export { useR } from './react-integration';
-export { EmptyItem, readonlyArray, readonlyTuple, tuple } from './type-utils';
+export { EmptyItem, SimplePatch, readonlyArray, readonlyTuple, tuple } from './type-utils';

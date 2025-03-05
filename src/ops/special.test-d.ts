@@ -12,8 +12,16 @@ import {
   setIt,
   WriteProc,
 } from '../mechanism';
-import { Generalness, Mug, PossibleMugLike, ReadSpecialOpMeta, WriteSpecialOpMeta } from '../mug';
+import {
+  _writeProc,
+  Generalness,
+  Mug,
+  PossibleMugLike,
+  ReadSpecialOpMeta,
+  WriteSpecialOpMeta,
+} from '../mug';
 import { onto, ReadGeneralOp, WriteGeneralOp } from './general';
+import { SimpleMerge } from './middleware';
 import { ReadSpecialOp, SpecialTrait, upon, WriteSpecialOp } from './special';
 
 interface ObjectState {
@@ -308,7 +316,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
   expectType<
     (() => void) &
       (<TState extends AState>(state: TState) => TState) &
-      WriteSpecialOpMeta<(state: AState) => ObjectState, AState>
+      WriteSpecialOpMeta<(state: AState) => AState, AState>
   >(fake<WriteSpecialOp<(state: AState) => ObjectState, AState>>());
 
   // =-=-=
@@ -324,7 +332,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
   expectType<
     (() => void) &
       (<TState extends AState>(state: TState) => TState) &
-      WriteSpecialOpMeta<(state: ObjectState) => ObjectState, AState>
+      WriteSpecialOpMeta<(state: ObjectState) => AState, AState>
   >(fake<WriteSpecialOp<(state: ObjectState) => ObjectState, AState>>());
 
   // =-=-=
@@ -386,7 +394,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
   expectType<
     (() => void) &
       (<TState extends AState>(state: TState) => TState) &
-      WriteSpecialOpMeta<() => ObjectState, AState>
+      WriteSpecialOpMeta<() => AState, AState>
   >(fake<WriteSpecialOp<() => ObjectState, AState>>());
 
   // =-=-=
@@ -630,9 +638,9 @@ test('upon#w, setIt, assignPatch', () => {
 test('SpecialTrait', () => {
   type SSb54 = SpecialTrait<
     {
-      read316: ReadGeneralOp<(state: ObjectState) => string, ObjectState>;
-      read03d: ReadGeneralOp<<TState>(state: TState) => TState, ObjectState>;
-      read25d: ReadGeneralOp<() => string, ObjectState>;
+      read316: ReadGeneralOp<ReadProc<(state: ObjectState) => string>, ObjectState>;
+      read03d: ReadGeneralOp<ReadProc<<TState>(state: TState) => TState>, ObjectState>;
+      read25d: ReadGeneralOp<ReadProc<() => string>, ObjectState>;
       read04e: ReadGeneralOp<GetIt, ObjectState>;
 
       write80e: WriteGeneralOp<(state: ObjectState) => ObjectState, ObjectState>;
@@ -656,9 +664,9 @@ test('SpecialTrait', () => {
     read25d: ReadSpecialOp<() => string, AState>;
     read04e: ReadSpecialOp<GetIt, AState>;
 
-    write80e: WriteSpecialOp<(state: ObjectState) => ObjectState, AState>;
-    write65d: WriteSpecialOp<<TState>(state: TState) => TState, AState>;
-    write9fb: WriteSpecialOp<() => ObjectState, AState>;
+    write80e: WriteSpecialOp<WriteProc<(state: ObjectState) => ObjectState>, AState>;
+    write65d: WriteSpecialOp<WriteProc<<TState>(state: TState) => TState>, AState>;
+    write9fb: WriteSpecialOp<WriteProc<() => ObjectState>, AState>;
     writece8: WriteSpecialOp<SetIt, AState>;
 
     execae7: () => Promise<void>;
@@ -717,7 +725,7 @@ test('upon#s', () => {
 
   // =-=-=
 
-  expectType<ReadSpecialOp<(state: ObjectState) => string, AState>>(read3e8);
+  expectType<ReadSpecialOp<ReadProc<(state: ObjectState) => string>, AState>>(read3e8);
 
   expectType<string>(read3e8());
   expectType<string>(read3e8(fake<AState>()));
@@ -731,7 +739,7 @@ test('upon#s', () => {
 
   // =-=-=
 
-  expectType<ReadSpecialOp<<TState>(state: TState) => TState, AState>>(read0b8);
+  expectType<ReadSpecialOp<ReadProc<<TState>(state: TState) => TState>, AState>>(read0b8);
 
   expectType<AState>(read0b8());
   expectType<AState>(read0b8(fake<AState>()));
@@ -745,7 +753,7 @@ test('upon#s', () => {
 
   // =-=-=
 
-  expectType<ReadSpecialOp<() => string, AState>>(read709);
+  expectType<ReadSpecialOp<ReadProc<() => string>, AState>>(read709);
 
   expectType<string>(read709());
   expectType<string>(read709(fake<AState>()));
@@ -773,7 +781,7 @@ test('upon#s', () => {
 
   // =-=-=
 
-  expectType<WriteSpecialOp<(state: ObjectState) => ObjectState, AState>>(writec83);
+  expectType<WriteSpecialOp<WriteProc<(state: ObjectState) => ObjectState>, AState>>(writec83);
 
   expectType<void>(writec83());
   expectType<AState>(writec83(fake<AState>()));
@@ -787,7 +795,7 @@ test('upon#s', () => {
 
   // =-=-=
 
-  expectType<WriteSpecialOp<<TState>(state: TState) => TState, AState>>(writea26);
+  expectType<WriteSpecialOp<WriteProc<<TState>(state: TState) => TState>, AState>>(writea26);
 
   expectType<void>(writea26());
   expectType<AState>(writea26(fake<AState>()));
@@ -801,7 +809,7 @@ test('upon#s', () => {
 
   // =-=-=
 
-  expectType<WriteSpecialOp<() => ObjectState, AState>>(write956);
+  expectType<WriteSpecialOp<WriteProc<() => ObjectState>, AState>>(write956);
 
   expectType<void>(write956());
   expectType<AState>(write956(fake<AState>()));

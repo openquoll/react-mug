@@ -1,4 +1,5 @@
 import { construction, getIt, Mug, onto, PossibleMugLike, PossiblePatch, setIt } from '../src';
+import { ownKeysOfObjectLike } from '../src/mug';
 
 jest.mock('../src/mechanism', () => {
   const m = jest.requireActual('../src/mechanism');
@@ -29,12 +30,20 @@ const customReadFn = jest.fn(
   },
 );
 
-const customWriteFn = jest.fn((state: AState, s: string): AState => {
+const customFullFledgedWriteFn = jest.fn((state: AState, s: string): AState => {
   return {
     ...state,
     s,
     potentialMuggyObject: {
       ...state.potentialMuggyObject,
+      s,
+    },
+  };
+});
+
+const customPartialWriteFn = jest.fn((state: AState, s: string) => {
+  return {
+    o: {
       s,
     },
   };
@@ -76,7 +85,9 @@ describe('451202d, general-ops straightforwardly, [cite] 006', () => {
 
   const defaultWriteGeneralOp = w();
 
-  const customWriteGeneralOp = w(customWriteFn);
+  const customFullFledgedWriteGeneralOp = w(customFullFledgedWriteFn);
+
+  const customPartialWriteGeneralOp = w(customPartialWriteFn);
 
   const customExecWG = x(customExec);
 
@@ -187,7 +198,7 @@ describe('451202d, general-ops straightforwardly, [cite] 006', () => {
     });
   });
 
-  describe('67567ee, writes by the custom write general-op', () => {
+  describe('67567ee, writes by the custom full-fledged write general-op', () => {
     const writeOpParamS = '5c9';
     let gotAStateBefore: AState, gotAStateAfter: AState;
     let writeFnParamState: AState, writeFnParamS: string, writeFnReturn: AState;
@@ -195,16 +206,16 @@ describe('451202d, general-ops straightforwardly, [cite] 006', () => {
     test('[action]', () => {
       gotAStateBefore = getIt(aMug);
 
-      customWriteGeneralOp(aMug, writeOpParamS);
-      writeFnParamState = customWriteFn.mock.calls[0][0];
-      writeFnParamS = customWriteFn.mock.calls[0][1];
-      writeFnReturn = customWriteFn.mock.results[0].value;
+      customFullFledgedWriteGeneralOp(aMug, writeOpParamS);
+      writeFnParamState = customFullFledgedWriteFn.mock.calls[0][0];
+      writeFnParamS = customFullFledgedWriteFn.mock.calls[0][1];
+      writeFnReturn = customFullFledgedWriteFn.mock.results[0].value;
 
       gotAStateAfter = getIt(aMug);
     });
 
     test('[verify] the write fn is called 1 time', () => {
-      expect(customWriteFn).toHaveBeenCalledTimes(1);
+      expect(customFullFledgedWriteFn).toHaveBeenCalledTimes(1);
     });
 
     test('[verify] the write fn param state equals the write op mug_s before-write got state in ref and value', () => {
@@ -219,6 +230,68 @@ describe('451202d, general-ops straightforwardly, [cite] 006', () => {
     test('[verify] the write op mug_s after-write got state equals the write fn return in ref and value', () => {
       expect(gotAStateAfter).toBe(writeFnReturn);
       expect(gotAStateAfter).toStrictEqual(writeFnReturn);
+    });
+  });
+
+  describe('67567ee, writes by the custom partial write general-op', () => {
+    const writeOpParamS = 'd32';
+    let gotAStateBefore: AState, gotAStateAfter: AState;
+    let writeFnParamState: AState, writeFnParamS: string, writeFnReturn: AState;
+
+    test('[action]', () => {
+      gotAStateBefore = getIt(aMug);
+
+      customPartialWriteGeneralOp(aMug, writeOpParamS);
+      writeFnParamState = customPartialWriteFn.mock.calls[0][0];
+      writeFnParamS = customPartialWriteFn.mock.calls[0][1];
+      writeFnReturn = customPartialWriteFn.mock.results[0].value;
+
+      gotAStateAfter = getIt(aMug);
+    });
+
+    test('[verify] the write fn is called 1 time', () => {
+      expect(customPartialWriteFn).toHaveBeenCalledTimes(1);
+    });
+
+    test('[verify] the write fn param state equals the write op mug_s before-write got state in ref and value', () => {
+      expect(writeFnParamState).toBe(gotAStateBefore);
+      expect(writeFnParamState).toStrictEqual(gotAStateBefore);
+    });
+
+    test('[verify] the write fn param string equals the write op param string in value', () => {
+      expect(writeFnParamS).toBe(writeOpParamS);
+    });
+
+    test('[verify] the write op mug_s after-write got state differs from the write fn return in ref and value', () => {
+      expect(gotAStateAfter).not.toBe(writeFnReturn);
+      expect(gotAStateAfter).not.toStrictEqual(writeFnReturn);
+    });
+
+    test('[verify] the write op mug_s after-write got state_s matching fields equals the write fn return_s in ref and value', () => {
+      ownKeysOfObjectLike(writeFnReturn).forEach((key) => {
+        expect(gotAStateAfter[key]).toBe(writeFnReturn[key]);
+        expect(gotAStateAfter[key]).toStrictEqual(writeFnReturn[key]);
+      });
+    });
+
+    test('[verify] the write op mug_s after-write got state_s unmatching fields stay unchanged in ref and value', () => {
+      ownKeysOfObjectLike(gotAStateBefore)
+        .filter((key) => !writeFnReturn.hasOwnProperty(key))
+        .forEach((key) => {
+          expect(gotAStateAfter[key]).toBe(gotAStateBefore[key]);
+          expect(gotAStateAfter[key]).toStrictEqual(gotAStateBefore[key]);
+        });
+    });
+
+    test('[verify] the contextual mug_s got state and its matching fields change in ref and value', () => {
+      expect(gotAStateAfter).not.toBe(gotAStateBefore);
+      expect(gotAStateAfter).not.toStrictEqual(gotAStateBefore);
+      ownKeysOfObjectLike(gotAStateBefore)
+        .filter((key) => writeFnReturn.hasOwnProperty(key))
+        .forEach((key) => {
+          expect(gotAStateAfter[key]).not.toBe(gotAStateBefore[key]);
+          expect(gotAStateAfter[key]).not.toStrictEqual(gotAStateBefore[key]);
+        });
     });
   });
 

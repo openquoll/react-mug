@@ -21,63 +21,47 @@ import {
   _ObjectPrototype,
   _true,
 } from '../shortcuts';
-import type { AnyFunction, Post0Params, SimplePatch } from '../type-utils';
-import type { WriteGeneralOp } from './general';
-import type { WriteSpecialOp } from './special';
+import type {
+  AnyFunction,
+  LatterIfChild,
+  LatterIfParent,
+  Param0,
+  Post0Params,
+  SimplePatch,
+} from '../type-utils';
 
 export namespace SimpleMerge {
-  export type WrapWOnEmptyParamWriteFn<TState> = () => TState;
+  export type WriteFnConstraint<TState> = {
+    (state: TState, ...restArgs: any): SimplePatch<TState>;
 
-  export type WrapWOnTypicalWriteFn<TWriteFn extends AnyFunction, TState> = (
-    state: TState,
+    // NotProc
+    [_readFn]?: never;
+    [_writeFn]?: never;
+
+    // NotOp
+    [_readProc]?: never;
+    [_writeProc]?: never;
+  };
+
+  export type MiddleWOnEmptyParamWriteFn<
+    TWriteFn extends AnyFunction,
+    TState,
+  > = () => LatterIfChild<TState, ReturnType<TWriteFn>>;
+
+  export type MiddleWOnTypicalWriteFn<TWriteFn extends AnyFunction, TState> = (
+    state: LatterIfParent<TState, Param0<TWriteFn>>,
     ...restArgs: Post0Params<TWriteFn>
-  ) => TState;
+  ) => LatterIfChild<TState, ReturnType<TWriteFn>>;
 
-  export type WrapW<TWriteFn extends AnyFunction, TState> = TWriteFn extends () => any
-    ? WrapWOnEmptyParamWriteFn<TState>
+  export type MiddleW<TWriteFn extends AnyFunction, TState> = TWriteFn extends () => any
+    ? MiddleWOnEmptyParamWriteFn<TWriteFn, TState>
     : TWriteFn extends AssignPatch
       ? TWriteFn
       : TWriteFn extends <TState extends never>(state: TState, ...restArgs: any) => TState
         ? TWriteFn
-        : WrapWOnTypicalWriteFn<TWriteFn, TState>;
+        : MiddleWOnTypicalWriteFn<TWriteFn, TState>;
 
-  export type SpecialW<TState> = {
-    <
-      TWriteFn extends {
-        (state: TState, ...restArgs: any): SimplePatch<TState>;
-
-        // NotProc
-        [_readFn]?: never;
-        [_writeFn]?: never;
-
-        // NotOp
-        [_readProc]?: never;
-        [_writeProc]?: never;
-      },
-    >(
-      writeFn: TWriteFn,
-    ): WriteSpecialOp<WrapW<TWriteFn, TState>, TState>;
-  };
-
-  export type GeneralW<TState> = {
-    <
-      TWriteFn extends {
-        (state: TState, ...restArgs: any): SimplePatch<TState>;
-
-        // NotProc
-        [_readFn]?: never;
-        [_writeFn]?: never;
-
-        // NotOp
-        [_readProc]?: never;
-        [_writeProc]?: never;
-      },
-    >(
-      writeFn: TWriteFn,
-    ): WriteGeneralOp<WrapW<TWriteFn, TState>, TState>;
-  };
-
-  export const wrapW = (writeFn: AnyFunction): AnyFunction => {
+  export const middleW = (writeFn: AnyFunction): AnyFunction => {
     if (isBuiltinFn(writeFn)) {
       return writeFn;
     }

@@ -100,7 +100,7 @@ export type WriteGeneralOp<TWrite extends AnyFunction, TState> = TWrite extends 
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteGeneralOpOnSetIt<TState>
       : WriteGeneralOpOnTypicalWriteProc<TWrite, TState>
-  : WriteGeneralOp<WriteProc<TWrite>, TState>;
+  : WriteGeneralOp<WriteProc<SimpleMerge.MiddleW<TWrite, TState>>, TState>;
 
 export type W<TState> = {
   (): WriteGeneralOp<SetIt, TState>;
@@ -108,7 +108,11 @@ export type W<TState> = {
   <TWriteProc extends AnyFunction & WriteProcMeta<(state: TState, ...restArgs: any) => TState>>(
     writeProc: TWriteProc,
   ): WriteGeneralOp<TWriteProc, TState>;
-} & SimpleMerge.GeneralW<TState>;
+
+  <TWriteFn extends SimpleMerge.WriteFnConstraint<TState>>(
+    writeFn: TWriteFn,
+  ): WriteGeneralOp<TWriteFn, TState>;
+};
 
 export type X<TState> = <
   TExec extends ((mugLike: PossibleMugLike<TState>, ...restArgs: any) => any) & NotProc & NotOp,
@@ -131,7 +135,7 @@ export function onto(): any {
   }
 
   function w(write: AnyFunction = setIt) {
-    const writeProc = isWriteProc(write) ? write : procW(SimpleMerge.wrapW(write));
+    const writeProc = isWriteProc(write) ? write : procW(SimpleMerge.middleW(write));
     const writeGeneralOp = (...args: any) => writeProc(...args);
     writeGeneralOp[_writeProc] = writeProc;
     writeGeneralOp[_general] = _general;

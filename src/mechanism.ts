@@ -1,4 +1,4 @@
-import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from './builtin/fns';
+import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from './builtin-fns';
 import {
   _readFn,
   _writeFn,

@@ -1,4 +1,4 @@
-export { PossiblePatch, assignPatch, passThrough } from './builtin';
+export { PossiblePatch, assignPatch, passThrough } from './builtin-fns';
 export { ReadProc, WriteProc, getIt, initial, r, resetIt, setIt, w } from './mechanism';
 export {
   Generalness,

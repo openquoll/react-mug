@@ -1,4 +1,4 @@
-import { AssignPatch, PossiblePatch } from '../builtin';
+import { AssignPatch, PossiblePatch } from '../builtin-fns';
 import {
   GetIt,
   getIt,
@@ -18,6 +18,7 @@ import {
   AnyReadProc,
   AnyWriteProc,
   Generalness,
+  isWriteProc,
   NotOp,
   NotProc,
   PossibleMugLike,
@@ -27,7 +28,8 @@ import {
   WriteGeneralOpMeta,
   WriteProcMeta,
 } from '../mug';
-import { AnyFunction, Post0Params, SimplePatch } from '../type-utils';
+import { AnyFunction, Post0Params } from '../type-utils';
+import { SimpleMerge } from './middleware';
 
 export type ReadGeneralOpOnEmptyParamReadProc<TReadProc extends AnyReadProc, TState> = ((
   mugLike?: PossibleMugLike<TState>,
@@ -106,23 +108,7 @@ export type W<TState> = {
   <TWriteProc extends AnyFunction & WriteProcMeta<(state: TState, ...restArgs: any) => TState>>(
     writeProc: TWriteProc,
   ): WriteGeneralOp<TWriteProc, TState>;
-
-  <
-    TWriteFn extends {
-      (state: TState, ...restArgs: any): SimplePatch<TState>;
-
-      // NotProc
-      [_readFn]?: never;
-      [_writeFn]?: never;
-
-      // NotOp
-      [_readProc]?: never;
-      [_writeProc]?: never;
-    },
-  >(
-    writeFn: TWriteFn,
-  ): WriteGeneralOp<TWriteFn, TState>;
-};
+} & SimpleMerge.GeneralW<TState>;
 
 export type X<TState> = <
   TExec extends ((mugLike: PossibleMugLike<TState>, ...restArgs: any) => any) & NotProc & NotOp,
@@ -145,7 +131,7 @@ export function onto(): any {
   }
 
   function w(write: AnyFunction = setIt) {
-    const writeProc = procW(write);
+    const writeProc = isWriteProc(write) ? write : procW(SimpleMerge.wrapW(write));
     const writeGeneralOp = (...args: any) => writeProc(...args);
     writeGeneralOp[_writeProc] = writeProc;
     writeGeneralOp[_general] = _general;

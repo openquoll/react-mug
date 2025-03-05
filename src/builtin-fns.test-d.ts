@@ -1,9 +1,9 @@
 import { expectType } from 'tsd';
 
-import { fake } from '../../tests/type-utils';
-import { Mug, WithAttachments } from '../mug';
-import { EmptyItem } from '../type-utils';
-import { PossiblePatch } from './fns';
+import { fake } from '../tests/type-utils';
+import { Mug, WithAttachments } from './mug';
+import { EmptyItem } from './type-utils';
+import { PossiblePatch } from './builtin-fns';
 
 interface ObjectState {
   s: string;

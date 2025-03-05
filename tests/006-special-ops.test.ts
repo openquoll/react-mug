@@ -14,24 +14,18 @@ import {
 jest.mock('../src/mechanism', () => {
   const m = jest.requireActual('../src/mechanism');
   const { getIt, setIt } = m;
-  Object.assign(jest.spyOn(m, 'getIt'), getIt);
-  Object.assign(jest.spyOn(m, 'setIt'), setIt);
+  Object.defineProperties(jest.spyOn(m, 'getIt'), Object.getOwnPropertyDescriptors(getIt));
+  Object.defineProperties(jest.spyOn(m, 'setIt'), Object.getOwnPropertyDescriptors(setIt));
   return m;
 });
 
-jest.mock('../src/builtin/fns', () => {
-  const m = jest.requireActual('../src/builtin/fns');
+jest.mock('../src/builtin-fns', () => {
+  const m = jest.requireActual('../src/builtin-fns');
   const { passThrough, assignPatch } = m;
   jest.spyOn(m, 'passThrough');
-  Object.assign(m.passThrough, passThrough);
-  Object.defineProperty(m.passThrough, 'length', {
-    value: passThrough.length,
-  });
+  Object.defineProperties(m.passThrough, Object.getOwnPropertyDescriptors(passThrough));
   jest.spyOn(m, 'assignPatch');
-  Object.assign(m.assignPatch, assignPatch);
-  Object.defineProperty(m.assignPatch, 'length', {
-    value: assignPatch.length,
-  });
+  Object.defineProperties(m.assignPatch, Object.getOwnPropertyDescriptors(assignPatch));
   return m;
 });
 

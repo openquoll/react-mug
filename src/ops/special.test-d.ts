@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { fake } from '../../tests/type-utils';
-import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from '../builtin';
+import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from '../builtin-fns';
 import {
   GetIt,
   getIt,

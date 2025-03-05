@@ -9,11 +9,16 @@ export const _function = 'function';
 export const _constructor = 'constructor';
 export const _prototype = 'prototype';
 
+export const _name = 'name';
+export const _length = 'length';
+
 export const _Object = Object;
 export const {
+  is: _is,
   assign: _assign,
   create: _create,
-  is: _is,
+  defineProperty: _defineProperty,
+  getOwnPropertyDescriptor: _getOwnPropertyDescriptor,
   getOwnPropertyNames: _getOwnPropertyNames,
   getOwnPropertySymbols: _getOwnPropertySymbols,
   setPrototypeOf: _setPrototypeOf,
@@ -23,7 +28,6 @@ export const _hasOwnProperty = 'hasOwnProperty';
 
 export const _Array = Array;
 export const { isArray: _isArray } = _Array;
-export const _length = 'length';
 export const _forEach = 'forEach';
 export const _map = 'map';
 export const _reduce = 'reduce';

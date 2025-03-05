@@ -1,4 +1,4 @@
-import { AssignPatch, PossiblePatch } from '../builtin/fns';
+import { AssignPatch, PossiblePatch } from '../builtin-fns';
 import {
   GetIt,
   getIt,
@@ -26,6 +26,7 @@ import {
   isFunction,
   isReadGeneralOp,
   isWriteGeneralOp,
+  isWriteProc,
   NotOp,
   NotProc,
   ownKeysOfObjectLike,
@@ -35,7 +36,8 @@ import {
   WriteProcMeta,
   WriteSpecialOpMeta,
 } from '../mug';
-import { AnyFunction, AnyObject, Post0Params, SimplePatch } from '../type-utils';
+import { AnyFunction, AnyObject, Post0Params } from '../type-utils';
+import { SimpleMerge } from './middleware';
 
 export type ReadSpecialOpOnEmptyParamReadProc<
   TReadProc extends AnyReadProc,
@@ -119,23 +121,7 @@ export type W<TState> = {
   <TWriteProc extends AnyFunction & WriteProcMeta<(state: TState, ...restArgs: any) => TState>>(
     writeProc: TWriteProc,
   ): WriteSpecialOp<TWriteProc, TState>;
-
-  <
-    TWriteFn extends {
-      (state: TState, ...restArgs: any): SimplePatch<TState>;
-
-      // NotProc
-      [_readFn]?: never;
-      [_writeFn]?: never;
-
-      // NotOp
-      [_readProc]?: never;
-      [_writeProc]?: never;
-    },
-  >(
-    writeFn: TWriteFn,
-  ): WriteSpecialOp<TWriteFn, TState>;
-};
+} & SimpleMerge.SpecialW<TState>;
 
 export type SpecialTraitItemOnExec<TItem extends AnyFunction> = (
   ...args: Post0Params<TItem>
@@ -174,11 +160,11 @@ export type SpecialOpToolbelt<TState> = SpecialOpToolbeltFormat<R<TState>, W<TSt
 export function upon<TState>(mugLike: PossibleMugLike<NoInfer<TState>>): SpecialOpToolbelt<TState>;
 export function upon(mugLike: any): any {
   function r(read: (mugLike: any, ...restArgs: any) => any = getIt) {
-    const readProc = procR(read);
+    const readProc: AnyReadProc = procR(read);
     const readFn = readProc[_readFn];
     const thresholdLen = Math.max(1, readFn.length);
 
-    const readSpecialOp = (...args: [any, ...any]) => {
+    const readSpecialOp = (...args: any) => {
       if (args.length < thresholdLen) {
         return readProc(mugLike, ...args);
       } else {
@@ -193,11 +179,11 @@ export function upon(mugLike: any): any {
   }
 
   function w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
-    const writeProc = procW(write);
+    const writeProc: AnyWriteProc = isWriteProc(write) ? write : procW(SimpleMerge.wrapW(write));
     const writeFn = writeProc[_writeFn];
     const thresholdLen = Math.max(1, writeFn.length);
 
-    const writeSpecialOp = (...args: [any, ...any]) => {
+    const writeSpecialOp = (...args: any) => {
       if (args.length < thresholdLen) {
         writeProc(mugLike, ...args);
       } else {

@@ -3,8 +3,8 @@ import { construction, getIt, Mug, onto, PossibleMugLike, PossiblePatch, setIt }
 jest.mock('../src/mechanism', () => {
   const m = jest.requireActual('../src/mechanism');
   const { getIt, setIt } = m;
-  Object.assign(jest.spyOn(m, 'getIt'), getIt);
-  Object.assign(jest.spyOn(m, 'setIt'), setIt);
+  Object.defineProperties(jest.spyOn(m, 'getIt'), Object.getOwnPropertyDescriptors(getIt));
+  Object.defineProperties(jest.spyOn(m, 'setIt'), Object.getOwnPropertyDescriptors(setIt));
   return m;
 });
 

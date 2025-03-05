@@ -1,7 +1,7 @@
 import { expectAssignable, expectType } from 'tsd';
 
 import { fake } from '../tests/type-utils';
-import type { AssignPatch, PassThrough } from './builtin';
+import type { AssignPatch, PassThrough } from './builtin-fns';
 import type { GetIt, SetIt } from './mechanism';
 import {
   AnyMug,

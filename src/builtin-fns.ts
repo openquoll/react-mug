@@ -6,7 +6,7 @@ import {
   ownKeysOfObjectLike,
   shallowCloneOfPlainObject,
   State,
-} from '../mug';
+} from './mug';
 import {
   _constructor,
   _hasOwnProperty,
@@ -15,19 +15,28 @@ import {
   _length,
   _ObjectPrototype,
   _reduce,
-} from '../shortcuts';
+} from './shortcuts';
 import {
   AnyFunction,
   AnyObject,
   AnyReadonlyArray,
   AnyReadonlyTuple,
   EmptyItem,
-} from '../type-utils';
-import { _bidFnAssignPatch, _builtinId } from './ids';
+} from './type-utils';
+
+export const _builtinFnId = Symbol();
+
+export const _bidFnPassThrough = '0a4' as const;
+
+export const _bidFnAssignPatch = 'ed8' as const;
+
+export const isBuiltinFn = (fn: AnyFunction): boolean => fn[_hasOwnProperty](_builtinFnId);
 
 export function passThrough<TState>(state: TState): TState {
   return state;
 }
+
+passThrough[_builtinFnId] = _bidFnPassThrough;
 
 export type PassThrough = typeof passThrough;
 
@@ -131,6 +140,6 @@ export function assignPatch(state: any, patch: any): any {
   return patch;
 }
 
-assignPatch[_builtinId] = _bidFnAssignPatch;
+assignPatch[_builtinFnId] = _bidFnAssignPatch;
 
 export type AssignPatch = typeof assignPatch;

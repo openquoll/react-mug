@@ -1,6 +1,6 @@
-## Principles for Writing Tests
+## 写测试的原则
 
-1. Tests should reflect various use cases that are useful in the user perspective. Don't chase coverage by writing useless tests.
-2. Each test case should be independently executable so that the relevant code can be further debugged easily.
-3. Declare the citations of the approximate scope of the dependent tests to reduce code duplication and raise cognition speed.
-4. To cover a scope, just write a common test case group in the most thorough way, then stem from it for the missing test case groups.
+1. 测试应该反映各种从用户角度看是有用的用例。不用为了追求覆盖率写没用的测试。
+2. 每个测试用例都应该可以独立运行，以便进一步容易地调试相关代码。
+3. 声明引用所依赖测试的大致范围以减少代码重复并提高认知速度。
+4. 在覆盖一个范围时，先以最全面的方式挑一个常见的测试用例组写，然后再基于此生长补充遗漏的测试用例组。

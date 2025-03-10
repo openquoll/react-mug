@@ -1,9 +1,9 @@
-## Commit Conventions
+## 提交约定
 
-- A commit is a continuous mental output.
-- A commit message concisely states the main idea of the commit.
+- 把一次连续的思维产出作为一次提交。
+- 在提交信息中简要地说明本次提交的主体思想。
 
-## Type Defining Conventions
+## 类型定义约定
 
-- Every type and all its conditional results are explicitly declared and exported on file level to avoid TS4023 ("but cannot be named").
-- On defining function types, function overloads are preferred over conditional types for better assignability.
+- 每个类型和它所有的条件结果在文件级别上显式声明并导出以避免 TS4023 ("but cannot be named")。
+- 在定义函数类型时，为了更好的可赋值性，比起条件类型，优先使用函数重载。

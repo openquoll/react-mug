@@ -2,36 +2,36 @@
 
 ![Logo of Mug](https://github.com/user-attachments/assets/f47bc69e-fc3f-4465-96af-9aaff65c79ae)
 
-[Synopsis](#5b94f97) &nbsp;•&nbsp; [Functionalities](#cb032d8) &nbsp;•&nbsp; [Install](#f746377) &nbsp;•&nbsp; [Usage](#e4d5a54) &nbsp;•&nbsp; [Guide](#00bfdb1) &nbsp;•&nbsp; [APIs](#bf85749) &nbsp;•&nbsp; [License](#d4b3b37).
+[概要](#f595ead) &nbsp;•&nbsp; [功能](#dea3322) &nbsp;•&nbsp; [安装](#cf6afd0) &nbsp;•&nbsp; [用法](#9f9b12f) &nbsp;•&nbsp; [指南](#be6352c) &nbsp;•&nbsp; [APIs](#629f340) &nbsp;•&nbsp; [许可](#1036c9f)。
 
-English &nbsp;•&nbsp; [中文](./README.zh-Hans.md).
+中文 &nbsp;•&nbsp; [English](./README.en.md)。
 
-## <span id="5b94f97"></span>Synopsis
+## <span id="f595ead"></span>概要
 
-Possibly the optimal way to functionally manage states.
+可能是最好用的函数式状态库。
 
-## <span id="cb032d8"></span>Functionalities
+## <span id="dea3322"></span>功能
 
-✦ Rapid creation of directly callable state operations from pure functions.<br/>
-✦ Zero-step integration with React.<br/>
-✦ Full leverage on ES Modules for code organization.<br/>
-✦ Functionally reusing state operations.<br/>
-✦ Async operations.<br/>
-✦ State composition.<br/>
-✦ Trait segregation.<br/>
-✦ Functionally testing state operations.<br/>
-✦ Easily testing actual state values.</br>
-✦ Strong support for types.
+✦ 以纯函数快速创建可直接调用的状态操作，<br/>
+✦ 零步骤与 React 集成，<br/>
+✦ 善用 ES Modules 标准组织代码，<br/>
+✦ 函数式复用状态操作，<br/>
+✦ 异步操作，<br/>
+✦ 状态组合，<br/>
+✦ 特质分隔，<br/>
+✦ 函数式测试状态操作，<br/>
+✦ 轻松测试状态实际值，<br/>
+✦ 强支持类型。
 
-## <span id="f746377"></span>Install
+## <span id="cf6afd0"></span>安装
 
 ```sh
 npm i react-mug
 ```
 
-## <span id="e4d5a54"></span>Usage
+## <span id="9f9b12f"></span>用法
 
-Create a state and the operations:
+创建状态及其操作：
 
 ```ts
 // CountMug.ts
@@ -46,7 +46,7 @@ export const get = r();
 export const increase = w((count, delta: number) => count + delta);
 ```
 
-Use them straight:
+然后直接使用：
 
 ```tsx
 // CountDisplay.tsx
@@ -69,18 +69,18 @@ export function CountControl() {
 }
 ```
 
-Enjoy the smoothness.
+即可纵享丝滑。
 
-## <span id="00bfdb1"></span>Guide
+## <span id="be6352c"></span>指南
 
-[Manage One State](./docs/guide/57934f5.md).<br/>
-[Compose Multiple States](./docs/guide/7f95611.md).<br/>
-[Segregate General Traits](./docs/guide/eb8ec2b.md).
+[管理单个状态](./docs/guide/57934f5.md)，<br/>
+[组合多个状态](./docs/guide/7f95611.md)，<br/>
+[分隔通用特质](./docs/guide/eb8ec2b.md)。
 
-## <span id="bf85749"></span>APIs
+## <span id="629f340"></span>APIs
 
-[See also src/index](./src/index.ts).
+[参见 src/index](./src/index.ts)。
 
-## <span id="d4b3b37"></span>License
+## <span id="1036c9f"></span>许可
 
-[Apache 2.0](./LICENSE).
+[Apache 2.0](./LICENSE)。

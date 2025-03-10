@@ -1,11 +1,11 @@
-# Guide / ToC
+# 指南 / 目录
 
-English &nbsp;•&nbsp; [中文](./README.zh-Hans.md).
+中文 &nbsp;•&nbsp; [English](./README.en.md)。
 
-[Manage One State](./57934f5.md).<br/>
-[Compose Multiple States](./7f95611.md).<br/>
-[Segregate General Traits](./eb8ec2b.md).
+[管理单个状态](./57934f5.md)，<br/>
+[组合多个状态](./7f95611.md)，<br/>
+[分隔通用特质](./eb8ec2b.md)。
 
 ---
 
-[Back to Root Doc](../../README.md).
+[返回根文档](../../README.md)。

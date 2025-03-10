@@ -1,16 +1,16 @@
-# 指南 / 分隔通用特质
+# Guide / Segregate General Traits
 
-[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步通用操作](#5b70f21) &nbsp;•&nbsp; [通用操作复用](#3139a8c) &nbsp;•&nbsp; [默认通用操作](#78208bb) &nbsp;•&nbsp; [通用操作测试](#a8658c7) &nbsp;•&nbsp; [异步通用操作测试](#d83d546)。
+[Key Content](#256ed49) &nbsp;•&nbsp; [Async General Ops](#18fab2d) &nbsp;•&nbsp; [General Op Reuse](#1c5618e) &nbsp;•&nbsp; [Default General Ops](#f8f326d) &nbsp;•&nbsp; [General Op Testing](#0535cd6) &nbsp;•&nbsp; [Async General Op Testing](#ae966ca).
 
-[返回目录](./README.zh-Hans.md)。
+[Back to ToC](./README.en.md).
 
-中文 &nbsp;•&nbsp; [English](./eb8ec2b.md)。
+English &nbsp;•&nbsp; [中文](./eb8ec2b.md).
 
-## <span id="bfc7f69"></span>核心内容
+## <span id="256ed49"></span>Key Content
 
-状态越大包含的特质越多，有的特征会在不同状态反复出现，通用的特征值得单拎出来，为此 React Mug 提供了状态分隔。
+The bigger a state, the more traits there are. Some traits can reappear in different states. General traits are worth setting apart. Thus, React Mug provides trait segregation.
 
-例如，对于下面的计数器状态：
+For example, regarding a counter state as follows:
 
 ```ts
 // CounterMug.ts
@@ -55,7 +55,7 @@ export const queryValue = async () => {
 };
 ```
 
-通过分隔，即可将 “可查询” 的特质提炼为通用状态：
+By segregation, the "queryable" trait gets extracted as a general state:
 
 ```ts
 // QueryableMug.ts
@@ -76,7 +76,7 @@ export const endQuerying = w((state) => ({ ...state, querying: false }));
 export * as QueryableOps from './QueryableMug';
 ```
 
-然后接入回计数器状态：
+It, then, gets plugged back into the counter state:
 
 ```ts
 // CounterMug.ts
@@ -84,7 +84,7 @@ import { construction, upon } from 'react-mug';
 
 import { QueryableOps, QueryableState } from './QueryableMug';
 
-// 接入可查询状态
+// Plug in queryable state
 export interface CounterState extends QueryableState {
   value: number;
 }
@@ -98,11 +98,11 @@ export const counterMug = {
 
 const { r, w, s } = upon<CounterState>(counterMug);
 
-// 接入可查询状态
+// Plug in queryable state
 export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
 
 export const getValue = r((state) => {
-  // 调用可查询操作
+  // Call queryable ops
   if (isQuerying(state)) {
     return;
   }
@@ -114,16 +114,16 @@ export const increase = w((state, delta: number) => ({ ...state, value: state.va
 export const set = w();
 
 export const queryValue = async () => {
-  // 调用可查询操作
+  // Call queryable ops
   startQuerying();
   const value = await RestfulApi.counter.value.get();
   set({ value });
-  // 调用可查询操作
+  // Call queryable ops
   endQuerying();
 };
 ```
 
-这样代码结构更加清晰，并且方便复用：
+As such, a clearer code structure is achieved, and reuse becomes convenient:
 
 ```ts
 // BriefingMug.ts
@@ -163,11 +163,11 @@ export const queryText = async () => {
 };
 ```
 
-让状态有序地拆分开来。
+States are divided in an orderly manner.
 
-## <span id="5b70f21"></span>异步通用操作
+## <span id="18fab2d"></span>Async General Ops
 
-此外，以普通的异步函数，借助 `x` 把兼容的 Mug 声明为首参，随后将 Mug 传入通用操作调用，即可定义异步通用操作：
+In addition, with plain async functions, specifying the first param as compatible mugs utilizing `x`, then calling general ops with the mug param defines async general ops:
 
 ```ts
 // QueryableMug.ts
@@ -223,9 +223,9 @@ export const queryValueFastWithRetry = async () => {
 };
 ```
 
-## <span id="3139a8c"></span>通用操作复用
+## <span id="1c5618e"></span>General Op Reuse
 
-把状态一并传入通用操作，即可调用其纯函数形式，完成在操作内复用：
+Passing states into general ops all at once activates functional mode for in-op reuse:
 
 ```ts
 // QueryableMug.ts
@@ -239,9 +239,9 @@ export const toggleQueryingElaborately = w((state) =>
 ...
 ```
 
-## <span id="78208bb"></span>默认通用操作
+## <span id="f8f326d"></span>Default General Ops
 
-无参调用 `r`、`w`，可以得到 “读取全量状态”、“合并写入状态” 的通用操作：
+Calling `r`, `w` without params creates "Read by all", "Write by merge" general ops:
 
 ```ts
 // QueryableMug.ts
@@ -280,9 +280,9 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
 ...
 ```
 
-## <span id="a8658c7"></span>通用操作测试
+## <span id="0535cd6"></span>General Op Testing
 
-以测试纯函数的方式，即可测试通用操作：
+The approach to testing pure functions applies to general ops:
 
 ```ts
 // QueryableMug.test.ts
@@ -295,9 +295,9 @@ describe('startQuerying', () => {
 });
 ```
 
-## <span id="d83d546"></span>异步通用操作测试
+## <span id="ae966ca"></span>Async General Op Testing
 
-以及，以 Mug 为支点，即可测试异步通用操作：
+Also, mugs as fulcrums boost testing async general ops:
 
 ```ts
 // QueryableMug.test.ts
@@ -330,4 +330,4 @@ describe('retry', () => {
 
 ---
 
-[返回目录](./README.zh-Hans.md)。
+[Back to ToC](./README.en.md).

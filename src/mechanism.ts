@@ -1,4 +1,5 @@
 import { AssignPatch, assignPatch, PassThrough, passThrough, PossiblePatch } from './builtin-fns';
+import { simpleMerge } from './middleware';
 import {
   _readFn,
   _writeFn,
@@ -295,20 +296,22 @@ export function r(read: AnyFunction = passThrough): AnyFunction {
     return read;
   }
 
+  const readFn = read;
+
   const readProc = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the read as it is.
     if (isState(mugLike)) {
-      return read(mugLike, ...restArgs);
+      return readFn(mugLike, ...restArgs);
     }
 
     const rTask = new MugLikeCurrentStateReadTask();
     const state = rTask._run(mugLike);
     rTask._clear();
 
-    return read(state, ...restArgs);
+    return readFn(state, ...restArgs);
   };
 
-  readProc[_readFn] = read;
+  readProc[_readFn] = readFn;
 
   return readProc;
 }
@@ -336,30 +339,34 @@ export type WriteProcOnTypicalWriteFn<TWriteFn extends AnyFunction> = (<
 ) => TMugLike) &
   WriteProcMeta<TWriteFn>;
 
+export type WriteProcOnWriteFn<TWriteFn extends AnyFunction> = TWriteFn extends () => any
+  ? WriteProcOnEmptyParamWriteFn<TWriteFn>
+  : TWriteFn extends AssignPatch
+    ? WriteProcOnAssignPatch
+    : WriteProcOnTypicalWriteFn<TWriteFn>;
+
 export type WriteProc<TWrite extends AnyFunction> = TWrite extends AnyWriteProc
   ? TWrite
-  : TWrite extends () => any
-    ? WriteProcOnEmptyParamWriteFn<TWrite>
-    : TWrite extends AssignPatch
-      ? WriteProcOnAssignPatch
-      : WriteProcOnTypicalWriteFn<TWrite>;
+  : WriteProcOnWriteFn<simpleMerge.MiddleW<TWrite>>;
 
 export type SetIt = WriteProc<AssignPatch>;
 
 export function w(): SetIt;
 export function w<TWriteProc extends AnyWriteProc>(writeProc: TWriteProc): WriteProc<TWriteProc>;
-export function w<
-  TWriteFn extends ((state: any, ...restArgs: any) => Param0<TWriteFn>) & NotProc & NotOp,
->(writeFn: TWriteFn): WriteProc<TWriteFn>;
+export function w<TWriteFn extends simpleMerge.ProcWriteFnConstraint<TWriteFn>>(
+  writeFn: TWriteFn,
+): WriteProc<TWriteFn>;
 export function w(write: AnyFunction = assignPatch): AnyFunction {
   if (isWriteProc(write)) {
     return write;
   }
 
+  const writeFn = simpleMerge.middleW(write);
+
   const writeProc = (mugLike: any, ...restArgs: any): any => {
     // When the mugLike is a state, use the writeFn as it is.
     if (isState(mugLike)) {
-      const newState = write(mugLike, ...restArgs);
+      const newState = writeFn(mugLike, ...restArgs);
 
       // When the new state is a state, use it as it is.
       if (isState(newState)) {
@@ -373,7 +380,7 @@ export function w(write: AnyFunction = assignPatch): AnyFunction {
     const oldState = rTask._run(mugLike);
     rTask._clear();
 
-    const newState = write(oldState, ...restArgs);
+    const newState = writeFn(oldState, ...restArgs);
 
     const wTask = new MugLikeWriteTask();
     wTask._run(mugLike, newState);
@@ -382,7 +389,7 @@ export function w(write: AnyFunction = assignPatch): AnyFunction {
     return assignConservatively(mugLike, newState);
   };
 
-  writeProc[_writeFn] = write;
+  writeProc[_writeFn] = writeFn;
 
   return writeProc;
 }

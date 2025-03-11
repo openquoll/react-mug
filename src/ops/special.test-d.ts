@@ -12,16 +12,8 @@ import {
   setIt,
   WriteProc,
 } from '../mechanism';
-import {
-  _writeProc,
-  Generalness,
-  Mug,
-  PossibleMugLike,
-  ReadSpecialOpMeta,
-  WriteSpecialOpMeta,
-} from '../mug';
+import { Generalness, Mug, PossibleMugLike, ReadSpecialOpMeta, WriteSpecialOpMeta } from '../mug';
 import { onto, ReadGeneralOp, WriteGeneralOp } from './general';
-import { SimpleMerge } from './middleware';
 import { ReadSpecialOp, SpecialTrait, upon, WriteSpecialOp } from './special';
 
 interface ObjectState {
@@ -332,7 +324,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
   expectType<
     (() => void) &
       (<TState extends AState>(state: TState) => TState) &
-      WriteSpecialOpMeta<(state: ObjectState) => AState, AState>
+      WriteSpecialOpMeta<(state: ObjectState) => ObjectState, AState>
   >(fake<WriteSpecialOp<(state: ObjectState) => ObjectState, AState>>());
 
   // =-=-=
@@ -394,7 +386,7 @@ test('WriteSpecialOp, SetIt, AssignPatch', () => {
   expectType<
     (() => void) &
       (<TState extends AState>(state: TState) => TState) &
-      WriteSpecialOpMeta<() => AState, AState>
+      WriteSpecialOpMeta<() => ObjectState, AState>
   >(fake<WriteSpecialOp<() => ObjectState, AState>>());
 
   // =-=-=

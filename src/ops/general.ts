@@ -9,6 +9,7 @@ import {
   setIt,
   WriteProc,
 } from '../mechanism';
+import { simpleMerge } from '../middleware';
 import {
   _general,
   _readFn,
@@ -18,7 +19,6 @@ import {
   AnyReadProc,
   AnyWriteProc,
   Generalness,
-  isWriteProc,
   NotOp,
   NotProc,
   PossibleMugLike,
@@ -29,7 +29,6 @@ import {
   WriteProcMeta,
 } from '../mug';
 import { AnyFunction, Post0Params } from '../type-utils';
-import { SimpleMerge } from './middleware';
 
 export type ReadGeneralOpOnEmptyParamReadProc<TReadProc extends AnyReadProc, TState> = ((
   mugLike?: PossibleMugLike<TState>,
@@ -100,7 +99,7 @@ export type WriteGeneralOp<TWrite extends AnyFunction, TState> = TWrite extends 
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteGeneralOpOnSetIt<TState>
       : WriteGeneralOpOnTypicalWriteProc<TWrite, TState>
-  : WriteGeneralOp<WriteProc<SimpleMerge.MiddleW<TWrite, TState>>, TState>;
+  : WriteGeneralOp<WriteProc<TWrite>, TState>;
 
 export type W<TState> = {
   (): WriteGeneralOp<SetIt, TState>;
@@ -109,7 +108,7 @@ export type W<TState> = {
     writeProc: TWriteProc,
   ): WriteGeneralOp<TWriteProc, TState>;
 
-  <TWriteFn extends SimpleMerge.WriteFnConstraint<TState>>(
+  <TWriteFn extends simpleMerge.OpWriteFnConstraint<TState>>(
     writeFn: TWriteFn,
   ): WriteGeneralOp<TWriteFn, TState>;
 };
@@ -135,7 +134,7 @@ export function onto(): any {
   }
 
   function w(write: AnyFunction = setIt) {
-    const writeProc = isWriteProc(write) ? write : procW(SimpleMerge.middleW(write));
+    const writeProc = procW(write);
     const writeGeneralOp = (...args: any) => writeProc(...args);
     writeGeneralOp[_writeProc] = writeProc;
     writeGeneralOp[_general] = _general;

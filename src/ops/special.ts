@@ -9,6 +9,7 @@ import {
   setIt,
   WriteProc,
 } from '../mechanism';
+import { simpleMerge } from '../middleware';
 import {
   _mugLike,
   _readFn,
@@ -26,7 +27,6 @@ import {
   isFunction,
   isReadGeneralOp,
   isWriteGeneralOp,
-  isWriteProc,
   NotOp,
   NotProc,
   ownKeysOfObjectLike,
@@ -37,7 +37,6 @@ import {
   WriteSpecialOpMeta,
 } from '../mug';
 import { AnyFunction, AnyObject, Post0Params } from '../type-utils';
-import { SimpleMerge } from './middleware';
 
 export type ReadSpecialOpOnEmptyParamReadProc<
   TReadProc extends AnyReadProc,
@@ -113,7 +112,7 @@ export type WriteSpecialOp<TWrite extends AnyFunction, TState> = TWrite extends 
     : TWrite[typeof _writeFn] extends AssignPatch
       ? WriteSpecialOpOnSetIt<TState>
       : WriteSpecialOpOnTypicalWriteProc<TWrite, TState>
-  : WriteSpecialOp<WriteProc<SimpleMerge.MiddleW<TWrite, TState>>, TState>;
+  : WriteSpecialOp<WriteProc<TWrite>, TState>;
 
 export type W<TState> = {
   (): WriteSpecialOp<SetIt, TState>;
@@ -122,7 +121,7 @@ export type W<TState> = {
     writeProc: TWriteProc,
   ): WriteSpecialOp<TWriteProc, TState>;
 
-  <TWriteFn extends SimpleMerge.WriteFnConstraint<TState>>(
+  <TWriteFn extends simpleMerge.OpWriteFnConstraint<TState>>(
     writeFn: TWriteFn,
   ): WriteSpecialOp<TWriteFn, TState>;
 };
@@ -183,7 +182,7 @@ export function upon(mugLike: any): any {
   }
 
   function w(write: (mugLike: any, ...restArgs: any) => any = setIt) {
-    const writeProc: AnyWriteProc = isWriteProc(write) ? write : procW(SimpleMerge.middleW(write));
+    const writeProc: AnyWriteProc = procW(write);
     const writeFn = writeProc[_writeFn];
     const thresholdLen = Math.max(1, writeFn.length);
 

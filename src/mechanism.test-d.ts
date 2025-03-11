@@ -312,7 +312,10 @@ test('WriteProc, SetIt, AssignPatch', () => {
 
   // =-=-=
 
-  fake<WriteProc<(state: AState) => ObjectState>>();
+  expectType<
+    (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
+      WriteProcMeta<(state: AState) => AState>
+  >(fake<WriteProc<(state: AState) => ObjectState>>());
 
   // =-=-=
 
@@ -439,8 +442,11 @@ test('w, setIt, assignPatch', () => {
 
   // =-=-=
 
-  // @ts-expect-error
-  w((state: AState) => fake<ObjectState>());
+  const write427 = w((state: AState) => fake<ObjectState>());
+
+  expectType<WriteProc<(state: AState) => ObjectState>>(write427);
+
+  expectType<AState>(write427(fake<AState>()));
 
   // =-=-=
 

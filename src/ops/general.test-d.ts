@@ -362,7 +362,7 @@ test('WriteGeneralOp, SetIt, AssignPatch', () => {
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike: TMugLike) => TMugLike) &
-      WriteGeneralOpMeta<(state: ObjectState) => AState, AState>
+      WriteGeneralOpMeta<(state: ObjectState) => ObjectState, AState>
   >(fake<WriteGeneralOp<(state: ObjectState) => ObjectState, AState>>());
 
   // =-=-=
@@ -414,7 +414,7 @@ test('WriteGeneralOp, SetIt, AssignPatch', () => {
 
   expectType<
     (<TMugLike extends PossibleMugLike<AState>>(mugLike?: TMugLike) => TMugLike) &
-      WriteGeneralOpMeta<() => AState, AState>
+      WriteGeneralOpMeta<() => ObjectState, AState>
   >(fake<WriteGeneralOp<() => ObjectState, AState>>());
 
   // =-=-=

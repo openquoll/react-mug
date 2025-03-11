@@ -1,4 +1,4 @@
-import { AssignPatch, isBuiltinFn } from '../builtin-fns';
+import { AssignPatch, isBuiltinFn } from './builtin-fns';
 import {
   _readFn,
   _readProc,
@@ -7,7 +7,7 @@ import {
   emptyCloneOfPlainObject,
   isPlainObject,
   ownKeysOfObjectLike,
-} from '../mug';
+} from './mug';
 import {
   _assign,
   _defineProperty,
@@ -20,18 +20,23 @@ import {
   _name,
   _ObjectPrototype,
   _true,
-} from '../shortcuts';
-import type {
-  AnyFunction,
-  LatterIfChild,
-  LatterIfParent,
-  Param0,
-  Post0Params,
-  SimplePatch,
-} from '../type-utils';
+} from './shortcuts';
+import type { AnyFunction, LatterIfChild, Param0, SimplePatch } from './type-utils';
 
-export namespace SimpleMerge {
-  export type WriteFnConstraint<TState> = {
+export namespace simpleMerge {
+  export type ProcWriteFnConstraint<TWriteFn extends AnyFunction> = {
+    (state: any, ...restArgs: any): SimplePatch<Param0<TWriteFn>>;
+
+    // NotProc
+    [_readFn]?: never;
+    [_writeFn]?: never;
+
+    // NotOp
+    [_readProc]?: never;
+    [_writeProc]?: never;
+  };
+
+  export type OpWriteFnConstraint<TState> = {
     (state: TState, ...restArgs: any): SimplePatch<TState>;
 
     // NotProc
@@ -43,23 +48,17 @@ export namespace SimpleMerge {
     [_writeProc]?: never;
   };
 
-  export type MiddleWOnEmptyParamWriteFn<
-    TWriteFn extends AnyFunction,
-    TState,
-  > = () => LatterIfChild<TState, ReturnType<TWriteFn>>;
+  export type MiddleWOnTypicalWriteFn<TWriteFn extends AnyFunction> = (
+    ...args: Parameters<TWriteFn>
+  ) => LatterIfChild<Param0<TWriteFn>, ReturnType<TWriteFn>>;
 
-  export type MiddleWOnTypicalWriteFn<TWriteFn extends AnyFunction, TState> = (
-    state: LatterIfParent<TState, Param0<TWriteFn>>,
-    ...restArgs: Post0Params<TWriteFn>
-  ) => LatterIfChild<TState, ReturnType<TWriteFn>>;
-
-  export type MiddleW<TWriteFn extends AnyFunction, TState> = TWriteFn extends () => any
-    ? MiddleWOnEmptyParamWriteFn<TWriteFn, TState>
+  export type MiddleW<TWriteFn extends AnyFunction> = TWriteFn extends () => any
+    ? TWriteFn
     : TWriteFn extends AssignPatch
       ? TWriteFn
       : TWriteFn extends <TState extends never>(state: TState, ...restArgs: any) => TState
         ? TWriteFn
-        : MiddleWOnTypicalWriteFn<TWriteFn, TState>;
+        : MiddleWOnTypicalWriteFn<TWriteFn>;
 
   export const middleW = (writeFn: AnyFunction): AnyFunction => {
     if (isBuiltinFn(writeFn)) {

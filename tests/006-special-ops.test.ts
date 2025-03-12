@@ -783,7 +783,7 @@ describe('0ab2ffa, special-ops straightforwardly, [cite] 003, 004, 007', () => {
     });
   });
 
-  describe(', writes by the custom empty-param write special-op in functional mode', () => {
+  describe('6ba6cf6, writes by the custom empty-param write special-op in functional mode', () => {
     const writeOpParamState: AState = {
       s: '674',
       o: {

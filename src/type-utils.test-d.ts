@@ -19,8 +19,8 @@ describe('SimplePatch', () => {
 
   expectType<[ObjectState, ObjectState]>(fake<SimplePatch<[ObjectState, ObjectState]>>());
 
-  expectType<{ s?: string; o?: { s: string } }>(fake<ObjectState>());
+  expectType<{ s?: string; o?: { s: string } }>(fake<SimplePatch<ObjectState>>());
 
   type PartialObjectState = Partial<ObjectState>;
-  expectType<PartialObjectState>(fake<PartialObjectState>());
+  expectType<PartialObjectState>(fake<SimplePatch<PartialObjectState>>());
 });

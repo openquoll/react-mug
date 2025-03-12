@@ -1,5 +1,4 @@
 import { produce } from 'immer';
-
 import { construction, getIt, Mug, upon, w } from '../src';
 
 interface ObjectState {

@@ -1,5 +1,4 @@
 import { expectAssignable, expectType } from 'tsd';
-
 import { fake } from '../../tests/type-utils';
 import { r as procR, w as procW } from '../mechanism';
 import { Mug, MugLike, PossibleMug, PossibleMugLike, WithAttachments } from '../mug';

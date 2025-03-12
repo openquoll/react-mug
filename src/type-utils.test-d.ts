@@ -1,5 +1,4 @@
 import { expectType } from 'tsd';
-
 import { fake } from '../tests/type-utils';
 import { SimplePatch } from './type-utils';
 

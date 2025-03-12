@@ -1,6 +1,5 @@
 import { act, render } from '@testing-library/react';
 import { useEffect } from 'react';
-
 import { construction, getIt, Mug, onto, r, setIt, tuple, upon, useR } from '../src';
 import { ownKeysOfObjectLike } from '../src/mug';
 

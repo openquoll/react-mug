@@ -81,7 +81,6 @@ export * as QueryableOps from './QueryableMug';
 ```ts
 // CounterMug.ts
 import { construction, upon } from 'react-mug';
-
 import { QueryableOps, QueryableState } from './QueryableMug';
 
 // 接入可查询状态
@@ -128,7 +127,6 @@ export const queryValue = async () => {
 ```ts
 // BriefingMug.ts
 import { construction, upon } from 'react-mug';
-
 import { QueryableOps, QueryableState } from './QueryableMug';
 
 export interface BriefingState extends QueryableState {

@@ -81,7 +81,6 @@ It, then, gets plugged back into the counter state:
 ```ts
 // CounterMug.ts
 import { construction, upon } from 'react-mug';
-
 import { QueryableOps, QueryableState } from './QueryableMug';
 
 // Plug in queryable state
@@ -128,7 +127,6 @@ As such, a clearer code structure is achieved, and reuse becomes convenient:
 ```ts
 // BriefingMug.ts
 import { construction, upon } from 'react-mug';
-
 import { QueryableOps, QueryableState } from './QueryableMug';
 
 export interface BriefingState extends QueryableState {

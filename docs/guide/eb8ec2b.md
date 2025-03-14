@@ -187,10 +187,7 @@ export const queryWithTimeout = x(async (mug, act: () => Promise<void>, ms: numb
 
   try {
     startQuerying(mug);
-    const timer = new Promise(
-      (_, reject),
-      setTimeout(() => reject(new Error('Timeout')), 3000),
-    );
+    const timer = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
     const actor = act();
     await Promise.race([timer, actor]);
   } finally {
@@ -282,7 +279,7 @@ describe('startQuerying', () => {
 
 ```ts
 // QueryableState.test.ts
-import { getIt, Mug, resetIt, setIt } from 'react-mug';
+import { construction, getIt, Mug, resetIt, setIt } from 'react-mug';
 import { QueryableState, queryWithTimeout } from './QueryableState';
 
 describe('queryWithTimeout', () => {

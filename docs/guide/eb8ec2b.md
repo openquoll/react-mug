@@ -1,6 +1,11 @@
-# 指南 / 分隔通用特质
+# <span id="c92c394"></span>指南 / 分隔通用特质
 
-[核心内容](#bfc7f69) &nbsp;•&nbsp; [异步通用操作](#5b70f21) &nbsp;•&nbsp; [通用操作复用](#3139a8c) &nbsp;•&nbsp; [默认通用操作](#78208bb) &nbsp;•&nbsp; [通用操作测试](#a8658c7) &nbsp;•&nbsp; [异步通用操作测试](#d83d546)。
+[核心内容](#bfc7f69) &nbsp;•&nbsp;
+[异步通用操作](#5b70f21) &nbsp;•&nbsp;
+[通用操作复用](#3139a8c) &nbsp;•&nbsp;
+[默认通用操作](#78208bb) &nbsp;•&nbsp;
+[通用操作测试](#a8658c7) &nbsp;•&nbsp;
+[异步通用操作测试](#d83d546)。
 
 [返回目录](./README.md)。
 
@@ -8,12 +13,12 @@
 
 ## <span id="bfc7f69"></span>核心内容
 
-状态越大包含的特质越多，有的特征会在不同状态反复出现，通用的特征值得单拎出来，为此 React Mug 提供了状态分隔。
+单个状态的体量越大，其包含的特质就越多。有的特质还会在不同的状态中反复出现，这些便是值得单拎出来的通用特质。为此 React Mug 提供了状态分隔机制。
 
-例如，对于下面的计数器状态：
+例如，对于以下可查询值的计数器状态：
 
 ```ts
-// CounterMug.ts
+// CounterState.ts
 import { construction, upon } from 'react-mug';
 
 export interface CounterState {
@@ -39,26 +44,26 @@ export const getValue = r((state) => {
   return state.value;
 });
 
-export const startQuerying = w((state) => ({ ...state, querying: true }));
+export const startQuerying = w(() => ({ querying: true }));
 
-export const endQuerying = w((state) => ({ ...state, querying: false }));
+export const endQuerying = w(() => ({ querying: false }));
 
-export const increase = w((state, delta: number) => ({ ...state, value: state.value + delta }));
+export const increase = w((state, delta: number) => ({ value: state.value + delta }));
 
 export const set = w();
 
 export const queryValue = async () => {
   startQuerying();
-  const value = await RestfulApi.counter.value.get();
+  const { data: value } = await fetch('/api/counter/value').then((res) => res.json());
   set({ value });
   endQuerying();
 };
 ```
 
-通过分隔，即可将 “可查询” 的特质提炼为通用状态：
+通过分隔，可以将 “可查询” 特质提炼成一个通用状态：
 
 ```ts
-// QueryableMug.ts
+// QueryableState.ts
 import { onto } from 'react-mug';
 
 export interface QueryableState {
@@ -67,21 +72,24 @@ export interface QueryableState {
 
 const { r, w } = onto<QueryableState>();
 
+// 通用读操作
 export const isQuerying = r((state) => state.querying);
 
-export const startQuerying = w((state) => ({ ...state, querying: true }));
+// 通用写操作
+export const startQuerying = w(() => ({ querying: true }));
 
-export const endQuerying = w((state) => ({ ...state, querying: false }));
+export const endQuerying = w(() => ({ querying: false }));
 
-export * as QueryableOps from './QueryableMug';
+// 通用操作的名字空间
+export * as queryableOps from './QueryableState';
 ```
 
-然后接入回计数器状态：
+然后再接入回计数器状态：
 
 ```ts
-// CounterMug.ts
+// CounterState.ts
 import { construction, upon } from 'react-mug';
-import { QueryableOps, QueryableState } from './QueryableMug';
+import { queryableOps, QueryableState } from './QueryableState';
 
 // 接入可查询状态
 export interface CounterState extends QueryableState {
@@ -98,124 +106,107 @@ export const counterMug = {
 const { r, w, s } = upon<CounterState>(counterMug);
 
 // 接入可查询状态
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
+export const { isQuerying, startQuerying, endQuerying } = s(queryableOps);
 
 export const getValue = r((state) => {
-  // 调用可查询操作
+  // 复用可查询操作
   if (isQuerying(state)) {
     return;
   }
   return state.value;
 });
 
-export const increase = w((state, delta: number) => ({ ...state, value: state.value + delta }));
+export const increase = w((state, delta: number) => ({ value: state.value + delta }));
 
 export const set = w();
 
 export const queryValue = async () => {
   // 调用可查询操作
   startQuerying();
-  const value = await RestfulApi.counter.value.get();
+  const { data: value } = await fetch('/api/counter/value').then((res) => res.json());
   set({ value });
   // 调用可查询操作
   endQuerying();
 };
 ```
 
-这样代码结构更加清晰，并且方便复用：
+这样代码保持等价，但是结构更加清晰，而且方便后续复用：
 
 ```ts
-// BriefingMug.ts
+// BriefingState.ts
 import { construction, upon } from 'react-mug';
-import { QueryableOps, QueryableState } from './QueryableMug';
+import { queryableOps, QueryableState } from './QueryableState';
 
 export interface BriefingState extends QueryableState {
-  text: string;
+  content: string;
 }
 
 export const briefingMug = {
   [construction]: {
     querying: false,
-    text: '',
+    content: '',
   },
 };
 
 const { r, w, s } = upon<BriefingState>(briefingMug);
 
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
+export const { isQuerying, startQuerying, endQuerying } = s(queryableOps);
 
-export const getText = r((state) => {
+export const getContent = r((state) => {
   if (isQuerying(state)) {
     return;
   }
-  return state.text;
+  return state.content;
 });
 
 export const set = w();
 
-export const queryText = async () => {
+export const queryContent = async () => {
   startQuerying();
-  const text = await RestfulApi.briefing.text.get();
-  set({ text });
+  const { data: content } = await fetch('/api/briefing/content').then((res) => res.json());
+  set({ content });
   endQuerying();
 };
 ```
 
-让状态有序地拆分开来。
+从而让状态有序地拆隔开来。
 
 ## <span id="5b70f21"></span>异步通用操作
 
-此外，以普通的异步函数，借助 `x` 把兼容的 Mug 声明为首参，随后将 Mug 传入通用操作调用，即可定义异步通用操作：
+进一步地，向 `x` 方法传入异步函数并在其中调用通用操作即可创建异步通用操作：
 
 ```ts
-// QueryableMug.ts
+// QueryableState.ts
 
-...
+const { ..., x } = onto<QueryableState>();
 
-const { r, w, x } = onto<QueryableState>();
-
-...
-
-export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) => {
+export const queryWithTimeout = x(async (mug, act: () => Promise<void>, ms: number = 3000) => {
   if (isQuerying(mug)) {
     return;
   }
 
-  startQuerying(mug);
-  let error: unknown;
-  for (let i = 0; i < times; i++) {
-    try {
-      await act();
-      break;
-    } catch (e) {
-      const noMore = i === times - 1;
-      if (noMore) {
-        error = e;
-      }
-    }
-  }
-  endQuerying(mug);
-
-  if (error) {
-    throw error;
+  try {
+    startQuerying(mug);
+    const timer = new Promise(
+      (_, reject),
+      setTimeout(() => reject(new Error('Timeout')), 3000),
+    );
+    const actor = act();
+    await Promise.race([timer, actor]);
+  } finally {
+    endQuerying(mug);
   }
 });
-
-...
 ```
 
 ```ts
-// CounterMug.ts
+// CounterState.ts
 
-...
+export const { ..., queryWithTimeout } = s(queryableOps);
 
-export const { ..., retry } = s(QueryableOps);
-
-...
-
-export const queryValueFastWithRetry = async () => {
-  await retry(async () => {
-    const value = await RestfulApi.counter.value.get({ timeout: 1000 });
+export const queryValueWithTimeout = async () => {
+  await queryWithTimeout(async () => {
+    const { data: value } = await fetch('/api/counter/value').then((res) => res.json());
     set({ value });
   });
 };
@@ -223,34 +214,28 @@ export const queryValueFastWithRetry = async () => {
 
 ## <span id="3139a8c"></span>通用操作复用
 
-把状态一并传入通用操作，即可调用其纯函数形式，完成在操作内复用：
+将状态一并传入通用操作，即可调起函数态进行操作间复用：
 
 ```ts
-// QueryableMug.ts
+// QueryableState.ts
 
-...
-
-export const toggleQueryingElaborately = w((state) =>
+export const toggleQueryingVerbosely = w((state) =>
   isQuerying(state) ? endQuerying(state) : startQuerying(state),
 );
-
-...
 ```
 
 ## <span id="78208bb"></span>默认通用操作
 
-无参调用 `r`、`w`，可以得到 “读取全量状态”、“合并写入状态” 的通用操作：
+无参调用 `r`、`w`，即可得到 “读取全量状态”、“合并写入状态” 的通用操作：
 
 ```ts
-// QueryableMug.ts
-
-...
+// QueryableState.ts
 
 export const get = r();
 
 export const set = w();
 
-export const retryAlternatively = x(async (mug, act: () => Promise<void>, times: number = 3) => {
+export const queryWithRetry = x(async (mug, act: () => Promise<void>, times: number = 3) => {
   if (get(mug).querying) {
     return;
   }
@@ -262,8 +247,8 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
       await act();
       break;
     } catch (e) {
-      const noMore = i === times - 1;
-      if (noMore) {
+      const noMoreTime = i === times - 1;
+      if (noMoreTime) {
         error = e;
       }
     }
@@ -274,17 +259,15 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
     throw error;
   }
 });
-
-...
 ```
 
 ## <span id="a8658c7"></span>通用操作测试
 
-以测试纯函数的方式，即可测试通用操作：
+以测试纯函数的方式，可轻松测试通用操作：
 
 ```ts
-// QueryableMug.test.ts
-import { startQuerying } from './QueryableMug';
+// QueryableState.test.ts
+import { startQuerying } from './QueryableState';
 
 describe('startQuerying', () => {
   test('sets querying to true', () => {
@@ -295,17 +278,14 @@ describe('startQuerying', () => {
 
 ## <span id="d83d546"></span>异步通用操作测试
 
-以及，以 Mug 为支点，即可测试异步通用操作：
+以及，以 Mug 为支点，可轻松测试异步通用操作：
 
 ```ts
-// QueryableMug.test.ts
+// QueryableState.test.ts
 import { getIt, Mug, resetIt, setIt } from 'react-mug';
+import { QueryableState, queryWithTimeout } from './QueryableState';
 
-import { ..., QueryableState, retry } from './QueryableMug';
-
-...
-
-describe('retry', () => {
+describe('queryWithTimeout', () => {
   const mug: Mug<QueryableState> = {
     [construction]: {
       querying: false,
@@ -314,11 +294,11 @@ describe('retry', () => {
 
   afterEach(() => resetIt(mug));
 
-  test('act not called and state not changed if querying is true', async () => {
+  test('act not called and state not changed if still querying', async () => {
     const act = jest.fn();
     setIt(mug, { querying: true });
 
-    await retry(mug, act);
+    await queryWithTimeout(mug, act);
 
     expect(act).not.toHaveBeenCalled();
     expect(getIt(mug)).toStrictEqual({ querying: true });
@@ -328,4 +308,5 @@ describe('retry', () => {
 
 ---
 
+[返回顶部](#c92c394) &nbsp;•&nbsp;
 [返回目录](./README.md)。

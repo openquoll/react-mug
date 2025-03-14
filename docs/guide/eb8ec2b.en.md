@@ -1,6 +1,11 @@
-# Guide / Segregate General Traits
+# <span id="06c8bd8"></span>Guide / Segregate General Traits
 
-[Key Content](#256ed49) &nbsp;•&nbsp; [Async General Ops](#18fab2d) &nbsp;•&nbsp; [General Op Reuse](#1c5618e) &nbsp;•&nbsp; [Default General Ops](#f8f326d) &nbsp;•&nbsp; [General Op Testing](#0535cd6) &nbsp;•&nbsp; [Async General Op Testing](#ae966ca).
+[Key Content](#256ed49) &nbsp;•&nbsp;
+[Async General Ops](#18fab2d) &nbsp;•&nbsp;
+[General Op Reuse](#1c5618e) &nbsp;•&nbsp;
+[Default General Ops](#f8f326d) &nbsp;•&nbsp;
+[General Op Testing](#0535cd6) &nbsp;•&nbsp;
+[Async General Op Testing](#ae966ca).
 
 [Back to ToC](./README.en.md).
 
@@ -8,12 +13,12 @@ English &nbsp;•&nbsp; [中文](./eb8ec2b.md).
 
 ## <span id="256ed49"></span>Key Content
 
-The bigger a state, the more traits there are. Some traits can reappear in different states. General traits are worth setting apart. Thus, React Mug provides trait segregation.
+The bigger scale a state is, the more traits it contains. Some traits can reappear across different states, which makes them worth setting apart. Thus, React Mug provides trait segregation mechanism.
 
-For example, regarding a counter state as follows:
+For example, regarding a value-queryable counter state as follows:
 
 ```ts
-// CounterMug.ts
+// CounterState.ts
 import { construction, upon } from 'react-mug';
 
 export interface CounterState {
@@ -39,26 +44,26 @@ export const getValue = r((state) => {
   return state.value;
 });
 
-export const startQuerying = w((state) => ({ ...state, querying: true }));
+export const startQuerying = w(() => ({ querying: true }));
 
-export const endQuerying = w((state) => ({ ...state, querying: false }));
+export const endQuerying = w(() => ({ querying: false }));
 
-export const increase = w((state, delta: number) => ({ ...state, value: state.value + delta }));
+export const increase = w((state, delta: number) => ({ value: state.value + delta }));
 
 export const set = w();
 
 export const queryValue = async () => {
   startQuerying();
-  const value = await RestfulApi.counter.value.get();
+  const { data: value } = await fetch('/api/counter/value').then((res) => res.json());
   set({ value });
   endQuerying();
 };
 ```
 
-By segregation, the "queryable" trait gets extracted as a general state:
+By segregation, the "queryable" trait can be extracted as a general state:
 
 ```ts
-// QueryableMug.ts
+// QueryableState.ts
 import { onto } from 'react-mug';
 
 export interface QueryableState {
@@ -67,23 +72,26 @@ export interface QueryableState {
 
 const { r, w } = onto<QueryableState>();
 
+// General read ops
 export const isQuerying = r((state) => state.querying);
 
-export const startQuerying = w((state) => ({ ...state, querying: true }));
+// General write ops
+export const startQuerying = w(() => ({ querying: true }));
 
-export const endQuerying = w((state) => ({ ...state, querying: false }));
+export const endQuerying = w(() => ({ querying: false }));
 
-export * as QueryableOps from './QueryableMug';
+// Namespace of general ops
+export * as queryableOps from './QueryableState';
 ```
 
-It, then, gets plugged back into the counter state:
+Then it gets inserted back to the counter state:
 
 ```ts
-// CounterMug.ts
+// CounterState.ts
 import { construction, upon } from 'react-mug';
-import { QueryableOps, QueryableState } from './QueryableMug';
+import { queryableOps, QueryableState } from './QueryableState';
 
-// Plug in queryable state
+// Insert back queryable state
 export interface CounterState extends QueryableState {
   value: number;
 }
@@ -97,125 +105,108 @@ export const counterMug = {
 
 const { r, w, s } = upon<CounterState>(counterMug);
 
-// Plug in queryable state
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
+// Insert back queryable state
+export const { isQuerying, startQuerying, endQuerying } = s(queryableOps);
 
 export const getValue = r((state) => {
-  // Call queryable ops
+  // Reuse queryable ops
   if (isQuerying(state)) {
     return;
   }
   return state.value;
 });
 
-export const increase = w((state, delta: number) => ({ ...state, value: state.value + delta }));
+export const increase = w((state, delta: number) => ({ value: state.value + delta }));
 
 export const set = w();
 
 export const queryValue = async () => {
-  // Call queryable ops
+  // Invoke queryable ops
   startQuerying();
-  const value = await RestfulApi.counter.value.get();
+  const { data: value } = await fetch('/api/counter/value').then((res) => res.json());
   set({ value });
-  // Call queryable ops
+  // Invoke queryable ops
   endQuerying();
 };
 ```
 
-As such, a clearer code structure is achieved, and reuse becomes convenient:
+As such, the code is kept equivalent, but the structure gets clearer, and later reuse becomes possible:
 
 ```ts
-// BriefingMug.ts
+// BriefingState.ts
 import { construction, upon } from 'react-mug';
-import { QueryableOps, QueryableState } from './QueryableMug';
+import { queryableOps, QueryableState } from './QueryableState';
 
 export interface BriefingState extends QueryableState {
-  text: string;
+  content: string;
 }
 
 export const briefingMug = {
   [construction]: {
     querying: false,
-    text: '',
+    content: '',
   },
 };
 
 const { r, w, s } = upon<BriefingState>(briefingMug);
 
-export const { isQuerying, startQuerying, endQuerying } = s(QueryableOps);
+export const { isQuerying, startQuerying, endQuerying } = s(queryableOps);
 
-export const getText = r((state) => {
+export const getContent = r((state) => {
   if (isQuerying(state)) {
     return;
   }
-  return state.text;
+  return state.content;
 });
 
 export const set = w();
 
-export const queryText = async () => {
+export const queryContent = async () => {
   startQuerying();
-  const text = await RestfulApi.briefing.text.get();
-  set({ text });
+  const { data: content } = await fetch('/api/briefing/content').then((res) => res.json());
+  set({ content });
   endQuerying();
 };
 ```
 
-States are divided in an orderly manner.
+So that states are divided down in an orderly manner.
 
 ## <span id="18fab2d"></span>Async General Ops
 
-In addition, with plain async functions, specifying the first param as compatible mugs utilizing `x`, then calling general ops with the mug param defines async general ops:
+Further more, passing async functions into the method `x` and invoking general ops inside create async general ops:
 
 ```ts
-// QueryableMug.ts
+// QueryableState.ts
 
-...
+const { ..., x } = onto<QueryableState>();
 
-const { r, w, x } = onto<QueryableState>();
-
-...
-
-export const retry = x(async (mug, act: () => Promise<void>, times: number = 3) => {
+export const queryWithTimeout = x(async (mug, act: () => Promise<void>, ms: number = 3000) => {
   if (isQuerying(mug)) {
     return;
   }
 
-  startQuerying(mug);
-  let error: unknown;
-  for (let i = 0; i < times; i++) {
-    try {
-      await act();
-      break;
-    } catch (e) {
-      const noMore = i === times - 1;
-      if (noMore) {
-        error = e;
-      }
-    }
-  }
-  endQuerying(mug);
-
-  if (error) {
-    throw error;
+  try {
+    startQuerying(mug);
+    const timer = new Promise(
+      (_, reject),
+      setTimeout(() => reject(new Error('Timeout')), 3000),
+    );
+    const actor = act();
+    await Promise.race([timer, actor]);
+  } finally {
+    endQuerying(mug);
   }
 });
-
-...
 ```
 
 ```ts
-// CounterMug.ts
+// CounterState.ts
 
-...
+export const { ..., queryWithTimeout } = s(queryableOps);
 
-export const { ..., retry } = s(QueryableOps);
-
-...
-
-export const queryValueFastWithRetry = async () => {
-  await retry(async () => {
-    const value = await RestfulApi.counter.value.get({ timeout: 1000 });
+export const queryValueWithTimeout = async () => {
+  await queryWithTimeout(async () => {
+    const { data: value } = await fetch('/api/counter/value').then((res) => res.json());
     set({ value });
   });
 };
@@ -223,34 +214,28 @@ export const queryValueFastWithRetry = async () => {
 
 ## <span id="1c5618e"></span>General Op Reuse
 
-Passing states into general ops all at once activates functional mode for in-op reuse:
+Passing states all at once into general ops activates functional mode for inter-op reuse:
 
 ```ts
-// QueryableMug.ts
+// QueryableState.ts
 
-...
-
-export const toggleQueryingElaborately = w((state) =>
+export const toggleQueryingVerbosely = w((state) =>
   isQuerying(state) ? endQuerying(state) : startQuerying(state),
 );
-
-...
 ```
 
 ## <span id="f8f326d"></span>Default General Ops
 
-Calling `r`, `w` without params creates "Read by all", "Write by merge" general ops:
+Empty-param calls to `r`, `w` create "Read by all", "Write by merge" general ops:
 
 ```ts
-// QueryableMug.ts
-
-...
+// QueryableState.ts
 
 export const get = r();
 
 export const set = w();
 
-export const retryAlternatively = x(async (mug, act: () => Promise<void>, times: number = 3) => {
+export const queryWithRetry = x(async (mug, act: () => Promise<void>, times: number = 3) => {
   if (get(mug).querying) {
     return;
   }
@@ -262,8 +247,8 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
       await act();
       break;
     } catch (e) {
-      const noMore = i === times - 1;
-      if (noMore) {
+      const noMoreTime = i === times - 1;
+      if (noMoreTime) {
         error = e;
       }
     }
@@ -274,17 +259,15 @@ export const retryAlternatively = x(async (mug, act: () => Promise<void>, times:
     throw error;
   }
 });
-
-...
 ```
 
 ## <span id="0535cd6"></span>General Op Testing
 
-The approach to testing pure functions applies to general ops:
+The easy approach to testing pure functions applies the same to general ops:
 
 ```ts
-// QueryableMug.test.ts
-import { startQuerying } from './QueryableMug';
+// QueryableState.test.ts
+import { startQuerying } from './QueryableState';
 
 describe('startQuerying', () => {
   test('sets querying to true', () => {
@@ -295,17 +278,14 @@ describe('startQuerying', () => {
 
 ## <span id="ae966ca"></span>Async General Op Testing
 
-Also, mugs as fulcrums boost testing async general ops:
+Also, mugs as fulcrums boost up testing async general ops:
 
 ```ts
-// QueryableMug.test.ts
+// QueryableState.test.ts
 import { getIt, Mug, resetIt, setIt } from 'react-mug';
+import { QueryableState, queryWithTimeout } from './QueryableState';
 
-import { ..., QueryableState, retry } from './QueryableMug';
-
-...
-
-describe('retry', () => {
+describe('queryWithTimeout', () => {
   const mug: Mug<QueryableState> = {
     [construction]: {
       querying: false,
@@ -314,11 +294,11 @@ describe('retry', () => {
 
   afterEach(() => resetIt(mug));
 
-  test('act not called and state not changed if querying is true', async () => {
+  test('act not called and state not changed if still querying', async () => {
     const act = jest.fn();
     setIt(mug, { querying: true });
 
-    await retry(mug, act);
+    await queryWithTimeout(mug, act);
 
     expect(act).not.toHaveBeenCalled();
     expect(getIt(mug)).toStrictEqual({ querying: true });
@@ -328,4 +308,5 @@ describe('retry', () => {
 
 ---
 
+[Back to Top](#06c8bd8) &nbsp;•&nbsp;
 [Back to ToC](./README.en.md).

@@ -1,6 +1,12 @@
-# React Mug
+# <span id="a6b2ef2"></span>React Mug
 
-[概要](#f595ead) &nbsp;•&nbsp; [特性](#dea3322) &nbsp;•&nbsp; [安装](#cf6afd0) &nbsp;•&nbsp; [指南](#be6352c) &nbsp;•&nbsp; [API](#629f340) &nbsp;•&nbsp; [许可](#1036c9f)。
+[概要](#f595ead) &nbsp;•&nbsp;
+[特性](#dea3322) &nbsp;•&nbsp;
+[安装](#cf6afd0) &nbsp;•&nbsp;
+[指南](#be6352c) &nbsp;•&nbsp;
+[API](#629f340) &nbsp;•&nbsp;
+[许可](#1036c9f) &nbsp;•&nbsp;
+[赞助](#8e8463c)。
 
 中文 &nbsp;•&nbsp; [English](./README.en.md)。
 
@@ -41,9 +47,7 @@ export const get = r();
 
 ```ts
 const count = get();
-```
 
-```ts
 increase(1);
 ```
 
@@ -112,10 +116,10 @@ describe('increase', () => {
 
 export const set = w();
 
-export async function query() {
+export const query = async () => {
   const { data: count } = await fetch('/api/count').then((res) => res.json());
   set(count);
-}
+};
 ```
 
 ## <span id="cf6afd0"></span>安装
@@ -138,9 +142,13 @@ npm i react-mug
 
 [Apache 2.0](./LICENSE)（免费商用）。
 
-## <span id=""></span>赞助
+## <span id="8e8463c"></span>赞助
 
 喜欢就赞助一下吧！
 
 <a href="https://afdian.com/a/openquoll" target="_blank"><img width="50" src="https://github.com/user-attachments/assets/f0442384-463d-4f62-aa91-775bfefc20f7" alt="在 afdian.com 上赞助" /></a>（国内）
 <a href='https://ko-fi.com/openquoll' target='_blank'><img width='50' src="https://github.com/user-attachments/assets/519a3a99-8eb0-4b44-bf87-4967ca0512a2" alt="在 ko-fi.com 上赞助" /></a>（海外）
+
+---
+
+[返回顶部](#a6b2ef2)

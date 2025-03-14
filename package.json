@@ -25,7 +25,7 @@
   "module": "./dist/react-mug.esm.min.js",
   "main": "./dist/react-mug.cjs.min.js",
   "types": "./dist/types/index.d.ts",
-  "description": "可能是最好用的函数式状态库。/ Possibly the optimal way to functionally manage states.",
+  "description": "下一代 React 状态库，为极致的体验而生 ✨ / Next-generation React state lib. Born for optimal experience ✨",
   "keywords": [
     "react-mug",
     "react",

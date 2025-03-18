@@ -1,4 +1,4 @@
-# <span id="c92c394"></span>指南 / 分隔通用特质
+# <span id="c92c394"></span> 指南 / 分隔通用特质
 
 [核心内容](#bfc7f69) &nbsp;•&nbsp;
 [异步通用操作](#5b70f21) &nbsp;•&nbsp;
@@ -11,7 +11,7 @@
 
 中文 &nbsp;•&nbsp; [English](./eb8ec2b.en.md)。
 
-## <span id="bfc7f69"></span>核心内容
+## <span id="bfc7f69"></span> 核心内容
 
 单个状态的体量越大，其包含的特质就越多。有的特质还会在不同的状态中反复出现，这些便是值得单拎出来的通用特质。为此 React Mug 提供了状态分隔机制。
 
@@ -171,7 +171,7 @@ export const queryContent = async () => {
 
 从而让状态有序地拆隔开来。
 
-## <span id="5b70f21"></span>异步通用操作
+## <span id="5b70f21"></span> 异步通用操作
 
 进一步地，向 `x` 方法传入异步函数并在其中调用通用操作即可创建异步通用操作：
 
@@ -209,7 +209,7 @@ export const queryValueWithTimeout = async () => {
 };
 ```
 
-## <span id="3139a8c"></span>通用操作复用
+## <span id="3139a8c"></span> 通用操作复用
 
 将状态一并传入通用操作，即可调起函数态进行操作间复用：
 
@@ -221,7 +221,7 @@ export const toggleQueryingVerbosely = w((state) =>
 );
 ```
 
-## <span id="78208bb"></span>默认通用操作
+## <span id="78208bb"></span> 默认通用操作
 
 无参调用 `r`、`w`，即可得到 “读取全量状态”、“合并写入状态” 的通用操作：
 
@@ -258,7 +258,7 @@ export const queryWithRetry = x(async (mug, act: () => Promise<void>, times: num
 });
 ```
 
-## <span id="a8658c7"></span>通用操作测试
+## <span id="a8658c7"></span> 通用操作测试
 
 以测试纯函数的方式，可轻松测试通用操作：
 
@@ -273,7 +273,7 @@ describe('startQuerying', () => {
 });
 ```
 
-## <span id="d83d546"></span>异步通用操作测试
+## <span id="d83d546"></span> 异步通用操作测试
 
 以及，以 Mug 为支点，可轻松测试异步通用操作：
 

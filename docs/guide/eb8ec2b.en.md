@@ -1,4 +1,4 @@
-# <span id="06c8bd8"></span>Guide / Segregate General Traits
+# <span id="06c8bd8"></span> Guide / Segregate General Traits
 
 [Key Content](#256ed49) &nbsp;•&nbsp;
 [Async General Ops](#18fab2d) &nbsp;•&nbsp;
@@ -11,7 +11,7 @@
 
 English &nbsp;•&nbsp; [中文](./eb8ec2b.md).
 
-## <span id="256ed49"></span>Key Content
+## <span id="256ed49"></span> Key Content
 
 The bigger scale a state is, the more traits it contains. Some traits can reappear across different states, which makes them worth setting apart. Thus, React Mug provides trait segregation mechanism.
 
@@ -171,7 +171,7 @@ export const queryContent = async () => {
 
 So that states are divided down in an orderly manner.
 
-## <span id="18fab2d"></span>Async General Ops
+## <span id="18fab2d"></span> Async General Ops
 
 Further more, passing async functions into the method `x` and invoking general ops inside create async general ops:
 
@@ -221,7 +221,7 @@ export const toggleQueryingVerbosely = w((state) =>
 );
 ```
 
-## <span id="f8f326d"></span>Default General Ops
+## <span id="f8f326d"></span> Default General Ops
 
 Empty-param calls to `r`, `w` create "Read by all", "Write by merge" general ops:
 
@@ -258,7 +258,7 @@ export const queryWithRetry = x(async (mug, act: () => Promise<void>, times: num
 });
 ```
 
-## <span id="0535cd6"></span>General Op Testing
+## <span id="0535cd6"></span> General Op Testing
 
 The easy approach to testing pure functions applies the same to general ops:
 
@@ -273,7 +273,7 @@ describe('startQuerying', () => {
 });
 ```
 
-## <span id="ae966ca"></span>Async General Op Testing
+## <span id="ae966ca"></span> Async General Op Testing
 
 Also, mugs as fulcrums boost up testing async general ops:
 

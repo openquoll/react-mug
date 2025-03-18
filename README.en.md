@@ -1,4 +1,4 @@
-# <span id="b66bc7f"></span>React Mug
+# <span id="b66bc7f"></span> React Mug
 
 [Synopsis](#5b94f97) &nbsp;•&nbsp;
 [Features](#dea3322) &nbsp;•&nbsp;
@@ -10,11 +10,11 @@
 
 English &nbsp;•&nbsp; [中文](./README.md).
 
-## <span id="5b94f97"></span>Synopsis
+## <span id="5b94f97"></span> Synopsis
 
 Next-generation React state lib, born for optimal experience -- optimal in not only user experience, but also developer experience.
 
-## <span id="dea3322"></span>Features
+## <span id="dea3322"></span> Features
 
 ### Writable
 
@@ -122,27 +122,27 @@ export const query = async () => {
 };
 ```
 
-## <span id="f746377"></span>Install
+## <span id="f746377"></span> Install
 
 ```sh
 npm i react-mug
 ```
 
-## <span id="00bfdb1"></span>Guide
+## <span id="00bfdb1"></span> Guide
 
 [Manage One State](./docs/guide/57934f5.en.md).<br/>
 [Compose Multiple States](./docs/guide/7f95611.en.md).<br/>
 [Segregate General Traits](./docs/guide/eb8ec2b.en.md).
 
-## <span id="bf85749"></span>API
+## <span id="bf85749"></span> API
 
 [See also src/index](./src/index.ts).
 
-## <span id="d4b3b37"></span>License
+## <span id="d4b3b37"></span> License
 
 [Apache 2.0](./LICENSE) (Free for commercial use).
 
-## <span id="982e917"></span>Sponsor
+## <span id="982e917"></span> Sponsor
 
 Like it? Then sponsor it!
 

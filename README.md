@@ -1,4 +1,4 @@
-# <span id="a6b2ef2"></span>React Mug
+# <span id="a6b2ef2"></span> React Mug
 
 [概要](#f595ead) &nbsp;•&nbsp;
 [特性](#dea3322) &nbsp;•&nbsp;
@@ -10,11 +10,11 @@
 
 中文 &nbsp;•&nbsp; [English](./README.en.md)。
 
-## <span id="f595ead"></span>概要
+## <span id="f595ead"></span> 概要
 
 下一代 React 状态库，为极致的体验而生 —— 极致的既是用户体验，也是开发者体验。
 
-## <span id="dea3322"></span>特性
+## <span id="dea3322"></span> 特性
 
 ### 好写
 
@@ -122,27 +122,27 @@ export const query = async () => {
 };
 ```
 
-## <span id="cf6afd0"></span>安装
+## <span id="cf6afd0"></span> 安装
 
 ```sh
 npm i react-mug
 ```
 
-## <span id="be6352c"></span>指南
+## <span id="be6352c"></span> 指南
 
 [管理单个状态](./docs/guide/57934f5.md)，<br/>
 [组合多个状态](./docs/guide/7f95611.md)，<br/>
 [分隔通用特质](./docs/guide/eb8ec2b.md)。
 
-## <span id="629f340"></span>API
+## <span id="629f340"></span> API
 
 [参见 src/index](./src/index.ts)。
 
-## <span id="1036c9f"></span>许可
+## <span id="1036c9f"></span> 许可
 
 [Apache 2.0](./LICENSE)（免费商用）。
 
-## <span id="8e8463c"></span>赞助
+## <span id="8e8463c"></span> 赞助
 
 喜欢就赞助一下吧！
 
